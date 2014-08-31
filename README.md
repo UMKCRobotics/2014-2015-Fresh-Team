@@ -2,14 +2,15 @@ The Fresh Team
 ==================
 
 #Building
+
 Regular build:
 
-  $ scons
-  
+    $ scons
+    
 Debug build:
 
-  $ scons --d
-  
+    $ scons --d
+    
 Release Build:
 
-  $ scons --r
+    $ scons --r
