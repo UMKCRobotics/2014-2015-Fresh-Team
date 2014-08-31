@@ -1,5 +1,5 @@
 #include "test.h"
 
 int main(void){
-	test tester;
+	test tester; //tested
 }
