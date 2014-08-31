@@ -1,2 +1,2 @@
-2014-2015-Fun-Team
+The Fresh Team
 ==================
