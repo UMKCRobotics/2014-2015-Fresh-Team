@@ -1,0 +1,3 @@
+[submodule "lib/2014-2015-Framework"]
+	path = lib/2014-2015-Framework
+	url = https://github.com/UMKCRobotics/2014-2015-Framework
