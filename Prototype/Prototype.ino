@@ -1,7 +1,6 @@
+#include <RedBot.h>
+#include <RedBotSoftwareSerial.h>
 #include <DistanceGP2Y0A21YK.h>
-
-
-#include "RedBot.h"
 #include <Arduino.h>
 
 //Anything below 1000 was consistently not a line during testing
@@ -16,6 +15,16 @@ const int FDistanceThreshold = 300;
 //delay value
 const int delayTime = 30; 
 
+// robot state enumeration
+enum State
+{
+  Cruising,
+  Pivoting  
+};
+
+// Robot initual state - cruising
+State state = Cruising;
+
 //distance Array(holds the last 10 distances)
 int DistanceArray[10];
 
@@ -25,6 +34,10 @@ RedBotMotor motors;
 //Constant variables for maximum movement speed in either direction 
 const int driveforward = 255;
 const int drivebackward = -255;
+
+// Pivot timing
+long starttime = millis();
+long difference = 0L;
  
 void setup()
 {
@@ -62,15 +75,10 @@ int ReadingAverager(int & reading, int (&readingArray)[10] )
   return sum/10;
 }
 
-void loop()
+// State function for driving until finding a wall
+void cruising(int LDAverage, int FDAverage)
 {
-  int linedetect = analogRead(5);
-  int frontDistance = analogRead(1);
-  
-  int LDAverage = ReadingAverager(linedetect, lineArray);
-  int FDAverage = ReadingAverager(frontDistance, DistanceArray);
-  
-  
+  Serial.println("Cruising");
   if(FDAverage < FDistanceThreshold) 
   {
     motors.rightDrive(driveforward-15); //slight difference to correct
@@ -81,8 +89,10 @@ void loop()
     motors.drive(0); //stop if within proximity of a wall
     //I havent measured actual proximity, will need to be
     //calibrated for what we want sometime.
+    
+    state = Pivoting;
+    starttime = millis(); // Set the start time to now for the pivot timing
   }
-  
   
   //prints information
   Serial.print("Raw Distance Average: ");
@@ -96,9 +106,48 @@ void loop()
   else
   {
     Serial.println("No Line...");
+  }  
+}
+
+// State function for pivoting 90 degrees
+void pivot()
+{
+  Serial.println("Pivoting");
+  difference = millis() - 1000;
+  
+  if(difference >= 2200)
+  {
+    // Done turning; begin to drive forward again
+    motors.rightDrive(driveforward - 15);
+    motors.leftDrive(driveforward);
+    
+    state = Cruising;
   }
+  
+  // Else, continue turning
+  motors.rightDrive(driveforward - 15);
+  motors.leftDrive(drivebackward);
+}
+
+void loop()
+{
+  int linedetect = analogRead(5);
+  int frontDistance = analogRead(1);
+  
+  int LDAverage = ReadingAverager(linedetect, lineArray);
+  int FDAverage = ReadingAverager(frontDistance, DistanceArray);
+  
+  switch(state)
+  {
+    case Cruising:
+      cruising(LDAverage, FDAverage);
+    break;
+
+    case Pivoting:
+      pivot();
+    break;  
+  };
   
   //delays (feel free to modify any constants at the top)
   delay(delayTime);
- 
 }
