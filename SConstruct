@@ -13,6 +13,7 @@ bins = "bins/"
 srcs = "src/"
 libs = "lib/"
 build = "build/"
+arduino = "build/program/Arduino/"
 SConscript_name = "SConscript"
 framework_name = "2014-2015-Framework/"
 
