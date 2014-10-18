@@ -3,7 +3,8 @@ const int B=3;
 const int C=4;
 const int D=5;
  
-void setup() {
+void setup() 
+{
   pinMode(A0, INPUT);
   pinMode(A, OUTPUT); //LSB
   pinMode(B, OUTPUT);
@@ -13,7 +14,8 @@ void setup() {
 }
 int count = 0; //the variable used to show the number
  
-void loop() {
+void loop() 
+{
   if (digitalRead(A0) == LOW) // From here the line sensors will give me a value for the Analog read
     {
     count++; 
@@ -108,3 +110,4 @@ void to_BCD()
       digitalWrite(C, LOW);
       digitalWrite(D, HIGH);
     } 
+}
