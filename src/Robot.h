@@ -22,6 +22,8 @@ public:
 	Robot(Logger logger);
 
 	void go(void);
+
+	Cardinal getOrientation(void);
 };
 
 #endif

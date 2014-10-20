@@ -19,7 +19,7 @@ void Robot::go(void)
 		position = 48;
 		endPosition = 9;
 	}
-	else if round == 2) 
+	else if(round == 2) 
 	{
 		position = 48;
 		endPosition = 1;
@@ -46,4 +46,9 @@ void Robot::getRoundAndPart(void)
 
 	logger.logMessage("Selected Round: " + str_round);
 	logger.logMessage("Selected Part: "  + str_part);
+}
+
+Cardinal Robot::getOrientation(void)
+{
+	return orientation;
 }
