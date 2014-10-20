@@ -1,6 +1,10 @@
-#include "Cardinal.h"
+#include "Robot.h"
 
-int main(void){
-	Cardinal c = EAST;
+Robot robot;
+
+int main(void)
+{
+	
+
 	return 0;
 }
