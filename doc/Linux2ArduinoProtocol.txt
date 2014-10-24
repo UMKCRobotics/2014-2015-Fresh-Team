@@ -1,0 +1,32 @@
+---------------------------------------------------
+			Arduino 2 Linux Protocol
+		for Udoo onboard communication
+---------------------------------------------------
+
+Needed functionality:
+- Udoo request sensor readings
+- Udoo update status lights
+- Arduino send button press (possibly have the Udoo 
+  just connected to it?)
+
+---------------------------------------------------
+readRound
+	Sent by: 		Linux
+	Received by: 	Arduino
+	Response:
+		Arduino reads the value of the round
+		potentiometer, interprets the resistance
+		to determine the selected round
+		Sends back the round (integer 1 to 3)
+
+readPart
+	Sent by:		Linux
+	Received by: 	Arduino
+		Arduino reads the value of the round
+		potentiometer, interprets the resistance
+		to determine the selected round
+		Sends back the round (integer 1 to 3)
+
+TODO: 	More to come. Feel free to add in any more 
+		you feel that we need
+---------------------------------------------------
