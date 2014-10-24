@@ -21,7 +21,7 @@ void MotorCommander::move(Cardinal direction)
     // TODO: Move forward
   }
   else {
-      int x = (cardinaldirection - CurrentOrientation);
+      int x = (orientation - CurrentOrientation);
    
       if (x == 0){
         // TODO: Move foward
