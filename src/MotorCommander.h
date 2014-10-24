@@ -4,9 +4,9 @@
 class MotorCommander
 {
 public:
-	MotorCommander();
+	MotorCommander(Robot robot);
 
-	void move(int cardinalDirection);
+	void move(Cardinal direction);
 	void turn(int degrees);
 	float getAngle();
 };

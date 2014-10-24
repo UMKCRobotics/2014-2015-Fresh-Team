@@ -1,7 +1,6 @@
 #include "IMU.h"
 
 LSM9DS0 dof(MODE_I2C, LSM9DS0_G, LSM9DS0_XM);
-int CurrentOrientation = 1;
 
 // Enable Pins for Motors
 const int E1 = 4;
@@ -16,13 +15,9 @@ const int L3 = 8;
 const int L4 = 9;
 
 // Moves robot in desired cardinal direction
-// 1 = North
-// 2 = East
-// 3 = South
-// 4 = West
-void move(int cardinaldirection)
+void MotorCommander::move(Cardinal direction)
 {
-  if (CurrentOrientation == cardinaldirection){
+  if (robot.getOrientation() == direction){
     // TODO: Move forward
   }
   else {
@@ -37,7 +32,7 @@ void move(int cardinaldirection)
       }
    }
 }
-void turn(int degrees)
+void MotorCommander::turn(int degrees)
 {
   if (degrees < 0){
     // left motor back, right foward
@@ -72,10 +67,10 @@ void turn(int degrees)
   digitalWrite (E2, HIGH);
   digitalWrite (L3, HIGH);
   digitalWrite (L4, HIGH);
-)
+}
 
 // Returns the angle the robot currently is in degrees
-float getAngle()
+float MotorCommander::getAngle()
 {
 	float heading;
 	float hx = dof.mx; // Heading X
