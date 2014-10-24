@@ -1,6 +1,8 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include "lib/Serial/SerialStream.h"
+
 #include "MotorCommander.h"
 #include "Cardinal.h"
 
@@ -13,6 +15,9 @@ private:
 	MotorCommander motorCommander;
 	Logger logger;
 
+	SerialStream arduinoSerial;
+	SerialStream PCSerial;
+
 	int round;
 	int part;
 
@@ -21,6 +26,7 @@ private:
 public:
 	Robot(Logger logger);
 
+	bool init(void);
 	void go(void);
 
 	Cardinal getOrientation(void);
