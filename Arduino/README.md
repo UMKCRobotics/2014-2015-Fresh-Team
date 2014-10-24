@@ -1,20 +1,23 @@
 Arduino Project
-==================
+===================
 
-#Documentation
+Documentation
+-------------------
 Documentation for inotool can be found at:  
 http://inotool.org/
 
 Suggested reading:  
 http://inotool.org/quickstart
 
-#Build and Upload
+Build and Upload
+--------------------
 ``` bash
 $ ino build
 $ ino upload
 ```
 
-#Serial Information
+Serial Information
+-------------------
 _Serial Port:_ `/dev/ttymxc3`  
 _Baud Rate:_ `115200`
 
