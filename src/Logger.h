@@ -7,6 +7,7 @@ using namespace std;
 
 class Logger{
 	public:
+		Logger();
 		void logMessage(string message);
 		void logError(string error);
 };

@@ -1,6 +1,7 @@
 #include "Robot.h"
 
-Robot robot;
+Logger logger;
+Robot robot(logger);
 
 int main(void)
 {

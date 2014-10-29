@@ -1,10 +1,12 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include "lib/Serial/SerialStream.h"
+#include "../lib/Serial/SerialStream.h"
+using namespace LibSerial;
 
 #include "MotorCommander.h"
 #include "Cardinal.h"
+#include "Logger.h"
 
 class Robot
 {
@@ -24,6 +26,7 @@ private:
 	void getRoundAndPart(void);
 
 public:
+	Robot();
 	Robot(Logger logger);
 
 	bool init(void);

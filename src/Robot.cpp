@@ -1,9 +1,14 @@
 #include "Robot.h"
 
-Robot::Robot(Logger logger)
+Robot::Robot()
 {
 	orientation = NORTH;
-	this.logger = logger;
+}
+
+Robot::Robot(Logger _logger)
+{
+	orientation = NORTH;
+	logger = _logger;
 }
 
 // Initiation function for all main robot components
