@@ -1,24 +1,33 @@
+#include <map>
 #include "Cardinal.h"
 
 class MazeNode
 {
 public:
+
+	//constructors
 	MazeNode();
 	MazeNode(Cardinal EntryDirection, MazeNode node);
 
-	void append(Cardinal direction, MazeNode node);
-	MazeNode getNode(Cardinal direction);
-	void traverse();
-	int getTraversalCount();
-	//rename this mess to not be something expected from Java
-	bool checkifNodeinDirectionExists(Cardinal direction);
 
+	void append(Cardinal direction, MazeNode node);
+
+	MazeNode getNodeTo(Cardinal direction);
+	bool nodeExistsTo(Cardinal direction);
+
+	bool isStart = false;
+	bool isFinish = false;
 
 private:
 	MazeNode *up, *down, *left, *right;
 	int traversalCount;
 	int posX, posY; //may change this system
-}
+
+	std::map<pair<int, int>, std::unique_ptr<MazeNode>> *Mazemap;
+	//pair doesn't work with ints?
+
+
+};
 
 /*******************************Notes*******************************************
 These notes are just for reference on how I envision it working as of November 2 

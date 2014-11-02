@@ -62,5 +62,22 @@ void MazeNode::append(Cardinal Direction, MazeNode node)
 	}
 }
 
+void MazeNode::getNodeTo(Cardinal Direction)
+{
+	switch(Direction)
+	{
+		case NORTH:
+			return &up;
+		case SOUTH:
+			return &down;
+		case EAST:
+			return &right;
+		case WEST:
+			return &left;
+	}
+}
+
+
+
 //todo: Review c++ pointers, finish filling this in, make corrections to my tree
 //datastructure
