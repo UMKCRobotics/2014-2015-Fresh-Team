@@ -23,7 +23,7 @@ private:
 	int traversalCount;
 	int posX, posY; //may change this system
 
-	std::map<pair<int, int>, std::unique_ptr<MazeNode>> *Mazemap;
+	std::map<pair<int, int>, std::shared_ptr<MazeNode>> *Mazemap;
 	//pair doesn't work with ints?
 
 
