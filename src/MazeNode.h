@@ -19,11 +19,11 @@ public:
 	bool isFinish = false;
 
 private:
-	MazeNode *up, *down, *left, *right;
+	std::shared_ptr<MazeNode> *up, *down, *left, *right;
 	int traversalCount;
 	int posX, posY; //may change this system
 
-	std::map<pair<int, int>, std::unique_ptr<MazeNode>> *Mazemap;
+	std::map<pair<int, int>, std::shared_ptr<MazeNode>> *Mazemap;
 	//pair doesn't work with ints?
 
 
