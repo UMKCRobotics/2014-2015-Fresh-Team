@@ -1,8 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include "../lib/Serial/SerialStream.h"
-using namespace LibSerial;
+#include "serialib.h"
 
 #include "MotorCommander.h"
 #include "Cardinal.h"
@@ -17,8 +16,8 @@ private:
 	MotorCommander motorCommander;
 	Logger logger;
 
-	SerialStream arduinoSerial;
-	SerialStream PCSerial;
+	serialib PCSerial;
+	serialib arduinoSerial;
 
 	int round;
 	int part;
@@ -27,7 +26,7 @@ private:
 
 public:
 	Robot();
-	Robot(Logger logger);
+
 
 	bool init(void);
 	void go(void);

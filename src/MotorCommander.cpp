@@ -16,20 +16,19 @@ const int L2 = 7;
 const int L3 = 8;
 const int L4 = 9;
 
-MotorCommander::MotorCommander(Robot &_robot)
-: robot(_robot)
+MotorCommander::MotorCommander()
 {
   
 }
 
 // Moves robot in desired cardinal direction
-void MotorCommander::move(Cardinal direction)
+void MotorCommander::move(Cardinal currentDirection, Cardinal direction)
 {
-  if (robot.getOrientation() == direction){
+  if (currentDirection == direction){
     // TODO: Move forward
   }
   else {
-      int x = (direction - robot.getOrientation());
+      int x = (direction - currentDirection);
    
       if (x == 0){
         // TODO: Move foward
