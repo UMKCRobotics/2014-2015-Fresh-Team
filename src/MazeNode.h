@@ -1,30 +1,43 @@
 #include <map>
-#include "Cardinal.h"
+#include <memory>
+#include "cardinal.h"
+#include "coordinate.h"
 
 class MazeNode
 {
 public:
-
+	
 	//constructors
-	MazeNode();
-	MazeNode(Cardinal EntryDirection, MazeNode node);
+	MazeNode(
+		std::weak_ptr<
+		std::multimap<Coordinate,std::shared_ptr<MazeNode> > > map);
+
+	MazeNode(Cardinal EntryDirection, std::shared_ptr<MazeNode> node, 
+		std::weak_ptr<
+		std::multimap<Coordinate,std::shared_ptr<MazeNode> > > map);
 
 
-	void append(Cardinal direction, MazeNode node);
+	void append(Cardinal direction);
 
-	MazeNode getNodeTo(Cardinal direction);
+	MazeNode* getNodeTo(Cardinal direction);
 	bool nodeExistsTo(Cardinal direction);
+
+	Coordinate getCoordinates();
 
 	bool isStart = false;
 	bool isFinish = false;
 
 private:
+<<<<<<< HEAD
 	std::shared_ptr<MazeNode> *up, *down, *left, *right;
+=======
+	std::weak_ptr<MazeNode> up, down, left, right;
+>>>>>>> 7f769f872ad83fa43c7063675ca18ed2882acbee
 	int traversalCount;
-	int posX, posY; //may change this system
+	Coordinate position; //may change this system
 
-	std::map<pair<int, int>, std::shared_ptr<MazeNode>> *Mazemap;
-	//pair doesn't work with ints?
+	std::weak_ptr<std::multimap<Coordinate, 
+		std::shared_ptr<MazeNode> > > Mazemap;
 
 
 };
