@@ -2,62 +2,108 @@
 
 
 //initializes empty MazeNode(for Root)
-MazeNode::MazeNode()
+MazeNode::MazeNode(std::weak_ptr <
+	std::multimap<Coordinate, std::shared_ptr<MazeNode> > > map)
 {
-	up = NULL;
-	down = NULL;
-	left = NULL;
-	right = NULL;
+
+	//sets next positions to empty weak_ptrs
+	up = std::make_shared<MazeNode>(nullptr);
+	down = std::make_shared<MazeNode>(nullptr);
+	left = std::make_shared<MazeNode>(nullptr);
+	right = std::make_shared<MazeNode>(nullptr);
+
+	//assigns the provided map to the mazemap
+	Mazemap = map;
+
+	//assigns position x and y to 0
+	position.x = position.y = 0;
+
+	//traversal count is set to 1 because it has been traversed if detected.
+	traversalCount = 1;
+
+	//sets isStart to true
+	isStart = true;
+
+	std::shared_ptr<std::multimap<Coordinate, std::shared_ptr<MazeNode> > > mazemapaccessor = Mazemap.lock();
+
+	mazemapaccessor->insert(std::make_pair(position, std::make_shared<MazeNode>(this)));
+
 }
 
 //Initializes maze node with a pointer to the previous node
-MazeNode::MazeNode(cardinal EntryDirection, MazeNode node)
+MazeNode::MazeNode(Cardinal EntryDirection, std::shared_ptr<MazeNode> node, std::weak_ptr<std::multimap<Coordinate, std::shared_ptr<MazeNode> > > map)
 {
+	/*!!note that this constructor does not add to the map because it is assumed
+	*that this constructor is being called from the append function of another
+	*node where it will be added automatically.
+	*/
+
 	switch(EntryDirection)
 	{
+		position = node->getCoordinates;
+
 		case NORTH:
-			up = &node;
-			down = NULL;
-			left = NULL;
-			right = NULL;
+			up = node;
+			down = std::make_shared<MazeNode>(nullptr);
+			left = std::make_shared<MazeNode>(nullptr);
+			right = std::make_shared<MazeNode>(nullptr);
+			position.x += 1;			
 			break;
 		case SOUTH:
-			up = NULL;
-			down = &node;
-			left = NULL;
-			right = NULL;
+			up = std::make_shared<MazeNode>(nullptr);
+			down = node;
+			left = std::make_shared<MazeNode>(nullptr);
+			right = std::make_shared<MazeNode>(nullptr);
+			position.x -= 1;
 			break;
 		case EAST:
-			up = NULL;
-			down = NULL;
-			left = NULL;
-			right = &node;
+			up = std::make_shared<MazeNode>(nullptr);
+			down = std::make_shared<MazeNode>(nullptr);
+			left = node;
+			right = std::make_shared<MazeNode>(nullptr);
+			position.y += 1;
 			break;
 		case WEST:
-			up = NULL;
-			down = NULL;
-			left = &node;
-			right = NULL;
+			up = std::make_shared<MazeNode>(nullptr);
+			down = std::make_shared<MazeNode>(nullptr);
+			left = std::make_shared<MazeNode>(nullptr);
+			right = node;
+			position.y -= 1;
 			break;
 	}
+
+	//traversal count initialized at 0 due to possibility that it has been created
+	//without being traversed to.
+	traversalCount = 0;
+
 }
 
-//adds a pointer to the node to the new direction
-void MazeNode::append(Cardinal Direction, MazeNode node)
+//creates a new node with a pointer to that node in the new direction
+void MazeNode::append(Cardinal Direction)
 {
+	std::shared_ptr<std::multimap<Coordinate, std::shared_ptr<MazeNode> > > mazemapaccessor = Mazemap.lock();
+	std::shared_ptr<MazeNode> nodeptr = mazemapaccessor->find(position)->second;
+
+
 	switch(Direction)
 	{
+
+		
 		case NORTH:
-			up = &(new MazeNode(Cardinal.SOUTH, this));
+			MazeNode newNode = MazeNode(SOUTH, Mazemap->)
+
+
+
+			up = node;
 			break;
 		case SOUTH:
-			down = &(new MazeNode(Cardinal.NORTH, this));
+			down = make_shared<new MazeNode(Cardinal.NORTH, this)>;
 			break;
 		case WEST:
-			left = &(new MazeNode(Cardinal.RIGHT, this));
+			left = make_shared<new MazeNode(Cardinal.RIGHT, this)>;
 			break;
 		case EAST:
-			right = &(new MazeNode(Cardinal.LEFT, this));
+			right = make_shared<new MazeNode(Cardinal.LEFT, this)>;
 			break;
 	}
 }
@@ -77,7 +123,3 @@ void MazeNode::getNodeTo(Cardinal Direction)
 	}
 }
 
-
-
-//todo: Review c++ pointers, finish filling this in, make corrections to my tree
-//datastructure
