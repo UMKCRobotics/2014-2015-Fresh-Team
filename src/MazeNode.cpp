@@ -85,16 +85,17 @@ void MazeNode::append(Cardinal Direction)
 	std::shared_ptr<MazeNode> nodeptr = mazemapaccessor->find(position)->second;
 
 
+	//todo: edit MazeNode to allow for empty constructor and an initialization function
+	
+
 	switch(Direction)
 	{
 
 		
 		case NORTH:
-			MazeNode newNode = MazeNode(SOUTH, Mazemap->)
-
-
-
-			up = node;
+			MazeNode newNode = MazeNode(SOUTH, nodeptr, Mazemap);
+			mazemapaccessor->insert()
+			up = newNode;
 			break;
 		case SOUTH:
 			down = make_shared<new MazeNode(Cardinal.NORTH, this)>;
@@ -108,18 +109,5 @@ void MazeNode::append(Cardinal Direction)
 	}
 }
 
-void MazeNode::getNodeTo(Cardinal Direction)
-{
-	switch(Direction)
-	{
-		case NORTH:
-			return &up;
-		case SOUTH:
-			return &down;
-		case EAST:
-			return &right;
-		case WEST:
-			return &left;
-	}
-}
+
 
