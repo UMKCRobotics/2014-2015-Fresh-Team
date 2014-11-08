@@ -6,23 +6,10 @@
 #include <string.h>
 using namespace std;
 
-enum LOG_OUTPUT
-{
-	LOGFILEOUT		= (1<<1),
-	CONSOLEOUT		= (1<<2)
-};
-
 class Logger{
 private:
 	ostream* os;
-	bool consoleOutput;
-	bool fileOutput;
 	void init();
-	/*
-	Logger(){};
-	Logger(Logger const&);
-	void operator=(Logger const&);
-	*/
 	void log(string& message);
 	void p_setStream(ostream* out);
 	bool checkStream(bool throwError=true);

@@ -7,16 +7,17 @@ void Logger::log(string& message){
 
 void Logger::logMessage(string message)
 {
+	message = message + "\n";
+
 	Logger::getInstance().checkStream();
 	Logger::getInstance().log(message);
-
-	// TODO: File output
 }
 
 void Logger::logError(string error)
 {
+	error = "Error: " + error + "\n";
 	Logger::getInstance().checkStream();
-	// TODO: Add functionality
+	Logger::getInstance().log(error);
 }
 void Logger::p_setStream(ostream* out){
 	os = out;
@@ -27,7 +28,7 @@ void Logger::setStream(ostream* out){
 
 bool Logger::checkStream(bool throwError){
 	if(Logger::getInstance().os == NULL){
-		if(throwError){
+		if(throwError) {
 			throw std::runtime_error("No stream set");
 		}
 		return false;
