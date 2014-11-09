@@ -167,7 +167,7 @@ string Robot::getPinFileContents(int pin, int property)
 	string contents = "";
 	string str_pin = to_string(pin);
 	string str_property = "";
-	string filePath = "/sys/class/gpio/gpio" + pin;
+	string filePath = "/sys/class/gpio/gpio" + str_pin;
 
 	// Convert from the pin property's integer value to a string
 	switch(property)
@@ -185,7 +185,7 @@ string Robot::getPinFileContents(int pin, int property)
 	filePath = filePath + "/" + str_property;
 
 	fstream pinFile;
-	pinFile.open(filePath);
+	pinFile.open(filePath, fstream::in);
 
 	if(pinFile.is_open())
 	{
@@ -204,7 +204,7 @@ bool Robot::writePinFileContents(int pin, int property, int value)
 {
 	bool status = true;
 	string str_pin = to_string(pin);
-	string filePath = "/sys/class/gpio/gpio" + pin;
+	string filePath = "/sys/class/gpio/gpio" + str_pin;
 	string str_property = "";
 	string str_value = "";
 
@@ -243,10 +243,10 @@ bool Robot::writePinFileContents(int pin, int property, int value)
 	// Append the path of what we want from the pin
 	filePath = filePath + "/" + str_property;
 
-	// Now open the pin file up and try and write the value
+	// Now open the pin file up and try to write the value
 	// to it
 	fstream pinFile;
-	pinFile.open(filePath);
+	pinFile.open(filePath, fstream::out);
 
 	if(pinFile.is_open())
 	{
