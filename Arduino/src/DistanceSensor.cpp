@@ -1,4 +1,4 @@
-#include "Sensor.h"
+#include "DistanceSensor.h"
 
 DistanceSensor::DistanceSensor()
 {
@@ -15,4 +15,9 @@ void DistanceSensor::update(float distance)
 	{
 		closeToWall = false;
 	}
+}
+
+bool isCloseToWall()
+{
+	return closeToWall;
 }

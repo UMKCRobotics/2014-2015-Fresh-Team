@@ -1,5 +1,5 @@
-#ifndef SENSOR_H
-#define SENSOR_H
+#ifndef DISTANCESENSOR_H
+#define DISTANCESENSOR_H
 
 #include <iostream>
 using namespace std;
