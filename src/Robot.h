@@ -12,8 +12,7 @@ private:
 	int position;
 	int endPosition;
 	Logger logger;
-
-	serialib PCSerial;
+	
 	serialib arduinoSerial;
 
 	int round;

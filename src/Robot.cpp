@@ -20,17 +20,6 @@ bool Robot::init(void)
 	bool successful = true;
 	int initStatus = 0;
 
-
-	Logger::logMessage("Initiating PC SerialStream...");
-	initStatus = PCSerial.Open("dev/ttsy0", 115200);
-
-	if(initStatus == 1) {
-		Logger::logMessage("\tComplete");
-	} else {
-		Logger::logMessage("\tFailed to Open");
-		successful = false;
-	}
-
 	Logger::logMessage("Initiating Arduino SerialStream...");
 	initStatus = arduinoSerial.Open("/dev/ttymxc3", 9600);
 
