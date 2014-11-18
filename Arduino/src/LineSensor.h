@@ -11,7 +11,7 @@ public:
 	LineSensor();
 
 	void update(float reading);
-	bool seesLine();
+	bool lineDetected();
 	// We can possibly add in a function to differentiate between
 	// a big line and a small line (actual line and gap in the
 	// table)
