@@ -1,6 +1,7 @@
 #include <math.h>
 #include "MotorCommander.h"
 #include "Pins.h"
+#include "Navigation.h"
 
 
 // Define pi here for sake of precision and easy of use
@@ -14,11 +15,11 @@ MotorCommander::MotorCommander()
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Robot* robot, Cardinal direction)
 {
-  if (robot->getOrientation() == direction){
+  if (robot->navigation.getOrientation() == direction){
     // TODO: Move forward
   }
   else {
-      int x = (direction - robot->getOrientation());
+      int x = (direction - robot->navigation.getOrientation());
    
       if (x == 0){
         // TODO: Move foward
