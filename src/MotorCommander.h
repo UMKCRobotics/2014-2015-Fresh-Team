@@ -7,9 +7,9 @@
 class MotorCommander
 {
 private:
-	Robot* robot;
+	
 public:
-	MotorCommander(Robot &_robot);
+	MotorCommander();
 
 	void move(Cardinal direction);
 	void turn(int degrees);
