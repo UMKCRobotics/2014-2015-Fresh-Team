@@ -6,13 +6,11 @@
 
 class MotorCommander
 {
-private:
-	
 public:
 	MotorCommander();
 
-	void move(Cardinal direction);
-	void turn(int degrees);
+	void move(Robot* robot, Cardinal direction);
+	void turn(int degrees, Robot* robot);
 	float getAngle();
 };
 

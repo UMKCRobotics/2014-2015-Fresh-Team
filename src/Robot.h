@@ -1,10 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include "../lib/Serial/SerialStream.h"
-using namespace LibSerial;
-
-#include "MotorCommander.h"
+#include "serialib.h"
 #include "Cardinal.h"
 #include "Logger.h"
 
@@ -14,25 +11,29 @@ private:
 	Cardinal orientation;
 	int position;
 	int endPosition;
-	MotorCommander motorCommander;
 	Logger logger;
 
-	SerialStream arduinoSerial;
-	SerialStream PCSerial;
+	serialib PCSerial;
+	serialib arduinoSerial;
 
 	int round;
 	int part;
 
 	void getRoundAndPart(void);
-
+	string getPinFileContents(int pin, int property);
+	bool writePinFileContents(int pin, int property, int value);
 public:
 	Robot();
-	Robot(Logger logger);
 
 	bool init(void);
 	void go(void);
 
 	Cardinal getOrientation(void);
-};
 
+	int getPinDirection(int pin);
+	int getPinState(int pin);
+
+	void setPinState(int pin, int state);
+	bool setPinDirection(int pin, int state);
+};
 #endif
