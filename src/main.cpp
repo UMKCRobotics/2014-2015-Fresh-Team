@@ -22,15 +22,26 @@ int main(void)
 	}
 	else
 	{
-		Logger::logMessage("Startup complete; waiting for go button to be pressed");
+		// Logger::logMessage("Startup complete; waiting for go button to be pressed");
 
-		while(robot.getPinState(PIN_GO_BUTTON) == PIN_STATE_LOW)
+		// while(robot.getPinState(PIN_GO_BUTTON) == PIN_STATE_LOW)
+		// {
+		// 	// Do nothing
+		// 	usleep(50000);
+		// }
+
+		// robot.go();
+
+		// TEMP: Code for testing communication with the Arduino side
+		char* received;
+
+		while(1)
 		{
-			// Do nothing
-			usleep(50000);
+			if(robot.arduinoSerial.ReadString(received, '\n', 100) > 0)
+			{
+				Logger::logMessage(received);
+			}
 		}
-
-		robot.go();
 	}
 
 	return 0;
