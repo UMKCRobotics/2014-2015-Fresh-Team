@@ -34,11 +34,32 @@ int main(void)
 
 		// TEMP: Code for testing communication with the Arduino side
 		char* received;
+		int readStatus = 0;
 
 		while(1)
 		{
-			if(robot.arduinoSerial.ReadString(received, '\n', 100) > 0)
+			readStatus = robot.arduinoSerial.ReadString(received, "\r\n", 100);
+
+			if(readStatus > 0)
 			{
+				Logger::logMessage("Data!");
+				Logger::logMessage(received);
+			}
+			else if(readStatus == 0)
+			{
+				Logger::logMessage("Timeout Reached");
+			}
+			else if(readStatus == -1)
+			{
+				Logger::logMessage("Error while setting timeout");
+			}
+			else if(readStatus == -2)
+			{
+				Logger::logMessage("Error while reading byte");
+			}
+			else if(readStatus == -3)
+			{
+				Logger::logMessage("Byte maximum is reached");
 				Logger::logMessage(received);
 			}
 		}
