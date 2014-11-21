@@ -128,7 +128,7 @@ MazeNode* MazeNode::getNodeTo(Cardinal direction)
 
 }
 
-//Please do read.
+//Please do read...
 
 
 
