@@ -33,12 +33,12 @@ int main(void)
 		// robot.go();
 
 		// TEMP: Code for testing communication with the Arduino side
-		char* received;
+		char received[128];
 		int readStatus = 0;
 
 		while(1)
 		{
-			readStatus = robot.arduinoSerial.ReadString(received, "\r\n", 100);
+			readStatus = robot.arduinoSerial.ReadString(received, '\n', 128);
 
 			if(readStatus > 0)
 			{
@@ -59,7 +59,7 @@ int main(void)
 			}
 			else if(readStatus == -3)
 			{
-				Logger::logMessage("Byte maximum is reached");
+				Logger::logMessage("Byte maximum is reached; pritning received data anyways");
 				Logger::logMessage(received);
 			}
 		}
