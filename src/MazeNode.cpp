@@ -32,16 +32,10 @@ std::shared_ptr<MazeNode> MazeNode::backstep()
 	return previousNode.lock();
 }
 
-<<<<<<< HEAD
 void MazeNode::deleteNext()
 {
 	nextNode.reset();
 }
-=======
-//Please do read....
-
-
->>>>>>> f3ba8aed4edbbe5193cd9ff3b8a54a8c16ae64d6
 
 std::shared_ptr<MazeNode> MazeNode::backstepAndDelete()
 {
