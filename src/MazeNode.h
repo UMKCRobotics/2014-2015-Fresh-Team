@@ -3,41 +3,39 @@
 #include "cardinal.h"
 #include "coordinate.h"
 
+enum nodeType(START, PASSAGE, TERMINAL);
+
 class MazeNode
 {
 public:
 	
-	//constructors
+	/**constructor**/
 	MazeNode(
-		std::weak_ptr<
-		std::multimap<Coordinate,std::shared_ptr<MazeNode> > > map);
+		int Location, Cardinal EntryDirection, std::weak_ptr<MazeNode> previous, nodeType Type);
 
-	MazeNode(Cardinal EntryDirection, std::shared_ptr<MazeNode> node, 
-		std::weak_ptr<
-		std::multimap<Coordinate,std::shared_ptr<MazeNode> > > map);
+	/**positive actions**/
+	void append(MazeNode nextNode);
+	std::shared_ptr<MazeNode> traverse();
+	std::shared_ptr<MazeNode> appendAndTraverse(MazeNode nextNode);
 
+	/**negative actions**/
+	std::shared_ptr<MazeNode> backstepAndDelete();
+	std::shared_ptr<MazeNode> backstep();
 
-	void append(Cardinal direction);
-	void traverse(direction);
-	void appendAndTraverse(Cardinal direction);
+	void deleteNext();
 
-	bool deleteBranchTo(Cardinal direction);
-	MazeNode* getNodeTo(Cardinal direction);
-	bool nodeExistsTo(Cardinal direction);
-
-	Coordinate getCoordinates();
-
-	bool isStart = false;
-	bool isFinish = false;
+	/**accessors**/
+	Cardinal getEntryDirection();
+	int getlocation();
 
 private:
-	std::weak_ptr<MazeNode> up, down, left, right;
+	std::shared_ptr<MazeNode> nextNode;
+	std::weak_ptr<MazeNode> previousNode;
+
+	Cardinal entrydirection;
+	nodeType type;
 	int traversalCount;
-	Coordinate position; //may change this system
-
-	std::weak_ptr<std::multimap<Coordinate, 
-		std::shared_ptr<MazeNode> > > Mazemap;
-
+	int location; //may change this system
 
 };
 
