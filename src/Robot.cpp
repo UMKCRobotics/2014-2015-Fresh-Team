@@ -38,6 +38,10 @@ bool Robot::init(void)
 		if(!setPinDirection(PIN_GO_BUTTON_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_GND, PIN_DIRECTION_OUT)) successful = false;
 
+		if(!setPinDirection(PIN_READY_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_END_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_STATUS_LIGHTS_GND, PIN_DIRECTION_OUT)) successful = false;
+
 		if(successful) Logger::logMessage("\tComplete");
 		else Logger::logMessage("\tFailed");
 	}
@@ -48,6 +52,10 @@ bool Robot::init(void)
 		setPinState(PIN_GO_BUTTON_TO, PIN_STATE_LOW);
 		setPinState(PIN_GO_BUTTON_VCC, PIN_STATE_HIGH);
 		setPinState(PIN_GO_BUTTON_GND, PIN_STATE_LOW);
+
+		setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_HIGH);
+		setPinState(PIN_END_LIGHT_VCC, PIN_STATE_LOW);
+		setPinState(PIN_STATUS_LIGHTS_GND, PIN_STATE_LOW);
 		
 		Logger::logMessage("\tComplete");
 	}

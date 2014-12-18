@@ -27,14 +27,6 @@ const int PIN_GO_BUTTON_FROM 				= 160;
 const int PIN_GO_BUTTON_VCC 				= 161;
 const int PIN_GO_BUTTON_GND 				= 150;
 
-const int PIN_ROUND_SELECT_VCC 				= 16;
-const int PIN_ROUND_SELECT_SIGNAL 			= 11;
-const int PIN_ROUND_SELECT_GND 				= 4;
-
-const int PIN_PART_SELECT_VCC				= 40;
-const int PIN_PART_SELECT_SIGNAL			= 3;
-const int PIN_PART_SELECT_GND				= 3;
-
 /********************************************
 Distance Sensors
 - Arranged in the following manner:
@@ -58,11 +50,9 @@ Output Pins
   needs a potential difference, not an actual
   ground to emit light
 ********************************************/
-const int PIN_READY_LIGHT_VCC			= 13;
-const int PIN_READY_LIGHT_GND 			= 13;
-
-const int PIN_END_LIGHT_VCC				= 13;
-const int PIN_END_LIGHT_GND 			= 13;
+const int PIN_READY_LIGHT_VCC			= 124;
+const int PIN_END_LIGHT_VCC				= 126;
+const int PIN_STATUS_LIGHTS_GND			= 133;
 
 /********************************************
 Pin Settings
