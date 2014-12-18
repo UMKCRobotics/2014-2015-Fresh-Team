@@ -8,24 +8,24 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_E1 			= 4;
-const int PIN_MOTOR_L1			= 6;
-const int PIN_MOTOR_L2 			= 7;
+const int PIN_MOTOR_E1 			= 144;
+const int PIN_MOTOR_L1			= 0x00; // TODO: 	Finish pin mappings
+const int PIN_MOTOR_L2 			= 0x00; //			for motor driver
 
 // Right Motor
-const int PIN_MOTOR_E2 			= 5;
-const int PIN_MOTOR_L3 			= 8;
-const int PIN_MOTOR_L4 			= 9;
+const int PIN_MOTOR_E2 			= 101;
+const int PIN_MOTOR_L3 			= 0x00;
+const int PIN_MOTOR_L4 			= 33;
 
 /********************************************
 Input Pins
 - Reading current round and part
 - Telling the robot to start
 ********************************************/
-const int PIN_GO_BUTTON_TO 					= 162;
-const int PIN_GO_BUTTON_FROM 				= 160;
-const int PIN_GO_BUTTON_VCC 				= 161;
-const int PIN_GO_BUTTON_GND 				= 150;
+const int PIN_GO_BUTTON_TO 		= 162;
+const int PIN_GO_BUTTON_FROM 	= 160;
+const int PIN_GO_BUTTON_VCC 	= 161;
+const int PIN_GO_BUTTON_GND 	= 150;
 
 /********************************************
 Distance Sensors
@@ -40,7 +40,7 @@ Distance Sensors
 
 - Includes their GND, VCC, and signal pins   
 ********************************************/
-
+// TODO
 
 /********************************************
 Output Pins
@@ -50,9 +50,9 @@ Output Pins
   needs a potential difference, not an actual
   ground to emit light
 ********************************************/
-const int PIN_READY_LIGHT_VCC			= 124;
-const int PIN_END_LIGHT_VCC				= 126;
-const int PIN_STATUS_LIGHTS_GND			= 133;
+const int PIN_READY_LIGHT_VCC	= 124;
+const int PIN_END_LIGHT_VCC		= 126;
+const int PIN_STATUS_LIGHTS_GND	= 133;
 
 /********************************************
 Pin Settings
