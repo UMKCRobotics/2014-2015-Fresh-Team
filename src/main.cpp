@@ -30,6 +30,9 @@ int main(void)
 			usleep(50);
 		}
 
+		robot.setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
+		robot.setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
+
 		robot.go();
 	}
 
