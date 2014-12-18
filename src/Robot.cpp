@@ -34,23 +34,22 @@ bool Robot::init(void)
 	{
 		Logger::logMessage("Configuring GPIO Directions...");
 		if(!setPinDirection(PIN_GO_BUTTON_TO, PIN_DIRECTION_OUT)) successful = false;
-		if(!setPinDirection(PIN_GO_BUTTON_FROM, PIN_DIRECTION_IN) successful = false;
+		if(!setPinDirection(PIN_GO_BUTTON_FROM, PIN_DIRECTION_IN)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_GND, PIN_DIRECTION_OUT)) successful = false;
 
 		if(successful) Logger::logMessage("\tComplete");
-		else Logger::LogMessage("\tFailed");
+		else Logger::logMessage("\tFailed");
 	}
 
 	if(successful)
 	{
 		Logger::logMessage("Configuring Default GPIO Outputs...");
-		if(!setPinState(PIN_GO_BUTTON_TO, PIN_STATE_LOW)) successful = false;
-		if(!setPinState(PIN_GO_BUTTON_VCC, PIN_STATE_HIGH)) successful = false;
-		if(!setPinState(PIN_GO_BUTTON_GND, PIN_STATE_LOW)) successful = false;
-
-		if(successful) Logger::logMessage("\tComplete");
-		else Logger::LogMessage("\tFailed");
+		setPinState(PIN_GO_BUTTON_TO, PIN_STATE_LOW);
+		setPinState(PIN_GO_BUTTON_VCC, PIN_STATE_HIGH);
+		setPinState(PIN_GO_BUTTON_GND, PIN_STATE_LOW);
+		
+		Logger::logMessage("\tComplete");
 	}
 
 	// TODO: Any other needed initiation
