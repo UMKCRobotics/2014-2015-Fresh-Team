@@ -14,7 +14,7 @@ int main(void)
 	MotorCommander motorCommander;
 	Logger::logMessage("\tComplete");
 	
-	bool startupSuccessful = true; //robot.init(); TEMP
+	bool startupSuccessful = robot.init(); //robot.init(); TEMP
 
 	if(!startupSuccessful)
 	{
