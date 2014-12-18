@@ -30,6 +30,29 @@ bool Robot::init(void)
 		successful = false;
 	}
 
+	if(successful)
+	{
+		Logger::logMessage("Configuring GPIO Directions...");
+		if(!setPinDirection(PIN_GO_BUTTON_TO, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_GO_BUTTON_FROM, PIN_DIRECTION_IN) successful = false;
+		if(!setPinDirection(PIN_GO_BUTTON_VCC, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_GO_BUTTON_GND, PIN_DIRECTION_OUT)) successful = false;
+
+		if(successful) Logger::logMessage("\tComplete");
+		else Logger::LogMessage("\tFailed");
+	}
+
+	if(successful)
+	{
+		Logger::logMessage("Configuring Default GPIO Outputs...");
+		if(!setPinState(PIN_GO_BUTTON_TO, PIN_STATE_LOW)) successful = false;
+		if(!setPinState(PIN_GO_BUTTON_VCC, PIN_STATE_HIGH)) successful = false;
+		if(!setPinState(PIN_GO_BUTTON_GND, PIN_STATE_LOW)) successful = false;
+
+		if(successful) Logger::logMessage("\tComplete");
+		else Logger::LogMessage("\tFailed");
+	}
+
 	// TODO: Any other needed initiation
 
 	return successful;
@@ -68,7 +91,7 @@ void Robot::getRoundAndPart(void)
 {
 	Logger::logMessage("Getting Round and Part");
 
-	// TODO: get round and part values from the Arduino side
+	// TODO: get round and part values from analog pins
 
 	string str_round = ""; // TODO: Dummy values; convert received integers to strings
 	string str_part = "";
