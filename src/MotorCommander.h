@@ -1,13 +1,16 @@
 #ifndef MOTORCOMMANDER_H
 #define MOTORCOMMANDER_H
 
+#include "Cardinal.h"
+#include "Robot.h"
+
 class MotorCommander
 {
 public:
-	MotorCommander(Robot robot);
+	MotorCommander();
 
-	void move(Cardinal direction);
-	void turn(int degrees);
+	void move(Robot* robot, Cardinal direction);
+	void turn(int degrees, Robot* robot);
 	float getAngle();
 };
 

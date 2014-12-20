@@ -1,88 +1,92 @@
-#include "IMU.h"
+#include <math.h>
+#include "MotorCommander.h"
+#include "Pins.h"
+#include "Navigation.h"
 
-LSM9DS0 dof(MODE_I2C, LSM9DS0_G, LSM9DS0_XM);
 
-// Enable Pins for Motors
-const int E1 = 4;
-const int E2 = 5;
+// Define pi here for sake of precision and easy of use
+const float pi = 3.14159265358979f;
 
-// Control Pins for Left Motor
-const int L1 = 6;
-const int L2 = 7;
-
-// Control Pins for Right Motor
-const int L3 = 8;
-const int L4 = 9;
+MotorCommander::MotorCommander()
+{
+  
+}
 
 // Moves robot in desired cardinal direction
-void MotorCommander::move(Cardinal direction)
+void MotorCommander::move(Robot* robot, Cardinal direction)
 {
-  if (robot.getOrientation() == direction){
+  if (robot->navigation.getOrientation() == direction){
     // TODO: Move forward
   }
   else {
-      int x = (orientation - CurrentOrientation);
+      int x = (direction - robot->navigation.getOrientation());
    
       if (x == 0){
         // TODO: Move foward
       }
       else
       {
-        turn(x*90);
+        turn(x*90, robot);
       }
    }
 }
-void MotorCommander::turn(int degrees)
+
+void MotorCommander::turn(int degrees, Robot* robot)
 {
   if (degrees < 0){
     // left motor back, right foward
-    digitalWrite (E1,HIGH);
-    digitalWrite (L1,HIGH);
-    digitalWrite (L2,LOW);
-    digitalWrite (E2, HIGH);
-    digitalWrite (L3, LOW);
-    digitalWrite (L4, HIGH);
+
+    robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+    robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+    robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+
+    robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+    robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+    robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
   }
  else{
   // right motor back, left motor foward
-  digitalWrite (E1, HIGH);
-  digitalWrite (L1, LOW);
-  digitalWrite (L2, HIGH);
-  digitalWrite (E2, HIGH);
-  digitalWrite (L3, HIGH);
-  digitalWrite (L4, LOW);
+
+  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+
+  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
  }
   
   float desiredAngle = getAngle() + degrees;
   
-  while(abs(getAngle() - desiredAngle) >= 2)
+  while(fabs(getAngle() - desiredAngle) >= 2)
   {
     // Nothing
   }
   
   // Stop turning
-  digitalWrite (E1, HIGH);
-  digitalWrite (L1, HIGH);
-  digitalWrite (L2, HIGH);
-  digitalWrite (E2, HIGH);
-  digitalWrite (L3, HIGH);
-  digitalWrite (L4, HIGH);
+  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+
+  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
 // Returns the angle the robot currently is in degrees
 float MotorCommander::getAngle()
 {
 	float heading;
-	float hx = dof.mx; // Heading X
-	float hy = dof.my; // Heading Y
+	float hx = 0; // Heading X
+	float hy = 0; // Heading Y
 
 	if (hy > 0)
 	{
-		heading = 90 - (atan(hx / hy) * (180 / PI));
+		heading = 90 - (atan(hx / hy) * (180 / pi));
 	}
 	else if (hy < 0)
 	{
-		heading = - (atan(hx / hy) * (180 / PI));
+		heading = - (atan(hx / hy) * (180 / pi));
 	}
 	else // hy = 0
 	{
