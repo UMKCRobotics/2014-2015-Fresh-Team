@@ -10,8 +10,7 @@ class Robot
 {
 private:
 	Logger logger;
-
-	serialib PCSerial;
+	
 	serialib arduinoSerial;
 
 	int round;

@@ -14,7 +14,7 @@ int main(void)
 	MotorCommander motorCommander;
 	Logger::logMessage("\tComplete");
 	
-	bool startupSuccessful = true; //robot.init(); TEMP
+	bool startupSuccessful = robot.init(); //robot.init(); TEMP
 
 	if(!startupSuccessful)
 	{
@@ -24,11 +24,14 @@ int main(void)
 	{
 		Logger::logMessage("Startup complete; waiting for go button to be pressed");
 
-		while(robot.getPinState(PIN_GO_BUTTON) == PIN_STATE_LOW)
+		while(robot.getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)
 		{
 			// Do nothing
-			usleep(50000);
+			usleep(50);
 		}
+
+		robot.setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
+		robot.setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 
 		robot.go();
 	}
