@@ -10,8 +10,6 @@ class Robot
 {
 private:
 	Logger logger;
-	
-	serialib arduinoSerial;
 
 	int round;
 	int part;
@@ -20,6 +18,8 @@ private:
 	string getPinFileContents(int pin, int property);
 	bool writePinFileContents(int pin, int property, int value);
 public:
+	serialib arduinoSerial; // TEMP: Put me back into private plz :)
+
 	Robot();
 	Navigation navigation;
 
