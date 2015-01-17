@@ -33,7 +33,10 @@ int main(void)
 		robot.setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
 		robot.setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 
-		robot.go();
+		//robot.go();
+
+		// TEMP: Test motors
+		motorCommander.move(&robot, robot.getOrientation());
 	}
 
 	return 0;
