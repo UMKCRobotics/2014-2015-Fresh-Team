@@ -16,13 +16,13 @@ MotorCommander::MotorCommander()
 void MotorCommander::move(Robot* robot, Cardinal direction)
 {
   if (robot->navigation.getOrientation() == direction){
-    moveForward();
+    moveForward(robot);
   }
   else {
       int x = (direction - robot->navigation.getOrientation());
    
       if (x == 0){
-        moveForward();
+        moveForward(robot);
       }
       else
       {
@@ -73,7 +73,7 @@ void MotorCommander::turn(int degrees, Robot* robot)
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
-void MotorCommander::moveForward()
+void MotorCommander::moveForward(Robot* robot)
 {
   robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
@@ -84,7 +84,7 @@ void MotorCommander::moveForward()
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
-void MotorCommander::moveBackward()
+void MotorCommander::moveBackward(Robot* robot)
 {
   robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
