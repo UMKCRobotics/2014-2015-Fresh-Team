@@ -16,13 +16,13 @@ MotorCommander::MotorCommander()
 void MotorCommander::move(Robot* robot, Cardinal direction)
 {
   if (robot->navigation.getOrientation() == direction){
-    // TODO: Move forward
+    moveForward();
   }
   else {
       int x = (direction - robot->navigation.getOrientation());
    
       if (x == 0){
-        // TODO: Move foward
+        moveForward();
       }
       else
       {
