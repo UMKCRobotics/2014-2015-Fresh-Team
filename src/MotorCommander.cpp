@@ -1,6 +1,7 @@
 #include <math.h>
 #include "MotorCommander.h"
 #include "Pins.h"
+#include "Navigation.h"
 
 
 // Define pi here for sake of precision and easy of use
@@ -14,14 +15,14 @@ MotorCommander::MotorCommander()
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Robot* robot, Cardinal direction)
 {
-  if (robot->getOrientation() == direction){
-    // TODO: Move forward
+  if (robot->navigation.getOrientation() == direction){
+    moveForward();
   }
   else {
-      int x = (direction - robot->getOrientation());
+      int x = (direction - robot->navigation.getOrientation());
    
       if (x == 0){
-        // TODO: Move foward
+        moveForward();
       }
       else
       {
@@ -70,6 +71,28 @@ void MotorCommander::turn(int degrees, Robot* robot)
   robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+}
+
+void MotorCommander::moveForward()
+{
+  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+
+  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+}
+
+void MotorCommander::moveBackward()
+{
+  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+
+  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 }
 
 // Returns the angle the robot currently is in degrees
