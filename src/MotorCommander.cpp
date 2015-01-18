@@ -73,6 +73,28 @@ void MotorCommander::turn(int degrees, Robot* robot)
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
+void MotorCommander::moveForward()
+{
+  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+
+  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+}
+
+void MotorCommander::moveBackward()
+{
+  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+
+  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+}
+
 // Returns the angle the robot currently is in degrees
 float MotorCommander::getAngle()
 {
