@@ -4,7 +4,8 @@
 #include <functional>
 #include <vector>
 #include <memory>
-
+#include "robotbase.h"
+#include "examplerobotobject.cpp"
 
 struct command{
 	int priority;
@@ -13,30 +14,18 @@ struct command{
 
 void world()
 {
-	std::cout << " World";
-}
+	std::cout << "World\n";
+};
 
 void hello()
 {
-	std::cout << "Hello";
-}
-
-constexpr bool comp(command & a, command & b)
-{
-	return a.priority > b.priority;
+	std::cout << "Hello\n";
 };
 
 int main()
 {
 
-
-
-	//std::vector<std::function<void()>> commandvector;
-
-	//std::function<void()> command = [](){hello(); world();};
-
-	//commandvector.push_back(command);
-
+	examplerobotobject gato;
 
 	auto compare = [](command a, command b)
 	{
@@ -66,9 +55,9 @@ int main()
 	
 	command f;
 	f.priority = 3;
-	f.dothis = std::bind([]()
+	f.dothis = std::bind([&gato]()
 	{
-		exists();
+		gato.halt();
 	});
 	commandqueue.push(f);
 
@@ -94,5 +83,6 @@ int main()
 	commandqueue.pop();
 
 	
+
 	return 0;
 }
