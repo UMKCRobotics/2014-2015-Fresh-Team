@@ -20,6 +20,11 @@ bool Robot::init(void)
 	bool successful = true;
 	int initStatus = 0;
 
+	//initiate motorCommander
+	Logger::logMessage("Instantiating MotorCommander...");
+	MotorCommander motorCommander; 
+	Logger::logMessage("\tComplete");
+
 	Logger::logMessage("Initiating Arduino SerialStream...");
 	initStatus = arduinoSerial.Open("/dev/ttymxc3", 9600);
 
@@ -61,22 +66,69 @@ bool Robot::init(void)
 	}
 
 	// TODO: Any other needed initiation
-
+	State = WAITFORGO;
 	return successful;
 }
 
-// go is called when the start button of the robot
-// is pressed at the beginning of the part
-void Robot::go(void)
+// wait for go is continuously called until the go button is called
+void Robot::waitforgo(void)
 {
-	Logger::logMessage("Go Button Pressed");
-
 	getRoundAndPart();
 
-	navigation.setRoundAndPart(round, part);
 
-	Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
+	if(!(getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
+	{
+		Logger::logMessage("Go Button Pressed");
+		setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
+		setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
+		//navigation.setRoundAndPart(round, part);
+			Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
+		state = RUNNING;
+	}
+
 }
+
+void Robot::running(void)
+{
+
+}
+
+void Robot::halted(void)
+{
+
+}
+
+
+//loop is continuously called after init and go as long as no errors occur
+void Robot::loop()
+{
+
+	switch(state)
+	{
+		case WAITFORGO:
+
+		waitforgo(void);
+
+		break;
+
+		case RUNNING:
+
+		running(void);
+
+		break;
+
+		case HALTED:
+
+		halted(void);
+
+		break;
+	}
+
+
+
+}
+
+
 
 // This function gets the round and part from the potentiometers
 // connected to the board using the Arduino side
