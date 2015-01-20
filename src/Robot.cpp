@@ -1,5 +1,6 @@
 #include "Robot.h"
 #include "Pins.h"
+#include "iRobotBase.h"
 
 #include <iostream>
 #include <fstream>
@@ -19,7 +20,7 @@ bool Robot::init(void)
 {
 	bool successful = true;
 	int initStatus = 0;
-
+	
 	//initiate motorCommander
 	Logger::logMessage("Instantiating MotorCommander...");
 	MotorCommander motorCommander; 
