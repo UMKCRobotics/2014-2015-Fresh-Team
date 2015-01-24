@@ -8,14 +8,14 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_E1 			= 144;
-const int PIN_MOTOR_L1			= 0x00; // TODO: 	Finish pin mappings
-const int PIN_MOTOR_L2 			= 0x00; //			for motor driver
+const int PIN_MOTOR_E1 			= 53;
+const int PIN_MOTOR_L1			= 56; 
+const int PIN_MOTOR_L2 			= 104;
 
 // Right Motor
-const int PIN_MOTOR_E2 			= 101;
-const int PIN_MOTOR_L3 			= 0x00;
-const int PIN_MOTOR_L4 			= 33;
+const int PIN_MOTOR_E2 			= 55;
+const int PIN_MOTOR_L3 			= 57;
+const int PIN_MOTOR_L4 			= 105;
 
 /********************************************
 Input Pins
