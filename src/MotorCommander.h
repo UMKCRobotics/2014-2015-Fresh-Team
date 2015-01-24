@@ -13,8 +13,10 @@ public:
 	void turn(int degrees, Robot* robot);
 	float getAngle();
 
-private:
 	void moveForward(Robot* robot);
+
+private:
+	
 	void moveBackward(Robot* robot);
 };
 

@@ -36,7 +36,7 @@ int main(void)
 		//robot.go();
 
 		// TEMP: Test motors
-		motorCommander.move(&robot, robot.navigation.getOrientation());
+		motorCommander.moveForward(&robot);
 	}
 
 	return 0;
