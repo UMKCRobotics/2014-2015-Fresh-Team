@@ -33,14 +33,28 @@ bool Robot::init(void)
 	if(successful)
 	{
 		Logger::logMessage("Configuring GPIO Directions...");
+
+		// Go Button
 		if(!setPinDirection(PIN_GO_BUTTON_TO, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_FROM, PIN_DIRECTION_IN)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_GND, PIN_DIRECTION_OUT)) successful = false;
 
+		// Status Lights
 		if(!setPinDirection(PIN_READY_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_END_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_STATUS_LIGHTS_GND, PIN_DIRECTION_OUT)) successful = false;
+
+		// Left Motor
+		if(!setPinDirection(PIN_MOTOR_E1, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_MOTOR_L1, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_MOTOR_L2, PIN_DIRECTION_OUT)) successful = false;
+
+		// Right Motor
+		if(!setPinDirection(PIN_MOTOR_E2, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_MOTOR_L3, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_MOTOR_L4, PIN_DIRECTION_OUT)) successful = false;
+
 
 		if(successful) Logger::logMessage("\tComplete");
 		else Logger::logMessage("\tFailed");
@@ -49,14 +63,27 @@ bool Robot::init(void)
 	if(successful)
 	{
 		Logger::logMessage("Configuring Default GPIO Outputs...");
+
+		// Go Button
 		setPinState(PIN_GO_BUTTON_TO, PIN_STATE_LOW);
 		setPinState(PIN_GO_BUTTON_VCC, PIN_STATE_HIGH);
 		setPinState(PIN_GO_BUTTON_GND, PIN_STATE_LOW);
 
+		// Status Lights
 		setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_HIGH);
 		setPinState(PIN_END_LIGHT_VCC, PIN_STATE_LOW);
 		setPinState(PIN_STATUS_LIGHTS_GND, PIN_STATE_LOW);
+
+		// Left Motor
+		setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
+		setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+		setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 		
+		// Right Motor
+		setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
+		setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+		setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+
 		Logger::logMessage("\tComplete");
 	}
 
