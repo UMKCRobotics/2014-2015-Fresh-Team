@@ -187,12 +187,15 @@ void Robot::setPinState(int pin, int state)
 	if(getPinDirection(pin) == PIN_DIRECTION_OUT)
 	{
 		// Pin is set as output thus we CAN change its state
-		writePinFileContents(pin, PIN_STATE, state);
-
-		// TODO: Check if the state was successfully set?
+		if(!writePinFileContents(pin, PIN_STATE, state))
+		{
+			string error = "Cannot set gpio " + to_string(pin) + " state";
+			Logger::logError(error);
+		}
 	} else {
-		// Pin not set as output thus how could we chance the state
-			
+		// Pin not set as output thus how could we change the state
+		string error = "Cannot set gpio " + to_string(pin) +  "state; pin is set to input";
+		Logger::logError(error);	
 	}
 }
 
@@ -233,7 +236,7 @@ string Robot::getPinFileContents(int pin, int property)
 		pinFile.close();
 	} else {
 		string error = "Could not read " + str_property + " from pin " + str_pin + " file";
-		logger.logError(error);
+		Logger::logError(error);
 	}
 
 	return contents;
@@ -294,7 +297,7 @@ bool Robot::writePinFileContents(int pin, int property, int value)
 		pinFile.close();
 	} else {
 		string error = "Could not write " + str_value + " to " + str_property + " of pin " + str_pin + " file";
-		logger.logError(error);
+		Logger::logError(error);
 		status = false;
 	}
 
