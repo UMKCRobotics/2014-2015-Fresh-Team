@@ -1,3 +1,6 @@
+#ifndef ROBOTBASE_H
+#define ROBOTBASE_H
+
 //class to be implemented by robot classes for standard callback functions
 #include <iostream>
 
@@ -17,3 +20,4 @@ public:
 
 
 };
+#endif

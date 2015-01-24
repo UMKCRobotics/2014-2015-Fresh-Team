@@ -6,11 +6,9 @@
 #include <memory>
 #include "robotbase.h"
 #include "examplerobotobject.cpp"
+#include "anotherrobotobject.cpp"
+#include "command.h"
 
-struct command{
-	int priority;
-	std::function<void()> dothis;
-};
 
 void world()
 {
@@ -27,6 +25,8 @@ int main()
 
 	examplerobotobject gato;
 
+
+
 	auto compare = [](command a, command b)
 	{
 		return a.priority > b.priority;
@@ -34,7 +34,8 @@ int main()
 
 	std::priority_queue<command, std::vector<command>, decltype(compare) > commandqueue(compare);
 
-	
+	anotherrobotobject robo = new anotherrobotobject(commandqueue);
+
 	std::function<void()> example = [] ()
 	{
 		world();
@@ -52,14 +53,8 @@ int main()
 		hello();
 	});
 	commandqueue.push(d);
-	
-	command f;
-	f.priority = 3;
-	f.dothis = std::bind([&gato]()
-	{
-		gato.halt();
-	});
-	commandqueue.push(f);
+
+	robo.halt();	
 
 	command e = commandqueue.top();
 
@@ -78,11 +73,9 @@ int main()
 
 	e = commandqueue.top();
 
-	e.dothis();
+	e.dothis(gato);
 
 	commandqueue.pop();
-
-	
 
 	return 0;
 }
