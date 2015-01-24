@@ -8,7 +8,7 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_E1 			= 53;
+const int PIN_MOTOR_E1 			= 88;
 const int PIN_MOTOR_L1			= 56; 
 const int PIN_MOTOR_L2 			= 104;
 
