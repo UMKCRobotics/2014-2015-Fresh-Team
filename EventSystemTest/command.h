@@ -6,6 +6,7 @@
 struct command{
 	int priority;
 	std::function<void()> dothis;
+
 };
 
 #endif

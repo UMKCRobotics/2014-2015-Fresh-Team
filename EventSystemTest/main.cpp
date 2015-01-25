@@ -1,81 +1,62 @@
 #include <iostream>
-#include <queue>
-//#include <lambda>
-#include <functional>
-#include <vector>
-#include <memory>
+
 #include "robotbase.h"
 #include "examplerobotobject.cpp"
-#include "anotherrobotobject.cpp"
 #include "command.h"
-
+#include "commandqueue.cpp"
 
 void world()
 {
-	std::cout << "World\n";
-};
+	std::cout << "world\n";
+}
 
 void hello()
 {
-	std::cout << "Hello\n";
-};
+	std::cout << "hello\n";
+}
+
 
 int main()
 {
-
 	examplerobotobject gato;
-
-
-
-	auto compare = [](command a, command b)
-	{
-		return a.priority > b.priority;
-	};
-
-	std::priority_queue<command, std::vector<command>, decltype(compare) > commandqueue(compare);
-
-	anotherrobotobject robo = new anotherrobotobject(commandqueue);
+	commandqueue::init();
+	std::cout << "Starting now!\n";
+	
 
 	std::function<void()> example = [] ()
 	{
-		world();
+		std::cout << "World!\n";
 	};
+
 
 	command c;
 	c.priority = 2;
 	c.dothis = example;
-	commandqueue.push(c);
+
+	std::cout << "Sending command 'c'\n";
+	commandqueue::sendCommand(c);
 
 	command d;
 	d.priority = 1;
 	d.dothis = std::bind([]()
 	{
-		hello();
+		std::cout << "Hello ";
 	});
-	commandqueue.push(d);
 
-	robo.halt();	
+	std::cout << "Sending command 'd'\n";
+	commandqueue::sendCommand(d);
 
-	command e = commandqueue.top();
+	command l = commandqueue::receiveCommand();
 
-	e.dothis();
+	std::cout << "Preparing to do first function\n";
 
-	
+	l.dothis();
 
-	commandqueue.pop();
+	l = commandqueue::receiveCommand();
 
-	e = commandqueue.top();
+	std::cout << "Preparing to do second function\n";
 
-	e.dothis();
-	
-
-	commandqueue.pop();
-
-	e = commandqueue.top();
-
-	e.dothis(gato);
-
-	commandqueue.pop();
+	l.dothis();
 
 	return 0;
 }

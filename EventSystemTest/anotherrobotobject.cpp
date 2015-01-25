@@ -6,7 +6,8 @@
 class anotherrobotobject : public RobotBase
 {
 	public:
-		anotherrobotobject(std::priorityqueue &thisqueue)
+		template <class T>
+		anotherrobotobject(std::priority_queue<T> &thisqueue)
 		{
 			commandqueue = thisqueue;
 		}
@@ -15,12 +16,13 @@ class anotherrobotobject : public RobotBase
 		{
 			command sendtogato;
 			sendtogato.priority = 1;
-			sendtogato.dothis = std::bind(	[](RobotBase * object){object.halt();});
+			sendtogato.dothis = std::bind(	[](RobotBase * object){object->halt();});
 			commandqueue.push(sendtogato);
 		}
 
 	private:
-		std::priorityqueue commandqueue;
+		template <class T>
+		std::priority_queue<command, std::vector<command>, decltype(compare)> commandqueue;
 };
 
 
