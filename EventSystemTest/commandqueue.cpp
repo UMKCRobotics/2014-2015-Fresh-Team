@@ -32,18 +32,15 @@ void commandqueue::setcompare()
 
 void commandqueue::init()
 {
-	std::cout << "Initializing Command Queue\n";
 	commandqueue::getinstance().setcompare();
 }
 
 void commandqueue::sendCommand(command a)
 {
-	std::cout << "Command Queue has received command\n";
 	commandqueue::getinstance().push(a);
 }
 
 command commandqueue::receiveCommand()
 {
-	std::cout << "Command Queue is returning command\n";
 	return commandqueue::getinstance().poptop();
 }
