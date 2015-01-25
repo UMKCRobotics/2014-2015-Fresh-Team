@@ -12,17 +12,19 @@ class commandqueue
 {
 private:
 
-	std::function<bool(command a, command b)> compare;
-
-	std::priority_queue<command, std::vector<command>, decltype(compare)> commands;
+	std::priority_queue<command, std::vector<command>,  std::function<bool(command,command)>> commands;
 
 	void push(command a);
 	command poptop();
-	void setcompare();
+	
+	commandqueue()
+	{
+		std::function<bool(command,command)> compare = [](command a, command b){return a.priority > b.priority;};
+		commands = std::priority_queue<command, std::vector<command>, decltype(compare)>(compare);
+	};
 
 public:
 
-	static void init();
 	static void sendCommand(command a);
 	static command receiveCommand();
 	static commandqueue& getinstance()

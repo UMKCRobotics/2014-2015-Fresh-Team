@@ -1,3 +1,4 @@
+#include <iostream>
 #include "commandqueue.h"
 #include "command.h"
 
@@ -8,31 +9,22 @@ void commandqueue::push(command a)
 
 command commandqueue::poptop()
 {
+	command c;
+	
 	if(!commands.empty())
 	{
-		commands.pop();
-		return commands.top();
-	}
+		c = commands.top();
 
-	//return fake command if the queue is empty
-	command c;
+
+		commands.pop();
+
+		return c;
+	}
+	
 	c.priority = 999;
-	c.dothis = [](){};
+	c.dothis = [](){std::cout << "No available commands in commandqueue\n";}; //switch this to logger
 
 	return c;
-}
-
-void commandqueue::setcompare()
-{
-	compare = [](command a, command b)
-	{
-		return a.priority > b.priority;
-	};		
-}
-
-void commandqueue::init()
-{
-	commandqueue::getinstance().setcompare();
 }
 
 void commandqueue::sendCommand(command a)

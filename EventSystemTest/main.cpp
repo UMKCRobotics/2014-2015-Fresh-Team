@@ -1,9 +1,8 @@
 #include <iostream>
-
 #include "robotbase.h"
 #include "examplerobotobject.cpp"
 #include "command.h"
-#include "commandqueue.cpp"
+#include "commandqueue.h"
 
 void world()
 {
@@ -12,14 +11,14 @@ void world()
 
 void hello()
 {
-	std::cout << "hello\n";
+	std::cout << "hello ";
 }
 
 
 int main()
 {
 	examplerobotobject gato;
-	commandqueue::init();
+	//commandqueue::init();
 	std::cout << "Starting now!\n";
 	
 
@@ -33,29 +32,27 @@ int main()
 	c.priority = 2;
 	c.dothis = example;
 
-	std::cout << "Sending command 'c'\n";
 	commandqueue::sendCommand(c);
 
 	command d;
 	d.priority = 1;
-	d.dothis = std::bind([]()
-	{
-		std::cout << "Hello ";
-	});
+	d.dothis = std::bind([](){hello();});
 
-	std::cout << "Sending command 'd'\n";
 	commandqueue::sendCommand(d);
+
+
 
 	command l = commandqueue::receiveCommand();
 
-	std::cout << "Preparing to do first function\n";
 
 	l.dothis();
 
 	l = commandqueue::receiveCommand();
 
-	std::cout << "Preparing to do second function\n";
 
+	l.dothis();
+
+	l = commandqueue::receiveCommand();
 	l.dothis();
 
 	return 0;
