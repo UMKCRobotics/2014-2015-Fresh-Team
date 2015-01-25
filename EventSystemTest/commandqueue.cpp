@@ -14,9 +14,10 @@ command commandqueue::poptop()
 		return commands.top();
 	}
 
+	//return fake command if the queue is empty
 	command c;
 	c.priority = 999;
-	c.dothis = [](){}; //return empty pointer if empty
+	c.dothis = [](){};
 
 	return c;
 }
