@@ -33,14 +33,28 @@ Distance Sensors
 
     ^FRONT^
 
-    FL  FR
+	   F
   LF      RF
 
   LB      RB
 
 - Includes their GND, VCC, and signal pins   
 ********************************************/
-// TODO
+const int PIN_DISTANCE_SENSOR_F 	= 0;
+const int PIN_DISTANCE_SENSOR_LF 	= 1;
+const int PIN_DISTANCE_SENSOR_LB 	= 2;
+const int PIN_DISTANCE_SENSOR_RF 	= 3;
+const int PIN_DISTANCE_SENSOR_RB 	= 4;
+
+/********************************************
+Line Sensors
+- Arranged with one on the left and one on 
+  the right
+- Arduino is respondible for telling the 
+  Linux side when a line is seen
+********************************************/
+const int PIN_LINE_SENSOR_L = 5;
+const int PIN_LINE_SENSOR_R = 6;
 
 /********************************************
 Output Pins
