@@ -1,6 +1,7 @@
 #include <iostream>
 #include "robotbase.h"
 #include "examplerobotobject.cpp"
+#include "CommandType.h"
 #include "command.h"
 #include "commandqueue.h"
 
@@ -31,12 +32,14 @@ int main()
 	command c;
 	c.priority = 2;
 	c.dothis = example;
+	c.commandtype = CommandType::DRIVEFORWARD;
 
 	commandqueue::sendCommand(c);
 
 	command d;
 	d.priority = 1;
 	d.dothis = std::bind([](){hello();});
+	d.commandtype = CommandType::DRIVEFORWARD;
 
 	commandqueue::sendCommand(d);
 
