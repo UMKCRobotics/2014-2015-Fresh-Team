@@ -1,9 +1,8 @@
 #include "Navigation.h"
 
-Navigation::Navigation(Robot& robot)
+Navigation::Navigation()
 {
 	position = startPosition;
-	
 }
 
 void Navigation::loadPath()

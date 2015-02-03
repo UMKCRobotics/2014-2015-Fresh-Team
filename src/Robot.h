@@ -30,5 +30,7 @@ public:
 
 	void setPinState(int pin, int state);
 	bool setPinDirection(int pin, int state);
+
+	bool getIsFastRound();
 };
 #endif

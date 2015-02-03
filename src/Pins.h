@@ -27,6 +27,8 @@ const int PIN_GO_BUTTON_FROM 	= 160;
 const int PIN_GO_BUTTON_VCC 	= 161;
 const int PIN_GO_BUTTON_GND 	= 150;
 
+const int PIN_ROUND_TYPE_SWITCH = 0x00; // TODO
+
 /********************************************
 Distance Sensors
 - Arranged in the following manner:

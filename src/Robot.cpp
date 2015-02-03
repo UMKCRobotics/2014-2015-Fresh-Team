@@ -284,3 +284,8 @@ bool Robot::writePinFileContents(int pin, int property, int value)
 
 	return status;
 }
+
+bool Robot::getIsFastRound()
+{
+	return isFastRound;
+}
