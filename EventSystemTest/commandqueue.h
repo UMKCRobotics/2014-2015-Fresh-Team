@@ -19,7 +19,7 @@ private:
 	//The priority queue for handling the commands
 	std::priority_queue<std::string, std::vector<command>,  std::function<bool(command,command)>> commands;
 	//The map of registered functions to commands
-	std::map<std::string, std::function<void()>> ObjectMap;
+	std::map<std::string, std::function<void(std::string)>> FunctionMap;
 
 	//priority queue accessors
 	void push(command a)
@@ -38,9 +38,11 @@ private:
 
 			return c;
 		}
+
+		Logger::logMessage("CommandQueue was empty");
 		
 		c.priority = 999;
-		c.dothis = [](){std::cout << "No available commands in commandqueue\n";}; //switch this to logger
+		c.commanddata = "NULL";
 		c.commandtype = "EMPTY";
 		return c;
 	}
@@ -55,11 +57,11 @@ private:
 	//check if command type actually exists
 	bool CommandTypeExists(std::string commandType)
 	{
-		if(!ObjectMap.empty()){
-			if(ObjectMap.find(commandType) > 0) return true;
+		if(!FunctionMap.empty()){
+			if(FunctionMap.find(commandType) > 0) return true;
 		}
 
-		logger.logError(commandType + " Does not extist in the FunctionMap!");
+		Logger::logError(commandType + " Does not extist in the FunctionMap!");
 		return false;
 	}
 
@@ -94,7 +96,7 @@ public:
 	}
 
 	template<typename Registree>
-	static void registerObject(std::string& commandtype, Registree&& registree)
+	static void registerFunction(std::string& commandtype, Registree&& registree)
 	{
 		commandqueue::getinstance().map(commandtype, registree);
 	}
@@ -102,5 +104,3 @@ public:
 };
 
 #endif
-
-//to consider: I may not need an actual "command objecst"
