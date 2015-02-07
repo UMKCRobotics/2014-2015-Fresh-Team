@@ -20,6 +20,14 @@ LSM9DS0 IMU(MODE_I2C, 0x6B, 0x1D); 	// Arguments are from SparkFun example
 void setup()
 {
 	Serial.begin(9600);
+
+	pinMode(A0, INPUT);
+	pinMode(A1, INPUT);
+	pinMode(A2, INPUT);
+	pinMode(A3, INPUT);
+	pinMode(A4, INPUT);
+	pinMode(A5, INPUT);
+	pinMode(A6, INPUT);
 }
 
 void loop()
@@ -53,7 +61,19 @@ void loop()
 	if(ls_left.lineDetected(ls_right.getTimeDetected()))
 	{
 		Serial.println("LineDetected");
-	}	
+	}
+
+	// TEMP: Read all of our sensors
+	Serial.println("A0\t\t"+analogRead(A0));
+	Serial.println("A1\t\t"+analogRead(A1));
+	Serial.println("A2\t\t"+analogRead(A2));
+	Serial.println("A3\t\t"+analogRead(A3));
+	Serial.println("A4\t\t"+analogRead(A4));
+	Serial.println("A5\t\t"+analogRead(A5));
+	Serial.println("A6\t\t"+analogRead(A6));
+	Serial.println("A7\t\t"+analogRead(A7));
+
+	delay(1000);
 }
 
 // Handles a message sent by the Linux side to the Arduino side
@@ -98,25 +118,26 @@ void handleMessage(String message)
 
 		// Parse end angle from string
 		String str_endAngle = response.substring(14);
-		float f_endAngle = str_angle.toFloat();
+		float f_endAngle = atof(str_endAngle.c_str());
 
-		long lastCheckTime = microseconds();
+		long lastCheckTime = micros();
 		float currentRotationSpeed = 0;
 		long timeSinceLastCheck = 0;
 		float f_angle = 0.0f;
 
 		// While the difference between the current angle and end angle is +/- 3 degrees...
-		while(fabs(angle - f_endAngle) >= 3) // 3 is the error in degrees acceptable. Will need to be tested
+		while(fabs(f_angle - f_endAngle) >= 3) // 3 is the error in degrees acceptable. Will need to be tested
 		{
 			// Get our rotation speed and get an estimation as to how long we have been
 			// turning at that speed
-			currentRotationSpeed = IMU.readGyro(IMU.gz);
-			timeSinceLastCheck = microseconds() - lastCheckTime;
+			IMU.readGyro();
+			currentRotationSpeed = IMU.gz;
+			timeSinceLastCheck = micros() - lastCheckTime;
 
 			// Add the degrees turned during that time period to our current angle
 			// Also set the lastCheckTime for the next calculation
-			angle += timeSinceLastCheck * currentRotationSpeed;
-			lastCheckTime = microseconds();
+			f_angle += timeSinceLastCheck * currentRotationSpeed;
+			lastCheckTime = micros();
 		}
 
 		Serial.println("AngleReached");
