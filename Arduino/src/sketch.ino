@@ -21,17 +21,14 @@ void setup()
 {
 	Serial.begin(9600);
 
-	pinMode(A0, INPUT);
-	pinMode(A1, INPUT);
-	pinMode(A2, INPUT);
-	pinMode(A3, INPUT);
-	pinMode(A4, INPUT);
-	pinMode(A5, INPUT);
-	pinMode(A6, INPUT);
+	Serial.println("Running...");
 
-	// VCC Pin for Sensor Board
-	pinMode(134, OUTPUT);
-	digitalWrite(134, HIGH);
+	pinMode(PIN_DISTANCE_SENSOR_F, INPUT);
+	pinMode(PIN_DISTANCE_SENSOR_LF, INPUT);
+	pinMode(PIN_DISTANCE_SENSOR_RF, INPUT);
+	pinMode(PIN_DISTANCE_SENSOR_LB, INPUT);
+	pinMode(PIN_DISTANCE_SENSOR_RB, INPUT);
+	pinMode(PIN_FAST_ROUND, INPUT);
 }
 
 void loop()
@@ -66,18 +63,6 @@ void loop()
 	{
 		Serial.println("LineDetected");
 	}
-
-	// TEMP: Read all of our sensors
-	Serial.println("A0\t\t"+analogRead(A0));
-	Serial.println("A1\t\t"+analogRead(A1));
-	Serial.println("A2\t\t"+analogRead(A2));
-	Serial.println("A3\t\t"+analogRead(A3));
-	Serial.println("A4\t\t"+analogRead(A4));
-	Serial.println("A5\t\t"+analogRead(A5));
-	Serial.println("A6\t\t"+analogRead(A6));
-	Serial.println("A7\t\t"+analogRead(A7));
-
-	delay(1000);
 }
 
 // Handles a message sent by the Linux side to the Arduino side
@@ -96,23 +81,23 @@ void handleMessage(String message)
 
 		if(sensor == "F")
 		{
-			response = "DistSensor " + sensor + " " + analogRead(PIN_DISTANCE_SENSOR_F);
+			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_F);
 		}
 		else if(sensor == "LF")
 		{
-			response = "DistSensor " + sensor + " " + analogRead(PIN_DISTANCE_SENSOR_LF);
+			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LF);
 		}
 		else if(sensor == "LB")
 		{
-			response = "DistSensor " + sensor + " " + analogRead(PIN_DISTANCE_SENSOR_LB);
+			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LB);
 		}
 		else if(sensor == "RF")
 		{
-			response = "DistSensor " + sensor + " " + analogRead(PIN_DISTANCE_SENSOR_RF);
+			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RF);
 		}
 		else if(sensor == "RB")
 		{
-			response = "DistSensor " + sensor + " " + analogRead(PIN_DISTANCE_SENSOR_RB);
+			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
 		}
 	}
 	else if(response.startsWith("NotifyOfAngle "))
