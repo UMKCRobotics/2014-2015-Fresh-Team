@@ -8,12 +8,12 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_L1			= 136; //56; 
-const int PIN_MOTOR_L2 			= 138; //104;
+const int PIN_MOTOR_L1			= 41; //56; 
+const int PIN_MOTOR_L2 			= 42; //104;
 
 // Right Motor
-const int PIN_MOTOR_L3 			= 137; //57;
-const int PIN_MOTOR_L4 			= 139; //105;
+const int PIN_MOTOR_L3 			= 17; //57;
+const int PIN_MOTOR_L4 			= 18; //105;
 
 /********************************************
 Input Pins
