@@ -28,6 +28,10 @@ void setup()
 	pinMode(A4, INPUT);
 	pinMode(A5, INPUT);
 	pinMode(A6, INPUT);
+
+	// VCC Pin for Sensor Board
+	pinMode(134, OUTPUT);
+	digitalWrite(134, HIGH);
 }
 
 void loop()
