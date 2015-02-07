@@ -2,12 +2,13 @@
 #define COMMAND_H
 
 #include <functional>
-#include "CommandType.h"
+#include <string>
+#include <vector>
 
 struct command{
 	int priority;
-	std::function<void()> dothis;
-	CommandType commandtype;
+	std::function<void(std::vector<T>> function;
+	std::string commandtype;
 };
 
 

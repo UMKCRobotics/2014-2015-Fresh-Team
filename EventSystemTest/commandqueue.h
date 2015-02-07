@@ -8,18 +8,18 @@
 #include <memory>
 #include <map>
 #include <utility>
+#include <string>
+#include "logger.h"
 #include "command.h"
 
-
-template<typename CommandType>
 class commandqueue
 {
 private:
 
 	//The priority queue for handling the commands
-	std::priority_queue<command, std::vector<command>,  std::function<bool(command,command)>> commands;
+	std::priority_queue<std::string, std::vector<command>,  std::function<bool(command,command)>> commands;
 	//The map of registered functions to commands
-	std::map<CommandType, std::function<void()>> FunctionMap;
+	std::map<std::string, std::function<void()>> ObjectMap;
 
 	//priority queue accessors
 	void push(command a)
@@ -52,24 +52,39 @@ private:
 		commands = std::priority_queue<command, std::vector<command>, decltype(compare)>(compare);
 	}
 
+	//check if command type actually exists
+	bool CommandTypeExists(std::string commandType)
+	{
+		if(!ObjectMap.empty()){
+			if(ObjectMap.find(commandType) > 0) return true;
+		}
+
+		logger.logError(commandType + " Does not extist in the FunctionMap!");
+		return false;
+	}
+
 	//made up my own word "Registree"
 	template<typename Registree>
-	void map(const CommandType& commandtype, const Registree&& registree)
+	void map(const std::string& commandtype, const Registree&& registree)
 	{
 		FunctionMap.emplace(commandtype, registree);
 	}
 
 public:
 
-	static void sendCommand(command a)
+	static bool sendNewCommand(command a)
 	{
+		if(!commandqueue::getinstance().CommandTypeExists(a.commandtype)) return false;
+
 		commandqueue::getinstance().push(a);
+		return true;
 	}
 
 	
 	static command receiveCommand()
 	{
 		return commandqueue::getinstance().poptop();
+
 	}
 
 	static commandqueue& getinstance()
@@ -79,10 +94,13 @@ public:
 	}
 
 	template<typename Registree>
-	static void registerObject(CommandType& commandtype, Registree&& registree)
+	static void registerObject(std::string& commandtype, Registree&& registree)
 	{
 		commandqueue::getinstance().map(commandtype, registree);
 	}
+
 };
 
 #endif
+
+//to consider: I may not need an actual "command objecst"
