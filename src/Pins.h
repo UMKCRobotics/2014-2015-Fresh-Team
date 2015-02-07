@@ -26,6 +26,7 @@ const int PIN_GO_BUTTON_TO 		= 126;
 const int PIN_GO_BUTTON_FROM 	= 133;
 const int PIN_GO_BUTTON_VCC 	= 135;
 const int PIN_GO_BUTTON_GND 	= 124;
+const int PIN_FAST_ROUND		= 7; 	// NOTE: This is connected through an analog pin
 
 /********************************************
 Distance Sensors
@@ -40,11 +41,11 @@ Distance Sensors
 
 - Includes their GND, VCC, and signal pins   
 ********************************************/
-const int PIN_DISTANCE_SENSOR_F 	= 0;
-const int PIN_DISTANCE_SENSOR_LF 	= 1;
-const int PIN_DISTANCE_SENSOR_LB 	= 2;
-const int PIN_DISTANCE_SENSOR_RF 	= 3;
-const int PIN_DISTANCE_SENSOR_RB 	= 4;
+const int PIN_DISTANCE_SENSOR_F 	= 5;
+const int PIN_DISTANCE_SENSOR_LF 	= 2;
+const int PIN_DISTANCE_SENSOR_LB 	= 3;
+const int PIN_DISTANCE_SENSOR_RF 	= 4;
+const int PIN_DISTANCE_SENSOR_RB 	= 1;
 
 /********************************************
 Line Sensors
