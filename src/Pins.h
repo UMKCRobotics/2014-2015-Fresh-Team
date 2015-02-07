@@ -8,12 +8,10 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_E1 			= 134; //88; // 134 	136 	138
 const int PIN_MOTOR_L1			= 136; //56; 
 const int PIN_MOTOR_L2 			= 138; //104;
 
 // Right Motor
-const int PIN_MOTOR_E2 			= 135; //55; // 135 	137 	139
 const int PIN_MOTOR_L3 			= 137; //57;
 const int PIN_MOTOR_L4 			= 139; //105;
 
@@ -22,12 +20,12 @@ Input Pins
 - Reading current round and part
 - Telling the robot to start
 ********************************************/
-const int PIN_GO_BUTTON_TO 		= 162;
-const int PIN_GO_BUTTON_FROM 	= 160;
-const int PIN_GO_BUTTON_VCC 	= 161;
-const int PIN_GO_BUTTON_GND 	= 150;
+const int PIN_GO_BUTTON_TO 		= 19;
+const int PIN_GO_BUTTON_FROM 	= 1;
+const int PIN_GO_BUTTON_VCC 	= 9;
+const int PIN_GO_BUTTON_GND 	= 21;
 
-const int PIN_ROUND_TYPE_SWITCH = 0x00; // TODO
+const int PIN_ROUND_TYPE_SWITCH = 0; // TODO
 
 /********************************************
 Distance Sensors
