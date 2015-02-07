@@ -46,15 +46,12 @@ bool Robot::init(void)
 		if(!setPinDirection(PIN_STATUS_LIGHTS_GND, PIN_DIRECTION_OUT)) successful = false;
 
 		// Left Motor
-		if(!setPinDirection(PIN_MOTOR_E1, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L1, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L2, PIN_DIRECTION_OUT)) successful = false;
 
 		// Right Motor
-		if(!setPinDirection(PIN_MOTOR_E2, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L3, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L4, PIN_DIRECTION_OUT)) successful = false;
-
 
 		if(successful) Logger::logMessage("\tComplete");
 		else Logger::logMessage("\tFailed");
@@ -75,12 +72,10 @@ bool Robot::init(void)
 		setPinState(PIN_STATUS_LIGHTS_GND, PIN_STATE_LOW);
 
 		// Left Motor
-		setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
 		setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
 		setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 		
 		// Right Motor
-		setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
 		setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
 		setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 

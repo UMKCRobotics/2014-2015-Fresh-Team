@@ -35,23 +35,17 @@ void MotorCommander::turn(int degrees, Robot* robot)
 {
   if (degrees < 0){
     // left motor back, right foward
-
-    robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
     robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
     robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 
-    robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
     robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
     robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
   }
  else{
   // right motor back, left motor foward
-
-  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
   robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
  }
@@ -64,33 +58,27 @@ void MotorCommander::turn(int degrees, Robot* robot)
   }
   
   // Stop turning
-  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
 void MotorCommander::moveForward(Robot* robot)
 {
-  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
   robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
 void MotorCommander::moveBackward(Robot* robot)
 {
-  robot->setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 
-  robot->setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
   robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 }
