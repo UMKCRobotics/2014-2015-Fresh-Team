@@ -51,8 +51,8 @@ Output Pins
   ground to emit light
 ********************************************/
 const int PIN_READY_LIGHT_VCC	= 124;
-const int PIN_END_LIGHT_VCC		= 126;
-const int PIN_STATUS_LIGHTS_GND	= 133;
+const int PIN_END_LIGHT_VCC		= 125;
+const int PIN_STATUS_LIGHTS_GND	= 123;
 
 /********************************************
 Pin Settings
