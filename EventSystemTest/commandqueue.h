@@ -9,7 +9,7 @@
 #include <map>
 #include <utility>
 #include <string>
-#include "logger.h"
+#include "Logger.h"
 #include "command.h"
 
 class commandqueue
@@ -19,7 +19,7 @@ private:
 	//The priority queue for handling the commands
 	std::priority_queue<std::string, std::vector<command>,  std::function<bool(command,command)>> commands;
 	//The map of registered functions to commands
-	std::map<std::string, std::function<void(std::string)>> FunctionMap;
+	std::map<std::string, std::vector<std::function<void(std::string)>>> FunctionMap;
 
 	//priority queue accessors
 	void push(command a)
@@ -51,25 +51,32 @@ private:
 	commandqueue()
 	{
 		std::function<bool(command,command)> compare = [](command a, command b){return a.priority > b.priority;};
-		commands = std::priority_queue<command, std::vector<command>, decltype(compare)>(compare);
+		commands = std::priority_queue<std::string, std::vector<command>, decltype(compare)>(compare);
 	}
 
 	//check if command type actually exists
 	bool CommandTypeExists(std::string commandType)
 	{
 		if(!FunctionMap.empty()){
-			if(FunctionMap.find(commandType) > 0) return true;
+			if(FunctionMap.count(commandType) > 0) return true;
 		}
 
 		Logger::logError(commandType + " Does not extist in the FunctionMap!");
 		return false;
 	}
 
-	//made up my own word "Registree"
-	template<typename Registree>
-	void map(const std::string& commandtype, const Registree&& registree)
+
+
+	void map(const std::string& commandtype, std::function<void(std::string)> function)
 	{
-		FunctionMap.emplace(commandtype, registree);
+
+		if(!CommandTypeExists(commandtype))
+		{
+			Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
+			FunctionMap.emplace(commandtype, std::vector<std::function<void(std::string)>>());
+		}
+
+		FunctionMap[commandtype].push_back(function);
 	}
 
 public:
@@ -83,9 +90,9 @@ public:
 	}
 
 	
-	static command receiveCommand()
+	static void runNextCommand()
 	{
-		return commandqueue::getinstance().poptop();
+		
 
 	}
 
@@ -95,10 +102,9 @@ public:
 		return instance;
 	}
 
-	template<typename Registree>
-	static void registerFunction(std::string& commandtype, Registree&& registree)
+	static void registerFunction(std::string& commandtype, std::function<void(std::string)> registerFunction)
 	{
-		commandqueue::getinstance().map(commandtype, registree);
+		commandqueue::getinstance().map(commandtype, registerFunction);
 	}
 
 };
