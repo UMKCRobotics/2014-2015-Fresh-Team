@@ -72,7 +72,7 @@ private:
 		//if the commandtype doesn't exist create it first
 		if(!CommandTypeExists(commandtype))
 		{
-			Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
+			//Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
 			FunctionMap.emplace(commandtype, std::vector<std::function<void(std::string)>>());
 		}
 
@@ -84,7 +84,7 @@ private:
 		//if the commandtype doesn't exist return an empty vector
 		if(!CommandTypeExists(commandType))
 		{
-			return new std::function<void(std::string)>>();
+			return std::vector<std::function<void(std::string)>>();
 		}
 
 		return FunctionMap[commandType];
@@ -132,8 +132,8 @@ public:
 
 		if(commandToRun.empty()) return;
 
-		std::for_each(commandToRun.begin(), commandToRun.end(), [b.commanddata](std::function<void(std::string)> actWith){
-			actWith(commanddata);
+		std::for_each(commandToRun.begin(), commandToRun.end(), [b](std::function<void(std::string)> actWith){
+			actWith(b.commanddata);
 		});
 	}
 
