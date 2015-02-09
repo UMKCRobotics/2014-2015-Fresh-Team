@@ -6,6 +6,7 @@
 #include <functional>
 #include <vector>
 #include <memory>
+#include <algorithm>
 #include <map>
 #include <utility>
 #include <string>
@@ -21,13 +22,19 @@ private:
 	//The map of registered functions to commands
 	std::map<std::string, std::vector<std::function<void(std::string)>>> FunctionMap;
 
-	//priority queue accessors
-	void push(command a)
+	//constructor
+	commandqueue()
+	{
+		std::function<bool(command,command)> compare = [](command a, command b){return a.priority > b.priority;};
+		commands = std::priority_queue<std::string, std::vector<command>, decltype(compare)>(compare);
+	}
+
+	void push(command a) //to commands
 	{
 		commands.push(a);
 	}
 
-	command poptop()
+	command poptop() //from commands
 	{
 		command c;
 		
@@ -42,20 +49,13 @@ private:
 		Logger::logMessage("CommandQueue was empty");
 		
 		c.priority = 999;
-		c.commanddata = "NULL";
+		c.commanddata = "";
 		c.commandtype = "EMPTY";
 		return c;
 	}
 	
-	//constructor
-	commandqueue()
-	{
-		std::function<bool(command,command)> compare = [](command a, command b){return a.priority > b.priority;};
-		commands = std::priority_queue<std::string, std::vector<command>, decltype(compare)>(compare);
-	}
-
 	//check if command type actually exists
-	bool CommandTypeExists(std::string commandType)
+	bool CommandTypeExists(std::string commandType) //in functionmap
 	{
 		if(!FunctionMap.empty()){
 			if(FunctionMap.count(commandType) > 0) return true;
@@ -65,11 +65,11 @@ private:
 		return false;
 	}
 
-
-
-	void map(const std::string& commandtype, std::function<void(std::string)> function)
+	//Adds function to the commandqueue based on commandtype string
+	void map(const std::string commandtype, std::function<void(std::string)> function) //to functionmap
 	{
 
+		//if the commandtype doesn't exist create it first
 		if(!CommandTypeExists(commandtype))
 		{
 			Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
@@ -79,9 +79,26 @@ private:
 		FunctionMap[commandtype].push_back(function);
 	}
 
+	std::vector<std::function<void(std::string)>> getCommandsOfType(std::string commandType) //from functionmap
+	{
+		//if the commandtype doesn't exist return an empty vector
+		if(!CommandTypeExists(commandType))
+		{
+			return new std::function<void(std::string)>>();
+		}
+
+		return FunctionMap[commandType];
+	}
+
 public:
 
-	static bool sendNewCommand(command a)
+	static commandqueue& getinstance() //of this commandqueue
+	{
+		static commandqueue instance;
+		return instance;
+	}
+
+	static bool sendNewCommand(command a) //to commands
 	{
 		if(!commandqueue::getinstance().CommandTypeExists(a.commandtype)) return false;
 
@@ -89,22 +106,35 @@ public:
 		return true;
 	}
 
-	
-	static void runNextCommand()
+	static bool sendNewCommand(int priority, std::string commandtype, std::string commanddata) //to commands
 	{
-		
+		if(!commandqueue::getinstance().CommandTypeExists(commandtype)) return false;
 
+		command b;
+		b.priority = priority;
+		b.commandtype = commandtype;
+		b.commanddata = commanddata;
+
+		commandqueue::getinstance().push(b);
+		return true;
 	}
 
-	static commandqueue& getinstance()
-	{
-		static commandqueue instance;
-		return instance;
-	}
-
-	static void registerFunction(std::string& commandtype, std::function<void(std::string)> registerFunction)
+	static void registerFunction(std::string commandtype, std::function<void(std::string)> registerFunction) //to functionmap
 	{
 		commandqueue::getinstance().map(commandtype, registerFunction);
+	}
+	
+	static void runNextCommand() //in commands from functionmap
+	{
+		command b = commandqueue::getinstance().poptop();
+
+		std::vector<std::function<void(std::string)>> commandToRun = commandqueue::getinstance().getCommandsOfType(b.commandtype);
+
+		if(commandToRun.empty()) return;
+
+		std::for_each(commandToRun.begin(), commandToRun.end(), [b.commanddata](std::function<void(std::string)> actWith){
+			actWith(commanddata);
+		});
 	}
 
 };
