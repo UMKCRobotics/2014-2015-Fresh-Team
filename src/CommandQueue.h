@@ -55,7 +55,7 @@ private:
 	}
 	
 	//check if command type actually exists
-	bool CommandTypeExists(std::string commandType) //in functionmap
+	bool commandTypeExists(std::string commandType) //in functionmap
 	{
 		if(!FunctionMap.empty()){
 			if(FunctionMap.count(commandType) > 0) return true;
@@ -70,7 +70,7 @@ private:
 	{
 
 		//if the commandtype doesn't exist create it first
-		if(!CommandTypeExists(commandtype))
+		if(!commandTypeExists(commandtype))
 		{
 			//Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
 			FunctionMap.emplace(commandtype, std::vector<std::function<void(std::string)>>());
@@ -82,7 +82,7 @@ private:
 	std::vector<std::function<void(std::string)>> getCommandsOfType(std::string commandType) //from functionmap
 	{
 		//if the commandtype doesn't exist return an empty vector
-		if(!CommandTypeExists(commandType))
+		if(!commandTypeExists(commandType))
 		{
 			return std::vector<std::function<void(std::string)>>();
 		}
@@ -100,7 +100,7 @@ public:
 
 	static bool sendNewCommand(command a) //to commands
 	{
-		if(!commandqueue::getinstance().CommandTypeExists(a.commandtype)) return false;
+		if(!commandqueue::getinstance().commandTypeExists(a.commandtype)) return false;
 
 		commandqueue::getinstance().push(a);
 		return true;
@@ -108,7 +108,7 @@ public:
 
 	static bool sendNewCommand(int priority, std::string commandtype, std::string commanddata) //to commands
 	{
-		if(!commandqueue::getinstance().CommandTypeExists(commandtype)) return false;
+		if(!commandqueue::getinstance().commandTypeExists(commandtype)) return false;
 
 		command b;
 		b.priority = priority;
