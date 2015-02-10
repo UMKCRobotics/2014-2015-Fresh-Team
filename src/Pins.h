@@ -8,24 +8,25 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_L1			= 41;
-const int PIN_MOTOR_L2 			= 42;
+const int PIN_MOTOR_E1 			= 134; //88; // 134 	136 	138
+const int PIN_MOTOR_L1			= 42; //56; 
+const int PIN_MOTOR_L2 			= 41; //104;
 
 // Right Motor
-const int PIN_MOTOR_L3 			= 18;
-const int PIN_MOTOR_L4 			= 17;
+const int PIN_MOTOR_E2 			= 135; //55; // 135 	137 	139
+const int PIN_MOTOR_L3 			= 18; //57;
+const int PIN_MOTOR_L4 			= 17; //105;
 
 /********************************************
 Input Pins
 - Reading current round and part
 - Telling the robot to start
 ********************************************/
-const int PIN_GO_BUTTON_TO 		= 19;
-const int PIN_GO_BUTTON_FROM 	= 1;
-const int PIN_GO_BUTTON_VCC 	= 9;
-const int PIN_GO_BUTTON_GND 	= 21;
-
-const int PIN_ROUND_TYPE_SWITCH = 0; // TODO
+const int PIN_GO_BUTTON_TO 		= 126;
+const int PIN_GO_BUTTON_FROM 	= 133;
+const int PIN_GO_BUTTON_VCC 	= 135;
+const int PIN_GO_BUTTON_GND 	= 124;
+const int PIN_FAST_ROUND		= 7; 	// NOTE: This is connected through an analog pin
 
 /********************************************
 Distance Sensors
@@ -33,14 +34,28 @@ Distance Sensors
 
     ^FRONT^
 
-    FL  FR
+	   F
   LF      RF
 
   LB      RB
 
 - Includes their GND, VCC, and signal pins   
 ********************************************/
-// TODO
+const int PIN_DISTANCE_SENSOR_F 	= 5;
+const int PIN_DISTANCE_SENSOR_LF 	= 2;
+const int PIN_DISTANCE_SENSOR_LB 	= 3;
+const int PIN_DISTANCE_SENSOR_RF 	= 4;
+const int PIN_DISTANCE_SENSOR_RB 	= 1;
+
+/********************************************
+Line Sensors
+- Arranged with one on the left and one on 
+  the right
+- Arduino is respondible for telling the 
+  Linux side when a line is seen
+********************************************/
+const int PIN_LINE_SENSOR_L = 5;
+const int PIN_LINE_SENSOR_R = 6;
 
 /********************************************
 Output Pins
