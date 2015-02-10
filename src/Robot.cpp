@@ -39,14 +39,25 @@ bool Robot::init(void)
 	if(successful)
 	{
 		Logger::logMessage("Configuring GPIO Directions...");
+
+		// Go Button
 		if(!setPinDirection(PIN_GO_BUTTON_TO, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_FROM, PIN_DIRECTION_IN)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_GO_BUTTON_GND, PIN_DIRECTION_OUT)) successful = false;
 
+		// Status Lights
 		if(!setPinDirection(PIN_READY_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_END_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_STATUS_LIGHTS_GND, PIN_DIRECTION_OUT)) successful = false;
+
+		// Left Motor
+		if(!setPinDirection(PIN_MOTOR_L1, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_MOTOR_L2, PIN_DIRECTION_OUT)) successful = false;
+
+		// Right Motor
+		if(!setPinDirection(PIN_MOTOR_L3, PIN_DIRECTION_OUT)) successful = false;
+		if(!setPinDirection(PIN_MOTOR_L4, PIN_DIRECTION_OUT)) successful = false;
 
 		if(successful) Logger::logMessage("\tComplete");
 		else Logger::logMessage("\tFailed");
@@ -55,14 +66,25 @@ bool Robot::init(void)
 	if(successful)
 	{
 		Logger::logMessage("Configuring Default GPIO Outputs...");
+
+		// Go Button
 		setPinState(PIN_GO_BUTTON_TO, PIN_STATE_LOW);
 		setPinState(PIN_GO_BUTTON_VCC, PIN_STATE_HIGH);
 		setPinState(PIN_GO_BUTTON_GND, PIN_STATE_LOW);
 
+		// Status Lights
 		setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_HIGH);
 		setPinState(PIN_END_LIGHT_VCC, PIN_STATE_LOW);
 		setPinState(PIN_STATUS_LIGHTS_GND, PIN_STATE_LOW);
+
+		// Left Motor
+		setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+		setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 		
+		// Right Motor
+		setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+		setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+
 		Logger::logMessage("\tComplete");
 	}
 
@@ -74,8 +96,8 @@ bool Robot::init(void)
 // wait for go is continuously called until the go button is called
 void Robot::waitforgo(void)
 {
-	getRoundAndPart();
 
+	getRoundAndPart();
 
 	if(!(getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
 	{
@@ -138,26 +160,14 @@ void Robot::loop()
 // should call it again
 void Robot::getRoundAndPart(void)
 {
-	Logger::logMessage("Getting Round and Part...");
-
-	// TODO: get round and part values from analog pins
-
-	string response = "1:1"; 	// Will get them in the format
-								// round:part
-								// Navigation class will hold these for  us
-
-	// parse the round and part
-	string str_round, str_part = "";
-	str_round = response.substr(0, response.find(":"));
-	str_part = response.substr(response.find(":")+1);
-
-	if(!isdigit(str_round.at(0)) && !isdigit(str_part.at(0)))
+	if(getPinState(PIN_ROUND_TYPE_SWITCH) == PIN_STATE_LOW)
 	{
-		// TODO: request round and part again
+		isFastRound = true;
 	}
-
-	round = atoi(str_round.c_str());
-	part = atoi(str_part.c_str());
+	else
+	{
+		isFastRound = false;
+	}
 }
 
 // Returns the Pins.h defined constant for the direction
@@ -213,12 +223,15 @@ void Robot::setPinState(int pin, int state)
 	if(getPinDirection(pin) == PIN_DIRECTION_OUT)
 	{
 		// Pin is set as output thus we CAN change its state
-		writePinFileContents(pin, PIN_STATE, state);
-
-		// TODO: Check if the state was successfully set?
+		if(!writePinFileContents(pin, PIN_STATE, state))
+		{
+			string error = "Cannot set gpio " + to_string(pin) + " state";
+			Logger::logError(error);
+		}
 	} else {
-		// Pin not set as output thus how could we chance the state
-			
+		// Pin not set as output thus how could we change the state
+		string error = "Cannot set gpio " + to_string(pin) +  "state; pin is set to input";
+		Logger::logError(error);	
 	}
 }
 
@@ -259,7 +272,7 @@ string Robot::getPinFileContents(int pin, int property)
 		pinFile.close();
 	} else {
 		string error = "Could not read " + str_property + " from pin " + str_pin + " file";
-		logger.logError(error);
+		Logger::logError(error);
 	}
 
 	return contents;
@@ -320,9 +333,14 @@ bool Robot::writePinFileContents(int pin, int property, int value)
 		pinFile.close();
 	} else {
 		string error = "Could not write " + str_value + " to " + str_property + " of pin " + str_pin + " file";
-		logger.logError(error);
+		Logger::logError(error);
 		status = false;
 	}
 
 	return status;
+}
+
+bool Robot::getIsFastRound()
+{
+	return isFastRound;
 }

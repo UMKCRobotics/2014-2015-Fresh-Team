@@ -22,7 +22,7 @@ private:
 
 	MotorCommander MotorCommander;
 
-	void getRoundAndPart(void);
+	void getRoundType(void);
 	string getPinFileContents(int pin, int property);
 	bool writePinFileContents(int pin, int property, int value);
 public:
@@ -45,5 +45,7 @@ public:
 
 	void setPinState(int pin, int state);
 	bool setPinDirection(int pin, int state);
+
+	bool getIsFastRound();
 };
 #endif

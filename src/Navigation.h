@@ -11,12 +11,29 @@ using namespace std;
 class Navigation
 {
 private:
-	const string fileLocation = "/home/Ubuntu/Documents/path.txt";
+	const string fileLocation = "/home/Ubuntu/Documents/path.txt"; // Dummy value
 	Cardinal orientation;
 	Cardinal map[50];
 
-	int position;
-	int finalPosition;
+	/*
+	Round 1
+		Start 	48
+		End 	9
+
+	Round 2
+		Start 	48
+		End 	1
+
+	Round 3
+		Start 	49
+		End 	1
+	*/
+
+	int position 				= 0; // position set to start position upon class instantiation
+	const int startPosition 	= 48;
+	const int finalPosition 	= 9; 	// Hard coded value because
+										// we no longer have dials
+										// Must be recoded for each round
 
 public:
 	Navigation();
@@ -26,7 +43,6 @@ public:
 	void addCurrentNodePlusCardinalToPath(Cardinal node);
 	bool inFinalNode();
 
-	void setRoundAndPart(int round, int part);
 	int getCurrentPosition();
 	int getFinalPosition();
 	Cardinal getOrientation(void);

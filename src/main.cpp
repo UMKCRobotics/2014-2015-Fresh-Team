@@ -20,7 +20,6 @@ int main(void)
 		Logger::logMessage("Startup successful");
 		while(robot.loop());
 		Logger::logMessage("Robot has finished")
-
 	} else{
 		Logger::logError("Startup failed");
 	}
