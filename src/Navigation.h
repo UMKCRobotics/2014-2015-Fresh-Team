@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <functional>
+#include "logger.h"
+#include "commandqueue.h"
 using namespace std;
 
 #include "Cardinal.h"

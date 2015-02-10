@@ -9,6 +9,13 @@ const float pi = 3.14159265358979f;
 
 MotorCommander::MotorCommander()
 {
+
+  commandqueue::register(2, "MOVE", [this](std::string arguments) //arguments: "direction, orientation" where 
+  {    
+
+
+
+  });
   
 }
 
@@ -22,24 +29,15 @@ bool MotorCommander::init()
 }
 
 
-//main loop
-void MotorCommander::loop()
-{
-
-}
-
-//halt
-void MotorCommander::halt()
-{
-
-}
-
 
 
 
 // Moves robot in desired cardinal direction
-void MotorCommander::move(Robot* robot, Cardinal direction)
+void MotorCommander::move(Cardinal direction, Cardinal orientation)
 {
+
+
+  /*
   if (robot->navigation.getOrientation() == direction){
     moveForward(robot);
   }
@@ -54,6 +52,7 @@ void MotorCommander::move(Robot* robot, Cardinal direction)
         turn(x*90, robot);
       }
    }
+  */
 }
 
 void MotorCommander::turn(int degrees, Robot* robot)
