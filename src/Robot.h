@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "Navigation.h"
 #include "MotorCommander.h"
+#include "SerialListener.h"
 
 class Robot
 {
@@ -14,13 +15,13 @@ private:
 	enum Round{ONE, TWO, THREE};
 	enum Part{}; //unsure what the parts are at the moment, can be added later
 
-	Logger logger;
-
 	State state = INIT;
 	Round round = ONE;
 	//Part part;
 
-	MotorCommander MotorCommander;
+	MotorCommander motorCommander;
+	SerialListener serialListener;
+
 
 	void getRoundType(void);
 	string getPinFileContents(int pin, int property);
@@ -42,6 +43,8 @@ public:
 
 	int getPinDirection(int pin);
 	int getPinState(int pin);
+
+	void halt();
 
 	void setPinState(int pin, int state);
 	bool setPinDirection(int pin, int state);

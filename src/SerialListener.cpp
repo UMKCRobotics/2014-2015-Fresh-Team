@@ -1,13 +1,12 @@
 #include "SerialListener.h"
 
-SerialListener::SerialListener(serialib _serial, CommandQueue _queue)
+
+SerialListener::SerialListener(serialib _serial)
 {
 	serial = _serial;
-	queue = _queue;
 
-	shouldListen = true;
+	beginListening();
 }
-
 
 // listen (void)
 // Theaded function used to listen on the serial line between processors on the Linux side
@@ -18,7 +17,7 @@ void SerialListener::listen()
 	char received[128];
 	int readStatus;
 
-	while(shouldListen)
+	if(shouldListen)
 	{
 		readStatus = serial.ReadString(received, '\n', 128);
 
@@ -53,8 +52,15 @@ void SerialListener::listen()
 
 // stopListening (void)
 // Stops the listening on the serial line
-void stopListening()
+void SerialListener::stopListening()
 {
+	Logger::logMessage("Disabling SerialListner!");
 	shouldListen = false;
 	// TODO: Code to cleanup and possibly stop the thread
+}
+
+void SerialListener::beginListening()
+{
+	Loger::logMessage("Enabling SerialListener!");
+	shouldListen = true;
 }

@@ -1,5 +1,7 @@
+#include <iostream>
 #include "Robot.h"
 #include "Pins.h"
+#include "CommandQueue.h"
 
 int main(void)
 {
@@ -9,12 +11,6 @@ int main(void)
 	Robot robot;
 	Logger::logMessage("\tComplete");
 	
-	//Logger::logMessage("Instantiating MotorCommander...");
-	//MotorCommander motorCommander; 
-	//Logger::logMessage("\tComplete");
-	//motor commander should be called at robot init
-
-
 	if(robot.init())
 	{
 		Logger::logMessage("Startup successful");

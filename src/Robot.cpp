@@ -2,6 +2,7 @@
 #include "Pins.h"
 #include "iRobotBase.h"
 
+
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -23,7 +24,7 @@ bool Robot::init(void)
 	
 	//initiate motorCommander
 	Logger::logMessage("Instantiating MotorCommander...");
-	MotorCommander motorCommander; 
+	motorCommander = new MotorCommander();
 	Logger::logMessage("\tComplete");
 
 	Logger::logMessage("Initiating Arduino SerialStream...");
@@ -88,8 +89,23 @@ bool Robot::init(void)
 		Logger::logMessage("\tComplete");
 	}
 
+	//Begin Serial Listener
+	serialListener = new serialListener(arduinoSerial);
+
 	// TODO: Any other needed initiation
+	if(!successful) return successful;
+
 	State = WAITFORGO;
+
+	commandqueue::registerFunction(0, "halt", [this](std::string arguments){
+			Logger::logMessage("Robot halting: " + arguments);
+		this->halt();
+	});
+
+	commandqueue::registerFunction(99, "print", [](std::string arguments){
+		cout << "Asked to print: " << arguments << endl;
+	});
+
 	return successful;
 }
 
@@ -113,6 +129,8 @@ void Robot::waitforgo(void)
 
 void Robot::running(void)
 {
+	serialListener.listen();
+	CommandQueue::runNextCommand();
 
 }
 
@@ -149,6 +167,12 @@ void Robot::loop()
 
 
 
+}
+
+void Robot::halt()
+{
+
+	state = HALTED;
 }
 
 

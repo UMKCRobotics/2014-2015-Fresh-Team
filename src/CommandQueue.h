@@ -119,9 +119,9 @@ public:
 		return true;
 	}
 
-	static void registerFunction(std::string commandtype, std::function<void(std::string)> registerFunction) //to functionmap
+	static void registerFunction(std::string commandtype, std::function<void(std::string)> functionToRegister) //to functionmap
 	{
-		commandqueue::getinstance().map(commandtype, registerFunction);
+		commandqueue::getinstance().map(commandtype, functionToRegister);
 	}
 	
 	static void runNextCommand() //in commands from functionmap
