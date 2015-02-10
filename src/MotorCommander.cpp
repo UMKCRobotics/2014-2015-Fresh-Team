@@ -12,6 +12,31 @@ MotorCommander::MotorCommander()
   
 }
 
+
+//return true if init was successful
+bool MotorCommander::init()
+{
+
+  Logger::logMessage("Motor Commander initialized successfully");
+  return true;
+}
+
+
+//main loop
+void MotorCommander::loop()
+{
+
+}
+
+//halt
+void MotorCommander::halt()
+{
+
+}
+
+
+
+
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Robot* robot, Cardinal direction)
 {
