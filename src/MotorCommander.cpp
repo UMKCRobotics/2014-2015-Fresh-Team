@@ -1,8 +1,8 @@
-#include <math.h>
+#include <math>
+#include <regex>
 #include "MotorCommander.h"
 #include "Pins.h"
 #include "Navigation.h"
-
 
 // Define pi here for sake of precision and easy of use
 const float pi = 3.14159265358979f;
@@ -16,7 +16,12 @@ MotorCommander::MotorCommander()
     //todo: parse string for the cardinals, using placeholders for now.
     Cardinal direction = NORTH;
     Cardinal orientation = NORTH;
+    
+    std::regex argument_regex("([A-Z])+");  
 
+    auto arguments_begin = std::sregex_iterator(arguments.begin(), arguments.end(), argument_regex);
+
+    auto arguments_end = std::regex_iterator();
 
     this.move(direction, orientation);
 
