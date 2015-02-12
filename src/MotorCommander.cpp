@@ -13,12 +13,16 @@ MotorCommander::MotorCommander()
   commandqueue::register(2, "MOVE", [this](std::string arguments) //arguments: "direction, orientation" where 
   {    
 
+    //todo: parse string for the cardinals, using placeholders for now.
+    Cardinal direction = NORTH;
+    Cardinal orientation = NORTH;
 
+
+    this.move(direction, orientation);
 
   });
   
 }
-
 
 //return true if init was successful
 bool MotorCommander::init()
@@ -28,16 +32,12 @@ bool MotorCommander::init()
   return true;
 }
 
-
-
-
-
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Cardinal direction, Cardinal orientation)
 {
 
 
-  /*
+  
   if (robot->navigation.getOrientation() == direction){
     moveForward(robot);
   }
@@ -52,7 +52,7 @@ void MotorCommander::move(Cardinal direction, Cardinal orientation)
         turn(x*90, robot);
       }
    }
-  */
+  
 }
 
 void MotorCommander::turn(int degrees, Robot* robot)
