@@ -1,8 +1,9 @@
-#include <math>
 #include <regex>
+#include <math>
 #include "MotorCommander.h"
 #include "Pins.h"
 #include "Navigation.h"
+
 
 // Define pi here for sake of precision and easy of use
 const float pi = 3.14159265358979f;
@@ -10,24 +11,25 @@ const float pi = 3.14159265358979f;
 MotorCommander::MotorCommander()
 {
 
-  commandqueue::register(2, "MOVE", [this](std::string arguments) //arguments: "direction, orientation" where 
+  commandqueue::register(2, "MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
   {    
+	
+	
+	
+	
+	
+	
+	std::string direction = "NORTH";
+	std::string orientation = "NORTH";
+	
+	this.move(direction, orientation);
+	
 
-    //todo: parse string for the cardinals, using placeholders for now.
-    Cardinal direction = NORTH;
-    Cardinal orientation = NORTH;
-    
-    std::regex argument_regex("([A-Z])+");  
-
-    auto arguments_begin = std::sregex_iterator(arguments.begin(), arguments.end(), argument_regex);
-
-    auto arguments_end = std::regex_iterator();
-
-    this.move(direction, orientation);
 
   });
   
 }
+
 
 //return true if init was successful
 bool MotorCommander::init()
@@ -37,12 +39,16 @@ bool MotorCommander::init()
   return true;
 }
 
+
+
+
+
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Cardinal direction, Cardinal orientation)
 {
 
 
-  
+  /*
   if (robot->navigation.getOrientation() == direction){
     moveForward(robot);
   }
@@ -57,7 +63,7 @@ void MotorCommander::move(Cardinal direction, Cardinal orientation)
         turn(x*90, robot);
       }
    }
-  
+  */
 }
 
 void MotorCommander::turn(int degrees, Robot* robot)
