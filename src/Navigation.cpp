@@ -9,10 +9,38 @@ Navigation::Navigation()
 	{
 		int iround = std::stoi(ROUND, std::string::size_type);
 
-		changeround(iround);
+		changeRound(iround);
 
 
 	});
+}
+
+void Navigation::changeRound(int round)
+{
+	//todo: Set up the proper configurations for each round
+	switch(round)
+	{
+		case 1:
+		startposition = 48;
+		finalposition = 9;
+
+		break;
+		case 2:
+		startposition = 48
+		finalposition = 1;
+
+		break;
+		case 3:
+		startposition = 49;
+		finalposition = 1;
+
+		break;
+		default:
+		break;
+	}
+
+
+
 }
 
 void Navigation::loadPath()
