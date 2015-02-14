@@ -38,12 +38,15 @@ private:
 										// we no longer have dials
 										// Must be recoded for each round
 
+	void changeRound(); //to be called from command "CHANGEROUND"
+
 public:
 	Navigation();
 	Cardinal getCardinalToNextNodeInPath(vector<Cardinal> openings);
 	void loadPath();
 	void storeCriticalPath();
 	void addCurrentNodePlusCardinalToPath(Cardinal node);
+
 	bool inFinalNode();
 
 	int getCurrentPosition();
