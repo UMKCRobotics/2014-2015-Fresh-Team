@@ -1,4 +1,5 @@
 #include "Navigation.h"
+#include <ifstream>
 #include <string>
 
 Navigation::Navigation()
@@ -43,8 +44,45 @@ void Navigation::changeRound(int round)
 
 }
 
-void Navigation::loadPath()
+bool Navigation::loadPath()
 {
+	Logger::logMessage("Attempting to read path in file: " + filelocation);
+
+	std::ifstream infile(filelocation, std::ifstream::in);
+	
+	if(!infile)
+	{
+		Logger::logError("COULD NOT READ THE FILE: " + filelocation);
+		return false;		
+	}
+
+	std::string line;
+
+	while(infile.good())
+	{
+		line = infile.getLine();
+		
+
+		switch(cardinal)
+		{
+			case "NORTH":
+
+			break;
+			case "SOUTH":
+
+			break;
+			case "EAST":
+
+			break;
+			case "WEST":
+
+			break;
+			default:
+				Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
+				return false;
+		}
+		map.emplace()
+	}
 
 }
 

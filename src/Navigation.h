@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <map>
 #include "logger.h"
 #include "commandqueue.h"
 using namespace std;
@@ -38,12 +39,12 @@ private:
 										// we no longer have dials
 										// Must be recoded for each round
 
-	void changeRound(); //to be called from command "CHANGEROUND"
+	void changeRound(int round); //to be called from command "CHANGEROUND"
 
 public:
 	Navigation();
 	Cardinal getCardinalToNextNodeInPath(vector<Cardinal> openings);
-	void loadPath();
+	bool loadPath();
 	void storeCriticalPath();
 	void addCurrentNodePlusCardinalToPath(Cardinal node);
 
