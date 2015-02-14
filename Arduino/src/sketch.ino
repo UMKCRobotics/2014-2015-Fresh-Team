@@ -2,7 +2,6 @@
 
 #include "../../src/Pins.h"
 #include "LineSensor.h"
-#include "IMU.h"
 
 // --- Message Handling ---
 char incomingByte;
@@ -11,11 +10,11 @@ void handleMesage(String message);
 
 // --- Line Sensors ---
 LineSensor ls_left;
+LineSensor ls_middle;
 LineSensor ls_right;
 
-// --- IMU ---
-LSM9DS0 IMU(MODE_I2C, 0x6B, 0x1D); 	// Arguments are from SparkFun example
-									// See "Simple" example for explanation
+// --- Distance Sensors ---
+int distanceThreshold = 0;
 
 void setup()
 {
@@ -29,12 +28,16 @@ void setup()
 	pinMode(PIN_DISTANCE_SENSOR_LB, INPUT);
 	pinMode(PIN_DISTANCE_SENSOR_RB, INPUT);
 	pinMode(PIN_FAST_ROUND, INPUT);
+
+	pinMode(PIN_LINE_SENSOR_L, INPUT);
+	pinMode(PIN_LINE_SENSOR_M, INPUT);
+	pinMode(PIN_LINE_SENSOR_R, INPUT);
 }
 
 void loop()
 {
-	// If data is available on the Serial line,
-	// read it a byte at a time until we are done
+	// // If data is available on the Serial line,
+	// // read it a byte at a time until we are done
 	while(Serial.available())
 	{
 		incomingByte = (char)Serial.read();
@@ -45,7 +48,8 @@ void loop()
 	// If not, just throw it away
 	if(strlen(receivedMessage.c_str()) > 1)
 	{
-		handleMessage(receivedMessage);
+		// handleMessage(receivedMessage);
+		handleMessage("FindRHOpening");
 		receivedMessage = ""; // Still need to clear the message for next time
 	} 
 	else
@@ -61,7 +65,10 @@ void loop()
 	// the threshold of time
 	if(ls_left.lineDetected(ls_right.getTimeDetected()))
 	{
-		Serial.println("LineDetected");
+//		Serial.print(ls_left.getLastReading());
+//		Serial.print("\t\t");
+//	 	Serial.println(ls_right.getLastReading());
+        Serial.println("LineDetected");
 	}
 }
 
@@ -100,6 +107,37 @@ void handleMessage(String message)
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
 		}
 	}
+	if(response.startsWith("FindRHOpening"))
+	{
+		// Front
+		int distanceFront = analogRead(PIN_DISTANCE_SENSOR_F);
+
+		// Left
+		int distanceLeftFront = analogRead(PIN_DISTANCE_SENSOR_LF);
+		int distanceLeftBack = analogRead(PIN_DISTANCE_SENSOR_LB);
+
+		// Right
+		int distanceRightFront = analogRead(PIN_DISTANCE_SENSOR_RF);
+		int distanceRightBack = analogRead(PIN_DISTANCE_SENSOR_RB);
+
+		// Check values and send Opening command with parameter/argument of where the opening is
+		if(distanceRightFront > distanceThreshold && distanceRightBack > distanceThreshold)
+		{
+			Serial.println("Opening Right");
+		}
+		else if(distanceFront > distanceThreshold)
+		{
+			Serial.println("Opening Front");
+		}
+		else if(distanceLeftFront > distanceThreshold && distanceLeftBack > distanceThreshold)
+		{
+			Serial.println("Opening Left");
+		}
+		else
+		{
+			Serial.println("Opening Back");
+		}
+	}
 	else if(response.startsWith("NotifyOfAngle "))
 	{
 		// This clause will send a message to the Linux side to stop turning when a designated
@@ -107,33 +145,44 @@ void handleMessage(String message)
 
 		// Parse end angle from string
 		String str_endAngle = response.substring(14);
-		float f_endAngle = atof(str_endAngle.c_str());
+		int endAngle = atoi(str_endAngle.c_str());
+		boolean angleReached = false;
 
-		long lastCheckTime = micros();
-		float currentRotationSpeed = 0;
-		long timeSinceLastCheck = 0;
-		float f_angle = 0.0f;
+		// Reset lines passed so that the number of lines passed starts at 0
+		ls_left.resetLinesPassed();
+		ls_middle.resetLinesPassed();
+		ls_right.resetLinesPassed();
 
-		// While the difference between the current angle and end angle is +/- 3 degrees...
-		while(fabs(f_angle - f_endAngle) >= 3) // 3 is the error in degrees acceptable. Will need to be tested
+		while(!angleReached)
 		{
-			// Get our rotation speed and get an estimation as to how long we have been
-			// turning at that speed
-			IMU.readGyro();
-			currentRotationSpeed = IMU.gz;
-			timeSinceLastCheck = micros() - lastCheckTime;
+			ls_left.update(analogRead(PIN_LINE_SENSOR_L));
+			ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
+			ls_right.update(analogRead(PIN_LINE_SENSOR_R));
 
-			// Add the degrees turned during that time period to our current angle
-			// Also set the lastCheckTime for the next calculation
-			f_angle += timeSinceLastCheck * currentRotationSpeed;
-			lastCheckTime = micros();
+			// Turning Right
+			if(endAngle < 0)
+			{
+				if(ls_right.getLinesPassed() == abs(endAngle / 90) &&
+				   ls_middle.getLinesPassed() == (abs(endAngle / 90) - 1) && 
+				   ls_middle.lineDetected(micros()))
+				{
+					Serial.println("AngleReached");
+					angleReached = true;
+				}
+			}
+			// Turning Left
+			if(endAngle > 0)
+			{
+				if(ls_left.getLinesPassed() == abs(endAngle / 90) &&
+				   ls_middle.getLinesPassed() == (abs(endAngle / 90) - 1) && 
+				   ls_middle.lineDetected(micros()))
+				{
+					Serial.println("AngleReached");
+					angleReached = true;
+				}
+			}
 		}
-
-		Serial.println("AngleReached");
 	}
 
-	if(strlen(response.c_str()) > 1)
-	{
-		Serial.println(response);
-	}
+    delay(500);
 }
