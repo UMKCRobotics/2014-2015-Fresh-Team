@@ -54,8 +54,9 @@ Line Sensors
 - Arduino is respondible for telling the 
   Linux side when a line is seen
 ********************************************/
-const int PIN_LINE_SENSOR_L = 5;
-const int PIN_LINE_SENSOR_R = 6;
+const int PIN_LINE_SENSOR_L = 8;
+const int PIN_LINE_SENSOR_M = 10;
+const int PIN_LINE_SENSOR_R = 9;
 
 /********************************************
 Output Pins
