@@ -1,5 +1,5 @@
 #include "Navigation.h"
-#include <ifstream>
+#include <fstream>
 #include <string>
 #include <regex>
 
@@ -77,7 +77,6 @@ bool Navigation::loadPath()
 			break;
 			case "WEST":
 			map.emplace(iround, WEST);
-
 			break;
 			default:
 				Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
@@ -92,18 +91,35 @@ bool Navigation::loadPath()
 
 bool Navigation::storeCriticalPath()
 {
-	Logger:logMessage("Attempting to write path to file: " + filelocation);
+
+	Logger::logMessage("Attempting to write path to file: " + filelocation);
+
+	ofstream outfile;
+	outfile.open(fileLocation, ofstream::out | ofstream::app);
+
+	if(!outfile)
+	{
+		Logger::logError("COULD NOT WRITE TO FILE: " + fileLocation);
+	}
+
+	for(auto& position: map)
+	{
+		outfile << position.first << " " << position.second << endl;
+
+	}
+
+	outfile.close();
 
 }
 
-Cardinal Navigation::getCardinalToNextNodeInPath(vector<Cardinal> openings)
+Cardinal Navigation::getCardinalToNextNodeInPath()
 {
-	return NORTH;
+	return map[position];
 }
 
 void Navigation::addCurrentNodePlusCardinalToPath(Cardinal node)
 {
-	map[position] = node;
+	map.emplace(position, node);
 }
 
 bool Navigation::inFinalNode()
