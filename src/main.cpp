@@ -14,7 +14,7 @@ int main(void)
 	MotorCommander motorCommander;
 	Logger::logMessage("\tComplete");
 	
-	bool startupSuccessful = robot.init();
+	bool startupSuccessful = robot.init(); //robot.init(); TEMP
 
 	if(!startupSuccessful)
 	{
@@ -22,47 +22,21 @@ int main(void)
 	}
 	else
 	{
-		// Logger::logMessage("Startup complete; waiting for go button to be pressed");
+		Logger::logMessage("Startup complete; waiting for go button to be pressed");
 
-		// while(robot.getPinState(PIN_GO_BUTTON) == PIN_STATE_LOW)
-		// {
-		// 	// Do nothing
-		// 	usleep(50000);
-		// }
-
-		// robot.go();
-
-		// TEMP: Code for testing communication with the Arduino side
-		char received[128];
-		int readStatus = 0;
-
-		while(1)
+		while(robot.getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)
 		{
-			readStatus = robot.arduinoSerial.ReadString(received, '\n', 128);
-
-			if(readStatus > 0)
-			{
-				Logger::logMessage("Data!");
-				Logger::logMessage(received);
-			}
-			else if(readStatus == 0)
-			{
-				Logger::logMessage("Timeout Reached");
-			}
-			else if(readStatus == -1)
-			{
-				Logger::logMessage("Error while setting timeout");
-			}
-			else if(readStatus == -2)
-			{
-				Logger::logMessage("Error while reading byte");
-			}
-			else if(readStatus == -3)
-			{
-				Logger::logMessage("Byte maximum is reached; pritning received data anyways");
-				Logger::logMessage(received);
-			}
+			// Do nothing
+			usleep(50);
 		}
+
+		robot.setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
+		robot.setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
+
+		//robot.go();
+
+		// TEMP: Test motors
+		motorCommander.moveForward(&robot);
 	}
 
 	return 0;

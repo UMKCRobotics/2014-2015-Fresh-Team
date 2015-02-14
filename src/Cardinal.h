@@ -4,6 +4,7 @@
 enum Cardinal { NORTH,
 		SOUTH,
 		EAST,
-		WEST};
+		WEST
+};
 
 #endif

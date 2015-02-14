@@ -4,13 +4,11 @@
 #include "serialib.h"
 #include "Cardinal.h"
 #include "Logger.h"
+#include "Navigation.h"
 
 class Robot
 {
 private:
-	Cardinal orientation;
-	int position;
-	int endPosition;
 	Logger logger;
 
 	int round;
@@ -23,11 +21,10 @@ public:
 	serialib arduinoSerial; // TEMP: Put me back into private plz :)
 
 	Robot();
+	Navigation navigation;
 
 	bool init(void);
 	void go(void);
-
-	Cardinal getOrientation(void);
 
 	int getPinDirection(int pin);
 	int getPinState(int pin);

@@ -11,7 +11,11 @@ public:
 
 	void move(Robot* robot, Cardinal direction);
 	void turn(int degrees, Robot* robot);
-	float getAngle();
+	void moveForward(Robot* robot);
+	void halt(Robot* robot);
+
+private:
+	void moveBackward(Robot* robot);
 };
 
 #endif
