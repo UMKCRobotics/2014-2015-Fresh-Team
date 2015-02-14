@@ -11,9 +11,8 @@ const float pi = 3.14159265358979f;
 MotorCommander::MotorCommander()
 {
 
-  commandqueue::register(2, "MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
-  {    
-
+  commandqueue::registerFunction("MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
+  {
     Cardinal direction;
     Cardinal orientation;
 
@@ -67,10 +66,12 @@ MotorCommander::MotorCommander()
           Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + match.str());
           return;
       }
-
-      this.move(direction, orientation);
     }
-  }
+    this.move(direction, orientation);
+  });
+
+
+
   
 }
 
@@ -92,7 +93,6 @@ void MotorCommander::move(Cardinal direction, Cardinal orientation)
 {
 
 
-  /*
   if (robot->navigation.getOrientation() == direction){
     moveForward(robot);
   }
@@ -107,7 +107,7 @@ void MotorCommander::move(Cardinal direction, Cardinal orientation)
         turn(x*90, robot);
       }
    }
-  */
+  
 }
 
 void MotorCommander::turn(int degrees, Robot* robot)
