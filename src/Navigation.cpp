@@ -1,6 +1,7 @@
 #include "Navigation.h"
 #include <ifstream>
 #include <string>
+#include <regex>
 
 Navigation::Navigation()
 {
@@ -40,8 +41,6 @@ void Navigation::changeRound(int round)
 		break;
 	}
 
-
-
 }
 
 bool Navigation::loadPath()
@@ -56,37 +55,44 @@ bool Navigation::loadPath()
 		return false;		
 	}
 
-	std::string line;
+	std::string Round;
 
 	while(infile.good())
 	{
-		infile.getLine(line);
+		infile >> Round;
+		int iround = std::stoi(Round, &std::string::size_type);
+
+		infile >> cardinal;
 
 		switch(cardinal)
 		{
 			case "NORTH":
-			
+			map.emplace(iround, NORTH);
 			break;
 			case "SOUTH":
-
+			map.emplace(iround, SOUTH);
 			break;
 			case "EAST":
-
+			map.emplace(iround, EAST);
 			break;
 			case "WEST":
+			map.emplace(iround, WEST);
 
 			break;
 			default:
 				Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
+				ifstream.close();
 				return false;
 		}
-		map.emplace()
 	}
+
+	ifstream.close();
 
 }
 
-void Navigation::storeCriticalPath()
+bool Navigation::storeCriticalPath()
 {
+	Logger:logMessage("Attempting to write path to file: " + filelocation);
 
 }
 

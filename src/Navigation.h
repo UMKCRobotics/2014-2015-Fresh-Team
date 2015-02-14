@@ -45,7 +45,7 @@ public:
 	Navigation();
 	Cardinal getCardinalToNextNodeInPath(vector<Cardinal> openings);
 	bool loadPath();
-	void storeCriticalPath();
+	bool storeCriticalPath();
 	void addCurrentNodePlusCardinalToPath(Cardinal node);
 
 	bool inFinalNode();
