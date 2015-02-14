@@ -1,8 +1,8 @@
-#include <math.h>
 #include "MotorCommander.h"
+
+#include <math.h>
 #include "Pins.h"
 #include "Navigation.h"
-
 
 // Define pi here for sake of precision and easy of use
 const float pi = 3.14159265358979f;
@@ -19,7 +19,7 @@ void MotorCommander::move(Robot* robot, Cardinal direction)
         moveForward(robot);
     }
     else {
-        int x = (direction - robot->navigation.getOrientation());
+        int x = (robot->navigation.getOrientation() - direction);
 
         if (x == 0)
         {
@@ -34,7 +34,7 @@ void MotorCommander::move(Robot* robot, Cardinal direction)
 
 void MotorCommander::turn(int degrees, Robot* robot)
 {
-    if (degrees < 0)
+    if (degrees > 0)
     {
         // left motor back, right foward
         robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
@@ -54,6 +54,7 @@ void MotorCommander::turn(int degrees, Robot* robot)
     }
 
     // TODO: Send message to Arduino to notify us of when the turn should stop
+    robot->arduinoSerial.WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
 }
 
 void MotorCommander::moveForward(Robot* robot)
