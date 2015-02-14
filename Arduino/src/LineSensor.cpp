@@ -10,13 +10,18 @@ LineSensor::LineSensor()
 
 void LineSensor::update(float reading)
 {
+	lastReading = reading;
+
 	if(reading > readingThreshold)
 	{
 		seesLine = true;
-		timeWhenDetected = millis();
+		timeWhenDetected = micros();
 	}
 	else
 	{
+		// Increment our number of lines passed
+		if(seesLine)	linesPassed++;
+
 		seesLine = false;
 	}
 }
@@ -31,7 +36,22 @@ bool LineSensor::lineDetected(long compareTime)
 	return ((compareTime - timeWhenDetected) <= timingThreshold);
 }
 
+void LineSensor::resetLinesPassed()
+{
+	linesPassed = 0;
+}
+
 long LineSensor::getTimeDetected()
 {
 	return timeWhenDetected;
+}
+
+int LineSensor::getLastReading()
+{
+	return lastReading;
+}
+
+int LineSensor::getLinesPassed()
+{
+	return linesPassed;
 }
