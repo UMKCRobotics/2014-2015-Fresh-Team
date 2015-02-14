@@ -1,9 +1,9 @@
 #include "SerialListener.h"
+#include "Logger.h"
 
-SerialListener::SerialListener(serialib _serial, CommandQueue _queue)
+SerialListener::SerialListener(serialib _serial)
 {
 	serial = _serial;
-	queue = _queue;
 
 	shouldListen = true;
 }
@@ -27,7 +27,9 @@ void SerialListener::listen()
 			Logger::logMessage("Received from Arduino: ");
 			Logger::logMessage(received);
 
-			queue.push(string(received)); 	// TODO: Will need to be expanded to accompany priority
+			// TODO: Push into queue
+
+			//queue.push(string(received)); 	// TODO: Will need to be expanded to accompany priority
 											// For example: a container class to hold the command itself, priority code,
 											// and the appropriate callback
 		}
@@ -53,7 +55,7 @@ void SerialListener::listen()
 
 // stopListening (void)
 // Stops the listening on the serial line
-void stopListening()
+void SerialListener::stopListening()
 {
 	shouldListen = false;
 	// TODO: Code to cleanup and possibly stop the thread
