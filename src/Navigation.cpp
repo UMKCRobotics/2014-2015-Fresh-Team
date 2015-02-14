@@ -60,13 +60,12 @@ bool Navigation::loadPath()
 
 	while(infile.good())
 	{
-		line = infile.getLine();
-		
+		infile.getLine(line);
 
 		switch(cardinal)
 		{
 			case "NORTH":
-
+			
 			break;
 			case "SOUTH":
 

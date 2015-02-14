@@ -17,7 +17,7 @@ class Navigation
 private:
 	const string fileLocation = "/home/Ubuntu/Documents/path.txt"; // Dummy value
 	Cardinal orientation;
-	Cardinal map[50];
+	std::map<int, Cardinal> map; //holds position and direction
 
 	/*
 	Round 1
