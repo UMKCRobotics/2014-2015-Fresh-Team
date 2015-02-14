@@ -13,20 +13,64 @@ MotorCommander::MotorCommander()
 
   commandqueue::register(2, "MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
   {    
-	
-	
-	
-	
-	
-	
-	std::string direction = "NORTH";
-	std::string orientation = "NORTH";
-	
-	this.move(direction, orientation);
-	
 
+    Cardinal direction;
+    Cardinal orientation;
 
-  });
+    std::regex regex("([A-Z])+");
+
+    auto cardinalsiter = std::sregex_iterator(teststring.begin(), teststring.end(), regex);
+
+    std::smatch match = *cardinalsiter;
+    if(!match.empty())
+    {
+
+      switch(match.str())
+      {
+        case "NORTH":
+          direction = NORTH;
+          break;
+        case "SOUTH":
+          direction = SOUTH;
+          break;
+        case "EAST":
+          direction = EAST;
+          break;
+        case "WEST":
+          direction = WEST;
+          break;
+        default:
+          Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + match.str());
+          return;
+      } 
+
+    }
+    match = *(++cardinalsiter);
+
+    if(!match.empty())
+    {
+      switch(match.str())
+      {
+        case "NORTH":
+          orientation = NORTH;
+          break;
+        case "SOUTH":
+          orientation = SOUTH;
+          break;
+        case "EAST":
+          orientation = EAST;
+          break;
+        case "WEST":
+          orientation = WEST;
+          break;
+        default:
+          Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + match.str());
+          return;
+      }
+
+      this.move(direction, orientation);
+    }
+  }
   
 }
 
