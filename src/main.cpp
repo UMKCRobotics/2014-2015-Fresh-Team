@@ -1,6 +1,7 @@
 #include "Robot.h"
 #include "MotorCommander.h"
 #include "Pins.h"
+#include "SerialListener.h"
 
 int main(void)
 {
@@ -23,7 +24,7 @@ int main(void)
 	}
 	else
 	{
-		SerialListener serialListener(robot->arduinoSerial);
+		SerialListener serialListener(robot.arduinoSerial);
 
 		Logger::logMessage("Startup complete; waiting for go button to be pressed");
 
@@ -44,7 +45,7 @@ int main(void)
 		// Test of whether or not the SerialListener will work
 		serialListener.listen();
 
-		motorCommander.halt();
+		motorCommander.halt(&robot);
 	}
 
 	return 0;
