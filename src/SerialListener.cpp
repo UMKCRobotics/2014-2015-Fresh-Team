@@ -27,6 +27,8 @@ void SerialListener::listen()
 			Logger::logMessage("Received from Arduino: ");
 			Logger::logMessage(received);
 
+			stopListening(); // Temp
+
 			// TODO: Push into queue
 
 			//queue.push(string(received)); 	// TODO: Will need to be expanded to accompany priority
