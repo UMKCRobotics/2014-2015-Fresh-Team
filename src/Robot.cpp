@@ -46,15 +46,12 @@ bool Robot::init(void)
 		if(!setPinDirection(PIN_STATUS_LIGHTS_GND, PIN_DIRECTION_OUT)) successful = false;
 
 		// Left Motor
-		if(!setPinDirection(PIN_MOTOR_E1, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L1, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L2, PIN_DIRECTION_OUT)) successful = false;
 
 		// Right Motor
-		if(!setPinDirection(PIN_MOTOR_E2, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L3, PIN_DIRECTION_OUT)) successful = false;
 		if(!setPinDirection(PIN_MOTOR_L4, PIN_DIRECTION_OUT)) successful = false;
-
 
 		if(successful) Logger::logMessage("\tComplete");
 		else Logger::logMessage("\tFailed");
@@ -75,12 +72,10 @@ bool Robot::init(void)
 		setPinState(PIN_STATUS_LIGHTS_GND, PIN_STATE_LOW);
 
 		// Left Motor
-		setPinState(PIN_MOTOR_E1, PIN_STATE_HIGH);
 		setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
 		setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 		
 		// Right Motor
-		setPinState(PIN_MOTOR_E2, PIN_STATE_HIGH);
 		setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
 		setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 
@@ -98,40 +93,21 @@ void Robot::go(void)
 {
 	Logger::logMessage("Go Button Pressed");
 
-	getRoundAndPart();
-
-	navigation.setRoundAndPart(round, part);
+	getRoundType();
 
 	Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
 }
 
-// This function gets the round and part from the potentiometers
-// connected to the board using the Arduino side
-// Returns INVALID when the received message from the Arduino is flawed
-// or just not correct. If the function does return INVALID, the Robot class 
-// should call it again
-void Robot::getRoundAndPart(void)
+void Robot::getRoundType(void)
 {
-	Logger::logMessage("Getting Round and Part...");
-
-	// TODO: get round and part values from analog pins
-
-	string response = "1:1"; 	// Will get them in the format
-								// round:part
-								// Navigation class will hold these for  us
-
-	// parse the round and part
-	string str_round, str_part = "";
-	str_round = response.substr(0, response.find(":"));
-	str_part = response.substr(response.find(":")+1);
-
-	if(!isdigit(str_round.at(0)) && !isdigit(str_part.at(0)))
+	if(getPinState(PIN_ROUND_TYPE_SWITCH) == PIN_STATE_LOW)
 	{
-		// TODO: request round and part again
+		isFastRound = true;
 	}
-
-	round = atoi(str_round.c_str());
-	part = atoi(str_part.c_str());
+	else
+	{
+		isFastRound = false;
+	}
 }
 
 // Returns the Pins.h defined constant for the direction
@@ -302,4 +278,9 @@ bool Robot::writePinFileContents(int pin, int property, int value)
 	}
 
 	return status;
+}
+
+bool Robot::getIsFastRound()
+{
+	return isFastRound;
 }
