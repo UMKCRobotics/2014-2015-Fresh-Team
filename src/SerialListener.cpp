@@ -27,7 +27,12 @@ void SerialListener::listen()
 			Logger::logMessage("Received from Arduino: ");
 			Logger::logMessage(received);
 
-			stopListening(); // Temp
+			if(received == "LineDetected")
+			{
+				Logger::logMessage("I hope I stop");
+
+				stopListening();
+			}
 
 			// TODO: Push into queue
 

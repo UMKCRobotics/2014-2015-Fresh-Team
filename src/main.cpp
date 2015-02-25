@@ -1,6 +1,7 @@
 #include "Robot.h"
 #include "MotorCommander.h"
 #include "Pins.h"
+#include "SerialListener.h"
 
 int main(void)
 {
@@ -23,6 +24,7 @@ int main(void)
 	else
 	{
 		Logger::logMessage("Startup complete; waiting for go button to be pressed");
+		SerialListener _serialListener(robot.arduinoSerial);
 
 		while(robot.getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)
 		{
@@ -33,10 +35,12 @@ int main(void)
 		robot.setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
 		robot.setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 
-		//robot.go();
-
-		// TEMP: Test motors
+		// TEMP: Test communication to stop
 		motorCommander.moveForward(&robot);
+
+		_serialListener.listen();
+
+		motorCommander.halt(&robot);
 	}
 
 	return 0;
