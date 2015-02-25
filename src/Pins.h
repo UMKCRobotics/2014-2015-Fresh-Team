@@ -45,7 +45,7 @@ const int PIN_DISTANCE_SENSOR_F 	= 5;
 const int PIN_DISTANCE_SENSOR_LF 	= 2;
 const int PIN_DISTANCE_SENSOR_LB 	= 3;
 const int PIN_DISTANCE_SENSOR_RF 	= 4;
-const int PIN_DISTANCE_SENSOR_RB 	= 1;
+const int PIN_DISTANCE_SENSOR_RB 	= 0;
 
 /********************************************
 Line Sensors
