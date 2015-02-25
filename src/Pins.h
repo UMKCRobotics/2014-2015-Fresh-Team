@@ -8,24 +8,21 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_E1 			= 134; //88; // 134 	136 	138
-const int PIN_MOTOR_L1			= 42; //56; 
-const int PIN_MOTOR_L2 			= 41; //104;
-
+const int PIN_MOTOR_L1 = 41;
+const int PIN_MOTOR_L2 = 42;
 // Right Motor
-const int PIN_MOTOR_E2 			= 135; //55; // 135 	137 	139
-const int PIN_MOTOR_L3 			= 18; //57;
-const int PIN_MOTOR_L4 			= 17; //105;
+const int PIN_MOTOR_L3 = 18;
+const int PIN_MOTOR_L4 = 17;
 
 /********************************************
 Input Pins
 - Reading current round and part
 - Telling the robot to start
 ********************************************/
-const int PIN_GO_BUTTON_TO 		= 126;
-const int PIN_GO_BUTTON_FROM 	= 133;
-const int PIN_GO_BUTTON_VCC 	= 135;
-const int PIN_GO_BUTTON_GND 	= 124;
+const int PIN_GO_BUTTON_TO 		= 19;
+const int PIN_GO_BUTTON_FROM 	= 1;
+const int PIN_GO_BUTTON_VCC 	= 9;
+const int PIN_GO_BUTTON_GND 	= 21;
 const int PIN_FAST_ROUND		= 7; 	// NOTE: This is connected through an analog pin
 
 /********************************************
@@ -54,9 +51,9 @@ Line Sensors
 - Arduino is respondible for telling the 
   Linux side when a line is seen
 ********************************************/
-const int PIN_LINE_SENSOR_L = 8;
-const int PIN_LINE_SENSOR_M = 10;
-const int PIN_LINE_SENSOR_R = 9;
+const int PIN_LINE_SENSOR_L 	= 8;
+const int PIN_LINE_SENSOR_M 	= 10;
+const int PIN_LINE_SENSOR_R 	= 9;
 
 /********************************************
 Output Pins
