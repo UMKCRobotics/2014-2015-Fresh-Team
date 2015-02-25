@@ -1,7 +1,6 @@
-#include "string.h"
-
 #include "../../src/Pins.h"
 #include "LineSensor.h"
+#include "Arduino.h"
 
 // --- Message Handling ---
 char incomingByte;
@@ -9,12 +8,12 @@ String receivedMessage;
 void handleMesage(String message);
 
 // --- Line Sensors ---
-LineSensor ls_left;
-LineSensor ls_middle;
-LineSensor ls_right;
+LineSensor ls_left(850);
+LineSensor ls_middle(800); // TEMP: Still need to calibrate
+LineSensor ls_right(900);
 
 // --- Distance Sensors ---
-int distanceThreshold = 0;
+int distanceThreshold = 150;
 
 void setup()
 {
@@ -32,24 +31,26 @@ void setup()
 	pinMode(PIN_LINE_SENSOR_L, INPUT);
 	pinMode(PIN_LINE_SENSOR_M, INPUT);
 	pinMode(PIN_LINE_SENSOR_R, INPUT);
+
+        Serial.println("Finished setting up pins");
 }
 
 void loop()
 {
 	// // If data is available on the Serial line,
-	// // read it a byte at a time until we are done
-	while(Serial.available())
-	{
-		incomingByte = (char)Serial.read();
-		receivedMessage += incomingByte;
-	}
+	// // read it a byte at a time until we are done // /home/umkc/robot/2014-2015-Fresh-Team//lib/2014-2015-Framework/src
+//	while(Serial.available())
+//	{
+//		incomingByte = (char)Serial.read();
+//		receivedMessage += incomingByte;
+//	}
 
 	// If we actually got more than a character, parse it
 	// If not, just throw it away
-	if(strlen(receivedMessage.c_str()) > 1)
+	if(receivedMessage.length() > 1)
 	{
-		// handleMessage(receivedMessage);
-		handleMessage("FindRHOpening");
+		handleMessage(receivedMessage);
+		// handleMessage("FindRHOpening");
 		receivedMessage = ""; // Still need to clear the message for next time
 	} 
 	else
@@ -68,8 +69,14 @@ void loop()
 //		Serial.print(ls_left.getLastReading());
 //		Serial.print("\t\t");
 //	 	Serial.println(ls_right.getLastReading());
-        Serial.println("LineDetected");
+                Serial.println("LineDetected");
 	}
+
+//        Serial.print(analogRead(PIN_LINE_SENSOR_L));
+//        Serial.print("\t\t\t");
+//        Serial.println(analogRead(PIN_LINE_SENSOR_R));
+
+        delay(100);
 }
 
 // Handles a message sent by the Linux side to the Arduino side
@@ -82,7 +89,7 @@ void handleMessage(String message)
 {
 	String response;
 
-	if(response.startsWith("ReadDistSensor "))
+	if(message.startsWith("ReadDistSensor "))
 	{
 		String sensor = message.substring(11);
 
@@ -107,8 +114,8 @@ void handleMessage(String message)
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
 		}
 	}
-	if(response.startsWith("FindRHOpening"))
-	{
+	else if(message.startsWith("FindRHOpening"))
+	{  
 		// Front
 		int distanceFront = analogRead(PIN_DISTANCE_SENSOR_F);
 
@@ -120,16 +127,18 @@ void handleMessage(String message)
 		int distanceRightFront = analogRead(PIN_DISTANCE_SENSOR_RF);
 		int distanceRightBack = analogRead(PIN_DISTANCE_SENSOR_RB);
 
+//                Serial.println("\tFinished reading distance sensors...");
+
 		// Check values and send Opening command with parameter/argument of where the opening is
-		if(distanceRightFront > distanceThreshold && distanceRightBack > distanceThreshold)
+		if((distanceRightFront + distanceRightBack)/2 < distanceThreshold)
 		{
 			Serial.println("Opening Right");
 		}
-		else if(distanceFront > distanceThreshold)
+		else if(distanceFront < distanceThreshold)
 		{
 			Serial.println("Opening Front");
 		}
-		else if(distanceLeftFront > distanceThreshold && distanceLeftBack > distanceThreshold)
+		else if((distanceLeftFront + distanceLeftBack)/2 < distanceThreshold)
 		{
 			Serial.println("Opening Left");
 		}
@@ -138,14 +147,14 @@ void handleMessage(String message)
 			Serial.println("Opening Back");
 		}
 	}
-	else if(response.startsWith("NotifyOfAngle "))
+	else if(message.startsWith("NotifyOfAngle "))
 	{
 		// This clause will send a message to the Linux side to stop turning when a designated
 		// angle has been reached (such as 90 or 180 degrees)
 
 		// Parse end angle from string
 		String str_endAngle = response.substring(14);
-		int endAngle = atoi(str_endAngle.c_str());
+		int endAngle = 90;//atoi(str_endAngle.toCharArray());
 		boolean angleReached = false;
 
 		// Reset lines passed so that the number of lines passed starts at 0
@@ -183,6 +192,4 @@ void handleMessage(String message)
 			}
 		}
 	}
-
-    delay(500);
 }

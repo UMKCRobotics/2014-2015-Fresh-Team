@@ -1,9 +1,8 @@
 #ifndef LINESENSOR_H
 #define LINESENSOR_H
 
-const int readingThreshold = 800; 	// Dummy reading theshold
-const int timingThreshold = 1000; 	// Microseconds between when one line
-									// sensor can see a line and the next
+const int timingThreshold = 10000; 	// Microseconds between when one line
+					// sensor can see a line and the next
 
 class LineSensor
 {
@@ -12,8 +11,10 @@ private:
 	long timeWhenDetected;
 	int lastReading;
 	int linesPassed;
+        int readingThreshold;
+        int consecutiveReadings;
 public:
-	LineSensor();
+	LineSensor(int _readingThreshold);
 
 	void update(float reading);
 	bool lineDetected(long compareTime);
