@@ -1,10 +1,10 @@
 #ifndef CARDINAL_H
 #define CARDINAL_H
 
-enum Cardinal { NORTH,
-		SOUTH,
-		EAST,
-		WEST
+enum Cardinal { EAST,
+		NORTH,
+		WEST,
+		SOUTH
 };
 
 #endif
