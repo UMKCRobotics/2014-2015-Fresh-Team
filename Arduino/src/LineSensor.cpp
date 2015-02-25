@@ -3,10 +3,10 @@
 
 LineSensor::LineSensor(int _readingThreshold)
 {
-        readingThreshold = _readingThreshold;
+    readingThreshold = _readingThreshold;
 	seesLine = false;
 	timeWhenDetected = 0L;
-        consecutiveReadings = 0;
+    consecutiveReadings = 0;
 }
 
 void LineSensor::update(float reading)
@@ -15,19 +15,19 @@ void LineSensor::update(float reading)
 
 	if(reading > readingThreshold)
 	{
-                consecutiveReadings++;	
+		consecutiveReadings++;	
   
 //                Serial.print("[");
 //                Serial.print(readingThreshold);
 //                Serial.print("] - ");
 //                Serial.println(reading);
                 
-                if(consecutiveReadings >= 3)
-                {              
-                    timeWhenDetected = micros();
-                    seesLine = true;
-                    //Serial.println("\t\tLine");
-                }
+        if(consecutiveReadings >= 3)
+        {              
+            timeWhenDetected = micros();
+            seesLine = true;
+            //Serial.println("\t\tLine");
+        }
 	}
 	else
 	{
@@ -35,7 +35,7 @@ void LineSensor::update(float reading)
 		if(seesLine)	linesPassed++;
 
 		seesLine = false;
-                consecutiveReadings = 0;
+        consecutiveReadings = 0;
 	}
 }
 

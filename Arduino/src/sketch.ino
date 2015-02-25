@@ -10,7 +10,7 @@ void handleMesage(String message);
 // --- Line Sensors ---
 LineSensor ls_left(850);
 LineSensor ls_middle(800); // TEMP: Still need to calibrate
-LineSensor ls_right(900);
+LineSensor ls_right(850);
 
 // --- Distance Sensors ---
 int distanceThreshold = 150;
@@ -32,25 +32,24 @@ void setup()
 	pinMode(PIN_LINE_SENSOR_M, INPUT);
 	pinMode(PIN_LINE_SENSOR_R, INPUT);
 
-        Serial.println("Finished setting up pins");
+    Serial.println("Finished setting up pins");
 }
 
 void loop()
 {
 	// // If data is available on the Serial line,
-	// // read it a byte at a time until we are done // /home/umkc/robot/2014-2015-Fresh-Team//lib/2014-2015-Framework/src
-//	while(Serial.available())
-//	{
-//		incomingByte = (char)Serial.read();
-//		receivedMessage += incomingByte;
-//	}
+	// // read it a byte at a time until we are done
+	while(Serial.available())
+	{
+		incomingByte = (char)Serial.read();
+		receivedMessage += incomingByte;
+	}
 
 	// If we actually got more than a character, parse it
 	// If not, just throw it away
 	if(receivedMessage.length() > 1)
 	{
 		handleMessage(receivedMessage);
-		// handleMessage("FindRHOpening");
 		receivedMessage = ""; // Still need to clear the message for next time
 	} 
 	else
@@ -66,17 +65,14 @@ void loop()
 	// the threshold of time
 	if(ls_left.lineDetected(ls_right.getTimeDetected()))
 	{
-//		Serial.print(ls_left.getLastReading());
-//		Serial.print("\t\t");
-//	 	Serial.println(ls_right.getLastReading());
-                Serial.println("LineDetected");
+        Serial.println("LineDetected");
 	}
 
-//        Serial.print(analogRead(PIN_LINE_SENSOR_L));
-//        Serial.print("\t\t\t");
-//        Serial.println(analogRead(PIN_LINE_SENSOR_R));
+//   	Serial.print(analogRead(PIN_LINE_SENSOR_L));
+//   	Serial.print("\t\t\t");
+//		Serial.println(analogRead(PIN_LINE_SENSOR_R));
 
-        delay(100);
+    delay(100);
 }
 
 // Handles a message sent by the Linux side to the Arduino side
@@ -91,28 +87,30 @@ void handleMessage(String message)
 
 	if(message.startsWith("ReadDistSensor "))
 	{
-		String sensor = message.substring(11);
+		String sensor = message.substring(15);
 
 		if(sensor == "F")
 		{
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_F);
 		}
-		else if(sensor == "LF")
+		else if(sensor.startsWith("LF"))
 		{
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LF);
 		}
-		else if(sensor == "LB")
+		else if(sensor.startsWith("LB"))
 		{
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LB);
 		}
-		else if(sensor == "RF")
+		else if(sensor.startsWith("RF"))
 		{
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RF);
 		}
-		else if(sensor == "RB")
+		else if(sensor.startsWith("RB"))
 		{
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
 		}
+
+		Serial.println(response);
 	}
 	else if(message.startsWith("FindRHOpening"))
 	{  
@@ -126,8 +124,6 @@ void handleMessage(String message)
 		// Right
 		int distanceRightFront = analogRead(PIN_DISTANCE_SENSOR_RF);
 		int distanceRightBack = analogRead(PIN_DISTANCE_SENSOR_RB);
-
-//                Serial.println("\tFinished reading distance sensors...");
 
 		// Check values and send Opening command with parameter/argument of where the opening is
 		if((distanceRightFront + distanceRightBack)/2 < distanceThreshold)
