@@ -100,7 +100,7 @@ void Robot::go(void)
 
 void Robot::getRoundType(void)
 {
-	if(getPinState(PIN_ROUND_TYPE_SWITCH) == PIN_STATE_LOW)
+	if(getPinState(PIN_FAST_ROUND) == PIN_STATE_LOW)
 	{
 		isFastRound = true;
 	}
