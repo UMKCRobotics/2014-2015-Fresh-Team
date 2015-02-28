@@ -38,7 +38,7 @@ int main(void)
 		// TEMP: Test communication to stop
 		motorCommander.moveForward(&robot);
 
-		_serialListener.listen();
+		robot.go();
 
 		motorCommander.halt(&robot);
 	}

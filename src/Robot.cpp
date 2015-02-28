@@ -93,9 +93,49 @@ void Robot::go(void)
 {
 	Logger::logMessage("Go Button Pressed");
 
-	getRoundType();
-
 	Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
+
+	char received[128];
+	int readStatus;
+
+	// TEMP: Testing to see if pass by value is messing with 
+	// the serial stream
+
+	while(true)
+	{
+		readStatus = arduinoSerial.ReadString(received, '\n', 128);
+
+		if(readStatus > 0)
+		{
+			Logger::logMessage("Received from Arduino: ");
+			Logger::logMessage(received);
+
+			break;
+
+			// TODO: Push into queue
+
+			//queue.push(string(received)); 	// TODO: Will need to be expanded to accompany priority
+											// For example: a container class to hold the command itself, priority code,
+											// and the appropriate callback
+		}
+		else if(readStatus == 0)
+		{
+			Logger::logMessage("Error: Timeout Reached");
+		}
+		else if(readStatus == -1)
+		{
+			Logger::logMessage("Error: Could not set timeout");
+		}
+		else if(readStatus == -2)
+		{
+			Logger::logMessage("Error: Encountered error while parsing byte");
+		}
+		else if(readStatus == -3)
+		{
+			Logger::logMessage("Error: Byte maximum is reached:");
+			Logger::logMessage(received);
+		}
+	}
 }
 
 void Robot::getRoundType(void)
