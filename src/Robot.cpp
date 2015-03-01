@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 using namespace std;
 
 Robot::Robot()
@@ -96,27 +97,36 @@ void Robot::go(void)
 	Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
 
 	char received[128];
+	string str_equiv;
 	int readStatus;
 
 	// TEMP: Testing to see if pass by value is messing with 
 	// the serial stream
 
+	arduinoSerial.FlushReceiver();
+
 	while(true)
 	{
-		readStatus = arduinoSerial.ReadString(received, '\n', 128);
+		readStatus = arduinoSerial.ReadString(received, '\n', 128, 0);
 
 		if(readStatus > 0)
 		{
-			Logger::logMessage("Received from Arduino: ");
+		//	Logger::logMessage("Received from Arduino: ");
 			Logger::logMessage(received);
 
-			break;
-
-			// TODO: Push into queue
-
-			//queue.push(string(received)); 	// TODO: Will need to be expanded to accompany priority
-											// For example: a container class to hold the command itself, priority code,
-											// and the appropriate callback
+			str_equiv = received;
+			str_equiv = str_equiv.substr(0, strlen(str_equiv.c_str())-2);			
+			
+			if(str_equiv  == "LineDetected")
+			{
+				Logger::logMessage("I should stop");
+				break;
+			}
+			else if(str_equiv == "Stop")
+			{
+				Logger::logMessage("I should stop because the Arduino says so");
+				break;
+			}
 		}
 		else if(readStatus == 0)
 		{
