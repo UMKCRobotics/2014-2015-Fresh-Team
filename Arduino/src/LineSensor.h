@@ -11,8 +11,8 @@ private:
 	long timeWhenDetected;
 	int lastReading;
 	int linesPassed;
-        int readingThreshold;
-        int consecutiveReadings;
+    int readingThreshold;
+    int consecutiveReadings;
 public:
 	LineSensor(int _readingThreshold);
 

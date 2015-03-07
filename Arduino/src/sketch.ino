@@ -8,12 +8,13 @@ String receivedMessage;
 void handleMesage(String message);
 
 // --- Line Sensors ---
-LineSensor ls_left(850);
-LineSensor ls_middle(800); // TEMP: Still need to calibrate
-LineSensor ls_right(850);
+LineSensor ls_left(880);
+LineSensor ls_middle(880);
+LineSensor ls_right(880);
 
 // --- Distance Sensors ---
 int distanceThreshold = 150;
+bool receivedEndline = false;
 
 void setup()
 {
@@ -39,40 +40,42 @@ void loop()
 {
 	// // If data is available on the Serial line,
 	// // read it a byte at a time until we are done
-	while(Serial.available())
+	while(Serial.available() && !receivedEndline)
 	{
 		incomingByte = (char)Serial.read();
 		receivedMessage += incomingByte;
+
+		if(incomingByte == '$') receivedEndline = true;
 	}
+
+	receivedEndline = false;
 
 	// If we actually got more than a character, parse it
 	// If not, just throw it away
-	if(receivedMessage.length() > 1)
+	if(receivedMessage.length() > 1 && receivedMessage.indexOf("$") != -1)
 	{
+		receivedMessage = receivedMessage.substring(0, strlen(receivedMessage.c_str()) - 2);
+
 		handleMessage(receivedMessage);
 		receivedMessage = ""; // Still need to clear the message for next time
-	} 
-	else
-	{
-		receivedMessage = "";
 	}
-
 	// Update 
 	ls_left.update(analogRead(PIN_LINE_SENSOR_L));
+	ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
 	ls_right.update(analogRead(PIN_LINE_SENSOR_R));
 
 	// Check and see if both of them have seen a line  within
 	// the threshold of time
 	if(ls_left.lineDetected(ls_right.getTimeDetected()))
 	{
-        Serial.println("LineDetected");
+		// Serial.print(ls_left.getLastReading());
+		// Serial.print("\t\t");
+		// Serial.println(ls_right.getLastReading());
+
+        Serial.print("LineDetected\r\n");
 	}
 
-//   	Serial.print(analogRead(PIN_LINE_SENSOR_L));
-//   	Serial.print("\t\t\t");
-//		Serial.println(analogRead(PIN_LINE_SENSOR_R));
-
-    delay(100);
+    delay(10);
 }
 
 // Handles a message sent by the Linux side to the Arduino side
@@ -84,6 +87,9 @@ void loop()
 void handleMessage(String message)
 {
 	String response;
+
+	Serial.print("Command: ");
+	Serial.println(message);
 
 	if(message.startsWith("ReadDistSensor "))
 	{
@@ -110,7 +116,7 @@ void handleMessage(String message)
 			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
 		}
 
-		Serial.println(response);
+		Serial.print(response + "\n");
 	}
 	else if(message.startsWith("FindRHOpening"))
 	{  
@@ -150,13 +156,17 @@ void handleMessage(String message)
 
 		// Parse end angle from string
 		String str_endAngle = response.substring(14);
-		int endAngle = 90;//atoi(str_endAngle.toCharArray());
+		int endAngle = -90;	//atoi(str_endAngle.toCharArray());
+		int numberOfRightAngles = abs(endAngle / 90);
 		boolean angleReached = false;
+		boolean passedLeadingSensorBefore = false;
 
 		// Reset lines passed so that the number of lines passed starts at 0
 		ls_left.resetLinesPassed();
 		ls_middle.resetLinesPassed();
 		ls_right.resetLinesPassed();
+
+		Serial.println("OK");
 
 		while(!angleReached)
 		{
@@ -164,27 +174,49 @@ void handleMessage(String message)
 			ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
 			ls_right.update(analogRead(PIN_LINE_SENSOR_R));
 
+			//Serial.println(ls_middle.getLinesPassed());
+
 			// Turning Right
 			if(endAngle < 0)
 			{
-				if(ls_right.getLinesPassed() == abs(endAngle / 90) &&
-				   ls_middle.getLinesPassed() == (abs(endAngle / 90) - 1) && 
-				   ls_middle.lineDetected(micros()))
+				if(ls_right.getLinesPassed() == numberOfRightAngles)
 				{
-					Serial.println("AngleReached");
-					angleReached = true;
+					// See if the leading line sensor has passed this line before
+					if(!passedLeadingSensorBefore)
+					{
+						// If not, then reset the middle line sensor and let it start scanning for the line
+						ls_middle.resetLinesPassed();
+						passedLeadingSensorBefore = true;
+					}
+					else
+					{
+						if(ls_middle.getLinesPassed() == numberOfRightAngles)
+						{
+							Serial.print("AngleReached\n");
+							angleReached = true;
+						}
+					}
 				}
 			}
 			// Turning Left
 			if(endAngle > 0)
 			{
-				if(ls_left.getLinesPassed() == abs(endAngle / 90) &&
-				   ls_middle.getLinesPassed() == (abs(endAngle / 90) - 1) && 
-				   ls_middle.lineDetected(micros()))
+				if(ls_left.getLinesPassed() == numberOfRightAngles)
 				{
-					Serial.println("AngleReached");
-					angleReached = true;
-				}
+					if(!passedLeadingSensorBefore)
+					{
+						ls_middle.resetLinesPassed();
+						passedLeadingSensorBefore = true;
+					}
+					else
+					{
+						if(ls_middle.getLinesPassed() == numberOfRightAngles)
+						{
+							Serial.print("AngleReached\n");
+							angleReached = true;
+						}
+					}
+				}	
 			}
 		}
 	}
