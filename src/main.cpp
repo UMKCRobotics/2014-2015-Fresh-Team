@@ -1,46 +1,39 @@
 #include "Robot.h"
-#include "MotorCommander.h"
 #include "Pins.h"
 #include "SerialListener.h"
+#include "Interface.h"
+#include "Logger.h"
 
 int main(void)
 {
 	Logger::setStream(&std::cout);
-	Logger::logMessage("Instantiating Robot...");
+	Logger::logMessage("Starting up...");
 
 	Robot robot;
-	Logger::logMessage("\tComplete");
+	SerialListener serialListener;
 	
-	Logger::logMessage("Instantiating MotorCommander...");
-	MotorCommander motorCommander;
-	Logger::logMessage("\tComplete");
-	
-	bool startupSuccessful = robot.init(); //robot.init(); TEMP
+	bool robotStartupSuccessful = robot.init(); //robot.init(); TEMP
+	bool serialListenerStartupSuccessful = serialListener.init();
 
-	if(!startupSuccessful)
+	if(!robotStartupSuccessful && !serialListenerStartupSuccessful)
 	{
 		Logger::logError("Startup failed");
 	}
 	else
 	{
 		Logger::logMessage("Startup complete; waiting for go button to be pressed");
-		SerialListener _serialListener(robot.arduinoSerial);
 
-		while(robot.getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)
+		while(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)
 		{
 			// Do nothing
 			usleep(50);
 		}
 
-		robot.setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
-		robot.setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
-
-		// TEMP: Test communication to stop
-		motorCommander.moveForward(&robot);
+		Interface::setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
 
 		robot.go();
 
-		motorCommander.halt(&robot);
+		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 	}
 
 	return 0;
