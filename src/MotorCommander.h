@@ -2,20 +2,19 @@
 #define MOTORCOMMANDER_H
 
 #include "Cardinal.h"
-#include "Robot.h"
 
 class MotorCommander
 {
 public:
 	MotorCommander();
 
-	void move(Robot* robot, Cardinal direction);
-	void turn(int degrees, Robot* robot);
-	void moveForward(Robot* robot);
-	void halt(Robot* robot);
+	void move(Cardinal currentOrientation, Cardinal direction);
+	void turn(int degrees);
+	void moveForward();
+	void halt();
 
 private:
-	void moveBackward(Robot* robot);
+	void moveBackward();
 };
 
 #endif

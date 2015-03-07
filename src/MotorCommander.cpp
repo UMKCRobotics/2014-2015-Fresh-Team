@@ -2,10 +2,7 @@
 #include "MotorCommander.h"
 #include "Pins.h"
 #include "Navigation.h"
-
-
-// Define pi here for sake of precision and easy of use
-const float pi = 3.14159265358979f;
+#include "Interface.h"
 
 MotorCommander::MotorCommander()
 {
@@ -13,72 +10,72 @@ MotorCommander::MotorCommander()
 }
 
 // Moves robot in desired cardinal direction
-void MotorCommander::move(Robot* robot, Cardinal direction)
+void MotorCommander::move(Cardinal currentOrientation, Cardinal direction)
 {
-    if (robot->navigation.getOrientation() == direction){
-        moveForward(robot);
+    if (currentOrientation == direction) {
+        moveForward();
     }
     else {
-        int x = (direction - robot->navigation.getOrientation());
+        int x = (direction - currentOrientation);
 
         if (x == 0)
         {
-            moveForward(robot);
+            moveForward();
         }
         else
         {
-            turn(x*90, robot);
+            turn(x*90);
         }
     }
 }
 
-void MotorCommander::turn(int degrees, Robot* robot)
+void MotorCommander::turn(int degrees)
 {
     if (degrees < 0)
     {
-        // left motor back, right foward
-        robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
-        robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+        // right motor back, left foward
+        Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+        Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-        robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
-        robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
     }
     else
     {
-        // right motor back, left motor foward
-        robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
-        robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+        // left motor back, right motor foward
+        Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 
-        robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
-        robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+        Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+        Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
     }
 
-    // TODO: Send message to Arduino to notify us of when the turn should stop
+    //arduinoSerial.WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
 }
 
-void MotorCommander::moveForward(Robot* robot)
+void MotorCommander::moveForward()
 {
-    robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
-    robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-    robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
-    robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
-void MotorCommander::moveBackward(Robot* robot)
+void MotorCommander::moveBackward()
 {
-    robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
-    robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 
-    robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
-    robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 }
 
-void MotorCommander::halt(Robot* robot)
+void MotorCommander::halt()
 {
-    robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
-    robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-    robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
-    robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
