@@ -2,14 +2,11 @@
 #include "MotorCommander.h"
 #include "Pins.h"
 #include "Navigation.h"
-
-
-// Define pi here for sake of precision and easy of use
-const float pi = 3.14159265358979f;
+#include "Interface.h"
 
 MotorCommander::MotorCommander()
 {
-  
+
 }
 
 
@@ -38,96 +35,72 @@ void MotorCommander::halt()
 
 
 // Moves robot in desired cardinal direction
-void MotorCommander::move(Robot* robot, Cardinal direction)
+void MotorCommander::move(Cardinal currentOrientation, Cardinal direction)
 {
-  if (robot->navigation.getOrientation() == direction){
-    moveForward(robot);
-  }
-  else {
-      int x = (direction - robot->navigation.getOrientation());
-   
-      if (x == 0){
-        moveForward(robot);
-      }
-      else
-      {
-        turn(x*90, robot);
-      }
-   }
+    if (currentOrientation == direction) {
+        moveForward();
+    }
+    else {
+        int x = (direction - currentOrientation);
+
+        if (x == 0)
+        {
+            moveForward();
+        }
+        else
+        {
+            turn(x*90);
+        }
+    }
 }
 
-void MotorCommander::turn(int degrees, Robot* robot)
+void MotorCommander::turn(int degrees)
 {
-  if (degrees < 0){
-    // left motor back, right foward
-    robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
-    robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+    if (degrees < 0)
+    {
+        // right motor back, left foward
+        Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+        Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-    robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
-    robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
-  }
- else{
-  // right motor back, left motor foward
-  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
-  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+    }
+    else
+    {
+        // left motor back, right motor foward
+        Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 
-  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
-  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
- }
-  
-  float desiredAngle = getAngle() + degrees;
-  
-  while(fabs(getAngle() - desiredAngle) >= 2)
-  {
-    // Nothing
-  }
-  
-  // Stop turning
-  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
-  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+        Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+        Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+    }
 
-  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
-  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+    //arduinoSerial.WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
 }
 
-void MotorCommander::moveForward(Robot* robot)
+void MotorCommander::moveForward()
 {
-  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
-  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
-  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
 
-void MotorCommander::moveBackward(Robot* robot)
+void MotorCommander::moveBackward()
 {
-  robot->setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
-  robot->setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
 
-  robot->setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
-  robot->setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 }
 
-// Returns the angle the robot currently is in degrees
-float MotorCommander::getAngle()
+void MotorCommander::halt()
 {
-	float heading;
-	float hx = 0; // Heading X
-	float hy = 0; // Heading Y
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
-	if (hy > 0)
-	{
-		heading = 90 - (atan(hx / hy) * (180 / pi));
-	}
-	else if (hy < 0)
-	{
-		heading = - (atan(hx / hy) * (180 / pi));
-	}
-	else // hy = 0
-	{
-		if (hx < 0) heading = 180;
-		else heading = 0;
-	}
-
-	return heading;
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
