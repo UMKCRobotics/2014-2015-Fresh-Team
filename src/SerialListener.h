@@ -2,6 +2,7 @@
 #define SERIALLISTENER_H
 
 #include "serialib.h"
+#include "MotorCommander.h"
 
 class SerialListener
 {
@@ -10,8 +11,9 @@ class SerialListener
 		serialib serial;
 
 	public:
-		SerialListener(serialib _serial);
-		void listen();
+		SerialListener();
+		bool init();
+		void listen(MotorCommander* motorCommander);
 		void stopListening();
 };
 

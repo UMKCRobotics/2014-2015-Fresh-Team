@@ -1,11 +1,27 @@
 #include "SerialListener.h"
 #include "Logger.h"
 
-SerialListener::SerialListener(serialib _serial)
+SerialListener::SerialListener()
 {
-	serial = _serial;
-
 	shouldListen = true;
+}
+
+bool SerialListener::init()
+{
+	bool successful = true;
+	int initStatus;
+
+	Logger::logMessage("Initiating Arduino SerialStream...");
+	initStatus = serial.Open("/dev/ttymxc3", 9600);
+
+	if(initStatus == 1) {
+		Logger::logMessage("\tComplete");
+	} else {
+		Logger::logMessage("\tFailed to Open");
+		successful = false;
+	}
+
+	return successful;
 }
 
 
@@ -13,10 +29,11 @@ SerialListener::SerialListener(serialib _serial)
 // Theaded function used to listen on the serial line between processors on the Linux side
 // serialib will need to be checked for thread safety: elsewhere in the code we will still
 // need to send messages
-void SerialListener::listen()
+void SerialListener::listen(MotorCommander* motorCommander)
 {
 	char received[128];
 	int readStatus;
+	string str_equiv, command, argument;
 
 	while(shouldListen)
 	{
@@ -24,21 +41,44 @@ void SerialListener::listen()
 
 		if(readStatus > 0)
 		{
-			Logger::logMessage("Received from Arduino: ");
-			Logger::logMessage(received);
-
-			if(received == "LineDetected")
+			str_equiv = received;
+			str_equiv = str_equiv.substr(0, strlen(str_equiv.c_str())-2);
+			
+			if(str_equiv == "LineDetected")
 			{
-				Logger::logMessage("I hope I stop");
+				Logger::logMessage("I'm in a new space");
 
-				stopListening();
+				// Let's figure out if we should stop
+				serial.WriteString("FindRHOpening$");
+			}
+			else if(str_equiv.find(" ") != -1)
+			{
+				// We have a command to interpret
+				command = str_equiv.substr(0, str_equiv.find(" "));
+				argument = str_equiv.substr(str_equiv.find(" ")+1);
+
+				if(command == "Opening" && argument != "Front")
+				{
+					motorCommander->halt();
+
+					// TODO: Interact with navigation and update direction and position
+
+					if(argument == "Right")
+					{
+						motorCommander->turn(-90);
+					}
+					else if(argument == "Left")
+					{
+						motorCommander->turn(90);
+					}
+					else if(argument == "Back")
+					{
+						motorCommander->turn(180);
+					}
+				}
 			}
 
 			// TODO: Push into queue
-
-			//queue.push(string(received)); 	// TODO: Will need to be expanded to accompany priority
-											// For example: a container class to hold the command itself, priority code,
-											// and the appropriate callback
 		}
 		else if(readStatus == 0)
 		{
