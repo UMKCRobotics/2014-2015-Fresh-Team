@@ -34,6 +34,7 @@ private:
 	*/
 
 	int position 				= 0; // position set to start position upon class instantiation
+	int prevPos					= 0; // previous position
 	const int startPosition 	= 48;
 	const int finalPosition 	= 9; 	// Hard coded value because
 										// we no longer have dials
@@ -43,16 +44,17 @@ private:
 
 public:
 	Navigation();
-	Cardinal getCardinalToNextNodeInPath(vector<Cardinal> openings);
+	Cardinal getNextMove(vector<Cardinal> openings);
 	bool loadPath();
 	bool storeCriticalPath();
-	void addCurrentNodePlusCardinalToPath(Cardinal node);
+	void addMove(Cardinal node);
+	void changePosition(int pos);
 
 	bool inFinalNode();
 
 	int getCurrentPosition();
 	int getFinalPosition();
-	Cardinal getOrientation(void);
+
 };
 
 #endif

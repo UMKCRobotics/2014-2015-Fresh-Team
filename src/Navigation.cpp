@@ -1,7 +1,7 @@
 #include "Navigation.h"
 #include <fstream>
 #include <string>
-#include <regex>
+#include <sstream>
 
 Navigation::Navigation()
 {
@@ -11,10 +11,41 @@ Navigation::Navigation()
 	{
 		int iround = std::stoi(ROUND, std::string::size_type);
 
-		changeRound(iround);
+		this.changeRound(iround);
 
 
 	});
+
+	CommandQueue::RegisterFunction("REPORTMOVE") [this](std::string MOVE)
+	{
+		//pass a string with the current position and last move ie. "2 NORTH"
+		std::stringstream ms;
+		ms << MOVE;
+
+		int pos;
+		std::string dir;
+		ms >> pos >> dir;
+
+		changePosition(pos);
+
+		switch(dir)
+		{
+			case "NORTH":
+			addMove(NORTH);
+			break;
+			case "EAST":
+			addMove(EAST);
+			break;
+			case "SOUTH":
+			addMove(SOUTH);
+			break;
+			case "WEST":
+			addMove(WEST);
+			break;
+		};
+
+	});
+
 }
 
 void Navigation::changeRound(int round)
@@ -69,9 +100,7 @@ bool Navigation::loadPath()
 			case "NORTH":
 			map.emplace(iround, NORTH);
 			break;
-			case "SOUTH":
-			map.emplace(iround, SOUTH);
-			break;
+			//south is not used.
 			case "EAST":
 			map.emplace(iround, EAST);
 			break;
@@ -94,8 +123,21 @@ bool Navigation::storeCriticalPath()
 
 	Logger::logMessage("Attempting to write path to file: " + filelocation);
 
-	ofstream outfile;
-	outfile.open(fileLocation, ofstream::out | ofstream::app);
+	std::ifstream cpFile(fileLocation, std::ifstream::in);
+	std::ostream outFile;
+
+	outFile.open(fileLocation + ".old", std::ofstream::out | std::ofstream::trunc);
+	if(cpFile.good())
+	{
+		Logger::logMessage(filelocation + " already exists, creating a backup!");
+
+		while(outFile << cpFile){/*do nothing*/};
+	}
+
+	cpFile.close();
+	outFile.close();
+
+	outFile.open(fileLocation, ofstream::out | ofstream::trunc);
 
 	if(!outfile)
 	{
@@ -104,22 +146,44 @@ bool Navigation::storeCriticalPath()
 
 	for(auto& position: map)
 	{
-		outfile << position.first << " " << position.second << endl;
+		outfile << position.second << endl;
 
 	}
 
 	outfile.close();
 
+	return true;
 }
 
-Cardinal Navigation::getCardinalToNextNodeInPath()
+void Navigation::changePosition(int pos)
+{
+	prevPos = position;
+	position = pos;
+}
+
+Cardinal Navigation::getNextMove()
 {
 	return map[position];
 }
 
-void Navigation::addCurrentNodePlusCardinalToPath(Cardinal node)
+//Dear past self: What is this, C#? addCurrentNodePlusCardinalToPath is a ridiculous name.
+//edit: so is getCardinalToNextNodeInPath
+void Navigation::addMove(Cardinal node) 
 {
-	map.emplace(position, node);
+	//checks map to ensure that the current node hasn't been added already and then acts appropriately
+	if(map.count(position) > 0)
+	{
+
+		for(auto it = map.end(); it != map.find(position); iter--)
+		{
+			map.erase(it);
+		}
+
+		return;
+	}
+
+
+	map.emplace(prevPos, node); //map stores the move to make from previous position to current position
 }
 
 bool Navigation::inFinalNode()
@@ -135,9 +199,4 @@ int Navigation::getCurrentPosition()
 int Navigation::getFinalPosition()
 {
 	return finalPosition;
-}
-
-Cardinal Navigation::getOrientation()
-{
-	return orientation;
 }
