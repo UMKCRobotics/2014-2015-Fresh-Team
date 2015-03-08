@@ -87,25 +87,28 @@ bool Navigation::loadPath()
 	}
 
 	std::string Round;
+	cardinal move;
+	int pos;
 
 	while(infile.good())
 	{
 		infile >> Round;
 		int iround = std::stoi(Round, &std::string::size_type);
 
-		infile >> cardinal;
+		infile >> pos >> cardinal;
 
 		switch(cardinal)
 		{
 			case "NORTH":
-			map.emplace(iround, NORTH);
+			map.emplace(pos, cardinal);
 			break;
-			//south is not used.
+			case "SOUTH":
+			map.emplace(pos, SOUTH);
 			case "EAST":
-			map.emplace(iround, EAST);
+			map.emplace(pos, EAST);
 			break;
 			case "WEST":
-			map.emplace(iround, WEST);
+			map.emplace(pos, WEST);
 			break;
 			default:
 				Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
@@ -130,8 +133,12 @@ bool Navigation::storeCriticalPath()
 	if(cpFile.good())
 	{
 		Logger::logMessage(filelocation + " already exists, creating a backup!");
+		outfile << cpFile << std::endl;
 
-		while(outFile << cpFile){/*do nothing*/};
+		while(outFile.good())
+		{
+			outfile << cpFile << " " << cpFile << std::endl;
+		}
 	}
 
 	cpFile.close();
@@ -146,7 +153,7 @@ bool Navigation::storeCriticalPath()
 
 	for(auto& position: map)
 	{
-		outfile << position.second << endl;
+		outfile << position.first << " " << position.second << endl;
 
 	}
 
@@ -175,7 +182,6 @@ void Navigation::addMove(Cardinal node)
 
 	if(nodeInMap != map.end())
 	{
-
 		for(auto it = map.end(); it != nodeInMap; iter--)
 		{
 			map.erase(it);
