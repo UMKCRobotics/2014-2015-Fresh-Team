@@ -171,10 +171,12 @@ Cardinal Navigation::getNextMove()
 void Navigation::addMove(Cardinal node) 
 {
 	//checks map to ensure that the current node hasn't been added already and then acts appropriately
-	if(map.count(position) > 0)
+	auto nodeInMap = map.find(position);
+
+	if(nodeInMap != map.end())
 	{
 
-		for(auto it = map.end(); it != map.find(position); iter--)
+		for(auto it = map.end(); it != nodeInMap; iter--)
 		{
 			map.erase(it);
 		}
