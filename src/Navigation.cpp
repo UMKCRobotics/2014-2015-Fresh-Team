@@ -1,21 +1,16 @@
 #include "Navigation.h"
-#include "CommandQueue.h"
-#include <fstream>
-#include <string>
-#include <sstream>
 
 Navigation::Navigation()
 {
 	position = startPosition;
 
-	commandqueue::registerFunction("CHANGEROUND", [this](std::string ROUND) //pass an integer as a string ie. "1" for round one.
+	commandqueue::registerFunction("CHANGEROUND", [this](std::string ROUND) 
 	{
+		//pass an integer as a string ie. "1" for round one.
 		std::string::size_type sz;
 		int iround = std::stoi(ROUND, &sz);
 
 		this->changeRound(iround);
-
-
 	});
 
 	commandqueue::registerFunction("REPORTMOVE", [this](std::string MOVE)
@@ -85,7 +80,6 @@ bool Navigation::loadPath()
 	while(infile.good())
 	{
 		infile >> Round;
-		//int iround = std::stoi(Round, &std::string::size_type);
 		string cardinal = "";
 
 		infile >> pos >> cardinal;
