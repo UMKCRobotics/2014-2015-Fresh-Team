@@ -7,7 +7,7 @@
 #include <functional>
 #include <map>
 #include "logger.h"
-#include "commandqueue.h"
+#include "CommandQueue.h"
 using namespace std;
 
 #include "Cardinal.h"
@@ -35,8 +35,8 @@ private:
 
 	int position 				= 0; // position set to start position upon class instantiation
 	int prevPos					= 0; // previous position
-	const int startPosition 	= 48;
-	const int finalPosition 	= 9; 	// Hard coded value because
+	int startPosition 			= 48;
+	int finalPosition 			= 9; 	// Hard coded value because
 										// we no longer have dials
 										// Must be recoded for each round
 
@@ -44,7 +44,7 @@ private:
 
 public:
 	Navigation();
-	Cardinal getNextMove(vector<Cardinal> openings);
+	Cardinal getNextMove();
 	bool loadPath();
 	bool storeCriticalPath();
 	void addMove(Cardinal node);

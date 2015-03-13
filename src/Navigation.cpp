@@ -1,4 +1,5 @@
 #include "Navigation.h"
+#include "CommandQueue.h"
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -7,16 +8,17 @@ Navigation::Navigation()
 {
 	position = startPosition;
 
-	CommandQueue::RegisterFunction("CHANGEROUND", [this](std::string ROUND) //pass an integer as a string ie. "1" for round one.
+	commandqueue::registerFunction("CHANGEROUND", [this](std::string ROUND) //pass an integer as a string ie. "1" for round one.
 	{
-		int iround = std::stoi(ROUND, std::string::size_type);
+		std::string::size_type sz;
+		int iround = std::stoi(ROUND, &sz);
 
 		this->changeRound(iround);
 
 
 	});
 
-	CommandQueue::RegisterFunction("REPORTMOVE", [this](std::string MOVE)
+	commandqueue::registerFunction("REPORTMOVE", [this](std::string MOVE)
 	{
 		//pass a string with the current position and last move ie. "2 NORTH"
 		std::stringstream ms;
@@ -28,22 +30,12 @@ Navigation::Navigation()
 
 		this->changePosition(pos);
 
-		switch(dir)
-		{
-			case "NORTH":
-			this->addMove(NORTH);
-			break;
-			case "EAST":
-			this->addMove(EAST);
-			break;
-			case "SOUTH":
-			this->addMove(SOUTH);
-			break;
-			case "WEST":
-			this->addMove(WEST);
-			break;
-		};
-
+		//c++ can't do string switches
+		if(dir == "NORTH") addMove(NORTH);
+		else if(dir == "EAST") addMove(EAST);
+		else if(dir == "SOUTH") addMove(SOUTH);
+		else if(dir == "WEST") addMove(WEST);
+		else Logger::logError("Improper direction provided: " + dir);
 	});
 
 }
@@ -54,18 +46,18 @@ void Navigation::changeRound(int round)
 	switch(round)
 	{
 		case 1:
-		startposition = 48;
-		finalposition = 9;
+		startPosition = 48;
+		finalPosition = 9;
 
 		break;
 		case 2:
-		startposition = 48
-		finalposition = 1;
+		startPosition = 48;
+		finalPosition = 1;
 
 		break;
 		case 3:
-		startposition = 49;
-		finalposition = 1;
+		startPosition = 49;
+		finalPosition = 1;
 
 		break;
 		default:
@@ -76,68 +68,61 @@ void Navigation::changeRound(int round)
 
 bool Navigation::loadPath()
 {
-	Logger::logMessage("Attempting to read path in file: " + filelocation);
+	Logger::logMessage("Attempting to read path in file: " + fileLocation);
 
-	std::ifstream infile(filelocation, std::ifstream::in);
+	std::ifstream infile(fileLocation, std::ifstream::in);
 	
 	if(!infile)
 	{
-		Logger::logError("COULD NOT READ THE FILE: " + filelocation);
+		Logger::logError("COULD NOT READ THE FILE: " + fileLocation);
 		return false;		
 	}
 
 	std::string Round;
-	cardinal move;
+	Cardinal move;
 	int pos;
 
 	while(infile.good())
 	{
 		infile >> Round;
 		//int iround = std::stoi(Round, &std::string::size_type);
+		string cardinal = "";
 
 		infile >> pos >> cardinal;
 
-		switch(cardinal)
+		if(cardinal == "NORTH") map.emplace(pos, NORTH);
+		else if(cardinal == "SOUTH") map.emplace(pos, SOUTH);
+		else if(cardinal == "EAST") map.emplace(pos, EAST);
+		else if(cardinal == "WEST") map.emplace(pos, WEST);
+		else
 		{
-			case "NORTH":
-			map.emplace(pos, cardinal);
-			break;
-			case "SOUTH":
-			map.emplace(pos, SOUTH);
-			case "EAST":
-			map.emplace(pos, EAST);
-			break;
-			case "WEST":
-			map.emplace(pos, WEST);
-			break;
-			default:
-				Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
-				ifstream.close();
-				return false;
+			Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
+			infile.close();
+			return false;
 		}
 	}
 
-	ifstream.close();
+	infile.close();
 
 }
 
 bool Navigation::storeCriticalPath()
 {
 
-	Logger::logMessage("Attempting to write path to file: " + filelocation);
+	Logger::logMessage("Attempting to write path to file: " + fileLocation);
 
 	std::ifstream cpFile(fileLocation, std::ifstream::in);
-	std::ostream outFile;
+	std::ofstream outFile;
 
 	outFile.open(fileLocation + ".old", std::ofstream::out | std::ofstream::trunc);
 	if(cpFile.good())
 	{
-		Logger::logMessage(filelocation + " already exists, creating a backup!");
-		outfile << cpFile << std::endl;
+		Logger::logMessage(fileLocation + " already exists, creating a backup!");
+		outFile << cpFile << std::endl;
 
 		while(outFile.good())
 		{
-			outfile << cpFile << " " << cpFile << std::endl;
+			outFile << cpFile << " " << cpFile << std::endl;
 		}
 	}
 
@@ -146,18 +131,18 @@ bool Navigation::storeCriticalPath()
 
 	outFile.open(fileLocation, ofstream::out | ofstream::trunc);
 
-	if(!outfile)
+	if(!outFile)
 	{
 		Logger::logError("COULD NOT WRITE TO FILE: " + fileLocation);
 	}
 
 	for(auto& position: map)
 	{
-		outfile << position.first << " " << position.second << endl;
+		outFile << position.first << " " << position.second << endl;
 
 	}
 
-	outfile.close();
+	outFile.close();
 
 	return true;
 }
@@ -182,7 +167,7 @@ void Navigation::addMove(Cardinal node)
 
 	if(nodeInMap != map.end())
 	{
-		for(auto it = map.end(); it != nodeInMap; iter--)
+		for(auto it = map.end(); it != nodeInMap; it--)
 		{
 			map.erase(it);
 		}
