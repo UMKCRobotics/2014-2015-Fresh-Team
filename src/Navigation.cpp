@@ -16,7 +16,7 @@ Navigation::Navigation()
 
 	});
 
-	CommandQueue::RegisterFunction("REPORTMOVE") [this](std::string MOVE)
+	CommandQueue::RegisterFunction("REPORTMOVE", [this](std::string MOVE)
 	{
 		//pass a string with the current position and last move ie. "2 NORTH"
 		std::stringstream ms;
