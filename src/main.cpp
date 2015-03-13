@@ -6,18 +6,21 @@
 int main(void)
 {
 	Logger::setStream(&std::cout);
-	Logger::logMessage("Instantiating Robot...");
+	Logger::logMessage("Starting up...");
 
 	Robot robot;
-	Logger::logMessage("\tComplete");
+
+	bool robotStartupSuccessful = robot.init(); //robot.init(); TEMP
 	
-	if(robot.init())
+	if(!robotStartupSuccessful)
+	{
+		Logger::logError("Startup failed");
+	}
+	else
 	{
 		Logger::logMessage("Startup successful");
 		while(robot.loop());
 		Logger::logMessage("Robot has finished")
-	} else{
-		Logger::logError("Startup failed");
 	}
 	
 	return 0;

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <functional>
 #include <map>
-#include "logger.h"
+#include "Logger.h"
 #include "CommandQueue.h"
 using namespace std;
 

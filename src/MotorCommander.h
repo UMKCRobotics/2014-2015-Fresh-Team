@@ -2,10 +2,9 @@
 #define MOTORCOMMANDER_H
 
 #include "Cardinal.h"
-#include "Robot.h"
-#include "iRobotBase.h"
+#include "serialib.h"
 
-class MotorCommander : iRobotBase 
+class MotorCommander
 {
 public:
 
@@ -13,7 +12,6 @@ public:
 	//use as LeftMotor.setState(FORWARD); RightMotor.setState(REVERSE); 
 	//as an example to turn right
 	enum state{FORWARD, REVERSE, STOPPED}; 
-
 
 	MotorCommander();
 
@@ -23,15 +21,11 @@ public:
 	void halt() override;
 
 	//Not Sure if we'll still need these
-	void move(Robot* robot, Cardinal direction);
-	void turn(int degrees, Robot* robot);
-	float getAngle();
-
-	void moveForward(Robot* robot);
+	void move(Cardinal direction, Cardinal currentOrientation, serialib arduinoSerial);
+	void turn(int degrees, serialib arduinoSerial);
 
 private:
-	
-	void moveBackward(Robot* robot);
+	void moveForward();
 };
 
 #endif

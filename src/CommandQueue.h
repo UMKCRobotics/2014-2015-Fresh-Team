@@ -11,7 +11,7 @@
 #include <utility>
 #include <string>
 #include "Logger.h"
-#include "command.h"
+#include "Command.h"
 
 class commandqueue
 {
