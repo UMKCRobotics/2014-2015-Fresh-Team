@@ -11,7 +11,7 @@ Navigation::Navigation()
 	{
 		int iround = std::stoi(ROUND, std::string::size_type);
 
-		this.changeRound(iround);
+		this->changeRound(iround);
 
 
 	});
@@ -26,21 +26,21 @@ Navigation::Navigation()
 		std::string dir;
 		ms >> pos >> dir;
 
-		changePosition(pos);
+		this->changePosition(pos);
 
 		switch(dir)
 		{
 			case "NORTH":
-			addMove(NORTH);
+			this->addMove(NORTH);
 			break;
 			case "EAST":
-			addMove(EAST);
+			this->addMove(EAST);
 			break;
 			case "SOUTH":
-			addMove(SOUTH);
+			this->addMove(SOUTH);
 			break;
 			case "WEST":
-			addMove(WEST);
+			this->addMove(WEST);
 			break;
 		};
 
@@ -93,7 +93,7 @@ bool Navigation::loadPath()
 	while(infile.good())
 	{
 		infile >> Round;
-		int iround = std::stoi(Round, &std::string::size_type);
+		//int iround = std::stoi(Round, &std::string::size_type);
 
 		infile >> pos >> cardinal;
 
