@@ -24,7 +24,6 @@ bool SerialListener::init()
 	return successful;
 }
 
-
 // listen (void)
 // Theaded function used to listen on the serial line between processors on the Linux side
 // serialib will need to be checked for thread safety: elsewhere in the code we will still
@@ -35,7 +34,7 @@ void SerialListener::listen(MotorCommander* motorCommander)
 	int readStatus;
 	string str_equiv, command, argument;
 
-	while(shouldListen)
+	if(shouldListen)
 	{
 		readStatus = serial.ReadString(received, '\n', 128);
 
@@ -104,6 +103,13 @@ void SerialListener::listen(MotorCommander* motorCommander)
 // Stops the listening on the serial line
 void SerialListener::stopListening()
 {
+	Logger::logMessage("Disabling SerialListner!");
 	shouldListen = false;
 	// TODO: Code to cleanup and possibly stop the thread
+}
+
+void SerialListener::beginListening()
+{
+	Loger::logMessage("Enabling SerialListener!");
+	shouldListen = true;
 }

@@ -20,6 +20,22 @@ Robot::Robot()
 bool Robot::init(void)
 {
 	bool successful = true;
+	int initStatus = 0;
+	
+	//initiate motorCommander
+	Logger::logMessage("Instantiating MotorCommander...");
+	motorCommander = new MotorCommander();
+	Logger::logMessage("\tComplete");
+
+	Logger::logMessage("Initiating Arduino SerialStream...");
+	initStatus = arduinoSerial.Open("/dev/ttymxc3", 9600);
+
+	if(initStatus == 1) {
+		Logger::logMessage("\tComplete");
+	} else {
+		Logger::logMessage("\tFailed to Open");
+		successful = false;
+	}
 
 	if(successful)
 	{
@@ -73,7 +89,53 @@ bool Robot::init(void)
 		Logger::logMessage("\tComplete");
 	}
 
+	//Begin Serial Listener
+	serialListener = new serialListener(arduinoSerial);
+
 	// TODO: Any other needed initiation
+
+	if(!successful) return successful;
+
+	State = WAITFORGO;
+
+	commandqueue::registerFunction(0, "halt", [this](std::string arguments){
+			Logger::logMessage("Robot halting: " + arguments);
+		this->halt();
+	});
+
+	commandqueue::registerFunction(99, "print", [](std::string arguments){
+		cout << "Asked to print: " << arguments << endl;
+	});
+
+	return successful;
+}
+
+// wait for go is continuously called until the go button is called
+void Robot::waitforgo(void)
+{
+	getRoundAndPart();
+
+	if(!(getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
+	{
+		Logger::logMessage("Go Button Pressed");
+		Interface::setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
+		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
+		//navigation.setRoundAndPart(round, part);
+		Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
+		state = RUNNING;
+	}
+
+}
+
+void Robot::running(void)
+{
+	serialListener.listen();
+	CommandQueue::runNextCommand();
+
+}
+
+void Robot::halted(void)
+{
 
 	return successful;
 }
@@ -82,15 +144,38 @@ bool Robot::init(void)
 // is pressed at the beginning of the part
 void Robot::go()
 {
-	Logger::logMessage("Go Button Pressed");
-	motorCommander.moveForward();
 
-	Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
+	switch(state)
+	{
+		case WAITFORGO:
+
+		waitforgo(void);
+
+		break;
+
+		case RUNNING:
+
+		running(void);
+
+		break;
+
+		case HALTED:
+
+		halted(void);
+
+		break;
+	}
+}
+
+void Robot::halt()
+{
+
+	state = HALTED;
 }
 
 void Robot::getRoundType(void)
 {
-	if(Interface::getPinState(PIN_FAST_ROUND) == PIN_STATE_LOW)
+	if(Interface::getPinState(PIN_ROUND_TYPE_SWITCH) == PIN_STATE_LOW)
 	{
 		isFastRound = true;
 	}

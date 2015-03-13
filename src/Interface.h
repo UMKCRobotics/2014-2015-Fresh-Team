@@ -13,10 +13,8 @@ public:
 		static Interface instance;
 		return instance;
 	}
-
 	static int getPinDirection(int pin);
 	static int getPinState(int pin);
-
 	static void setPinState(int pin, int state);
 	static bool setPinDirection(int pin, int state);
 

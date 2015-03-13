@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Robot.h"
 #include "Pins.h"
 #include "SerialListener.h"
@@ -10,6 +11,7 @@ int main(void)
 	Logger::logMessage("Starting up...");
 
 	Robot robot;
+
 	SerialListener serialListener;
 	
 	bool robotStartupSuccessful = robot.init(); //robot.init(); TEMP

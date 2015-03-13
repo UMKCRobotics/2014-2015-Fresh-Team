@@ -1,6 +1,7 @@
 #ifndef SERIALLISTENER_H
 #define SERIALLISTENER_H
 
+#include <string>
 #include "serialib.h"
 #include "MotorCommander.h"
 

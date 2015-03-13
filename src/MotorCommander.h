@@ -2,19 +2,29 @@
 #define MOTORCOMMANDER_H
 
 #include "Cardinal.h"
+#include "serialib.h"
 
 class MotorCommander
 {
 public:
+	//state declaration for the motors
+	//use as LeftMotor.setState(FORWARD); RightMotor.setState(REVERSE); 
+	//as an example to turn right
+	enum state{FORWARD, REVERSE, STOPPED}; 
+
 	MotorCommander();
 
-	void move(Cardinal currentOrientation, Cardinal direction);
-	void turn(int degrees);
-	void moveForward();
-	void halt();
+	bool init() override;
+
+	void loop() override;
+	void halt() override;
+
+	//Not Sure if we'll still need these
+	void move(Cardinal direction, Cardinal currentOrientation, serialib arduinoSerial);
+	void turn(int degrees, serialib arduinoSerial);
 
 private:
-	void moveBackward();
+	void moveForward();
 };
 
 #endif
