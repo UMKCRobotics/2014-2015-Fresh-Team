@@ -3,9 +3,8 @@
 
 #include "Cardinal.h"
 #include "Robot.h"
-#include "iRobotBase.h"
 
-class MotorCommander : iRobotBase 
+class MotorCommander
 {
 public:
 

@@ -1,5 +1,5 @@
 #include <regex>
-#include <math>
+#include <math.h>
 #include "MotorCommander.h"
 #include "Pins.h"
 #include "Navigation.h"
@@ -69,10 +69,6 @@ MotorCommander::MotorCommander()
     }
     this.move(direction, orientation);
   });
-
-
-
-  
 }
 
 
@@ -84,14 +80,9 @@ bool MotorCommander::init()
   return true;
 }
 
-
-
-
-
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Cardinal direction, Cardinal orientation)
 {
-
 
   if (robot->navigation.getOrientation() == direction){
     moveForward(robot);

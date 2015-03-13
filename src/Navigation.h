@@ -4,13 +4,15 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <functional>
 #include <map>
-#include "logger.h"
+#include <fstream>
+#include <string>
+#include <sstream>
+#include "Logger.h"
 #include "CommandQueue.h"
-using namespace std;
-
 #include "Cardinal.h"
+
+using namespace std;
 
 class Navigation
 {
