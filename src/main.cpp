@@ -14,7 +14,7 @@ int main(void)
 	
 	bool robotStartupSuccessful = robot.init(); //robot.init(); TEMP
 
-	if(!robotStartupSuccessful && !serialListenerStartupSuccessful)
+	if(!robotStartupSuccessful)
 	{
 		Logger::logError("Startup failed");
 	}

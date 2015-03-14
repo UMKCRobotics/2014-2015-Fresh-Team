@@ -15,7 +15,8 @@ class SerialListener
 		bool init();
 		void listen(MotorCommander* motorCommander);
 		void stopListening();
-		serialib getSerialStream();
+		void beginListening();
+		serialib* getSerialStream();
 };
 
 #endif

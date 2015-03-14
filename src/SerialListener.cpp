@@ -50,7 +50,7 @@ void SerialListener::listen(MotorCommander* motorCommander)
 				// Let's figure out if we should stop
 				serial.WriteString("FindRHOpening$");
 			}
-			else if(str_equiv.find(" ") != -1)
+			else if(str_equiv.find(" ") != std::string::npos)
 			{
 				// We have a command to interpret
 				command = str_equiv.substr(0, str_equiv.find(" "));
@@ -58,8 +58,6 @@ void SerialListener::listen(MotorCommander* motorCommander)
 
 				if(command == "Opening" && argument != "Front")
 				{
-					motorCommander->halt();
-
 					// TODO: Interact with navigation and update direction and position
 
 					if(argument == "Right")
@@ -110,11 +108,11 @@ void SerialListener::stopListening()
 
 void SerialListener::beginListening()
 {
-	Loger::logMessage("Enabling SerialListener!");
+	Logger::logMessage("Enabling SerialListener!");
 	shouldListen = true;
 }
 
-serialib SerialListener::getSerialStream()
+serialib* SerialListener::getSerialStream()
 {
-	return serial;
+	return &serial;
 }

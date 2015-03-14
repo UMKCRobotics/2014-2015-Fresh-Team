@@ -77,7 +77,6 @@ bool Navigation::loadPath()
 	}
 
 	std::string Round;
-	Cardinal move;
 	int pos;
 
 	while(infile.good())

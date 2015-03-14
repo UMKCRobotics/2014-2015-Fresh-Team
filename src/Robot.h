@@ -18,7 +18,7 @@ private:
 	Round round = ONE;
 	//Part part;
 
-	MotorCommander motorCommander;
+	MotorCommander* motorCommander;
 	SerialListener serialListener;
 
 	void getRoundType(void);

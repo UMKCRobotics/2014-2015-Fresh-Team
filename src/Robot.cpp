@@ -3,8 +3,7 @@
 #include "MotorCommander.h"
 #include "Interface.h"
 #include "Logger.h"
-
-#include <string.h>
+#include <string>
 using namespace std;
 
 Robot::Robot()
@@ -20,14 +19,13 @@ Robot::Robot()
 bool Robot::init(void)
 {
 	bool successful = true;
-	int initStatus = 0;
 
 	Logger::logMessage("Initiating SerialListener...");
 
 	if(serialListener.init()) {
 		Logger::logMessage("\tComplete");
 
-		successful = motorCommander.init(&serialListener.getSerialStream());
+		successful = motorCommander->init(serialListener.getSerialStream());
 	} else {
 		Logger::logMessage("\tFailed to Open");
 		successful = false;
@@ -90,13 +88,13 @@ bool Robot::init(void)
 	if(!successful) return successful;
 
 	state = WAITFORGO;
-
-	commandqueue::registerFunction(0, "halt", [this](std::string arguments){
+	
+	commandqueue::registerFunction("halt", [this](std::string arguments){
 			Logger::logMessage("Robot halting: " + arguments);
 		this->halt();
 	});
 
-	commandqueue::registerFunction(99, "print", [](std::string arguments){
+	commandqueue::registerFunction("print", [](std::string arguments){
 		cout << "Asked to print: " << arguments << endl;
 	});
 
@@ -106,7 +104,7 @@ bool Robot::init(void)
 // wait for go is continuously called until the go button is called
 void Robot::waitforgo(void)
 {
-	if(!(getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
+	if(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
 	{
 		Logger::logMessage("Go Button Pressed");
 		Interface::setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
@@ -120,42 +118,47 @@ void Robot::waitforgo(void)
 
 void Robot::running(void)
 {
-	serialListener.listen();
-	CommandQueue::runNextCommand();
+	serialListener.listen(motorCommander);
+	commandqueue::runNextCommand();
 
 }
 
 void Robot::halted(void)
 {
-
-	return successful;
 }
 
 // go is called when the start button of the robot
 // is pressed at the beginning of the part
-void Robot::go()
+bool Robot::loop()
 {
 
 	switch(state)
 	{
+		case INIT:
+		//init should have been handled before entering this loop...
+		break;
+
 		case WAITFORGO:
 
-		waitforgo(void);
+		waitforgo();
 
 		break;
 
 		case RUNNING:
 
-		running(void);
+		running();
 
 		break;
 
 		case HALTED:
 
-		halted(void);
+		halted();
 
 		break;
 	}
+	return true; 
+	//todo: boolean is required to end loop
+	//fix the code so it uses bools insted of voids
 }
 
 void Robot::halt()

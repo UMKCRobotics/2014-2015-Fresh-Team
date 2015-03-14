@@ -144,8 +144,6 @@ if GetOption("clean"):
 	subprocess.check_call(['rm','-rf',"build/"])
 
 if not GetOption("clean"):
-	print('Building FRAMEWORK...')
-	framework.build()
 	print('Building PROGRAM...')
-	program.build_link(['framework']+OPENCV_FORMATTED_LIBS)
+	program.build()
 
