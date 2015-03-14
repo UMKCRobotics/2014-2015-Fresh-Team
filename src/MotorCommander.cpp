@@ -17,70 +17,74 @@ MotorCommander::MotorCommander()
 
     std::regex regex("([A-Z])+");
 
-    auto cardinalsiter = std::sregex_iterator(teststring.begin(), teststring.end(), regex);
+    auto cardinalsiter = std::sregex_iterator(arguments.begin(), arguments.end(), regex);
 
+    // Get Direction
     std::smatch match = *cardinalsiter;
     if(!match.empty())
     {
-
-      switch(match.str())
-      {
-        case "NORTH":
-          direction = NORTH;
-          break;
-        case "SOUTH":
-          direction = SOUTH;
-          break;
-        case "EAST":
-          direction = EAST;
-          break;
-        case "WEST":
-          direction = WEST;
-          break;
-        default:
-          Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + match.str());
-          return;
-      } 
-
+        if(match.str() == "NORTH")
+        {
+            direction = NORTH;
+        }
+        else if(match.str() == "SOUTH")
+        {
+            direction = SOUTH;
+        }
+        else if(match.str() == "EAST")
+        {
+            direction = EAST;
+        }
+        else if(match.str() == "WEST")
+        {
+            direction = WEST;
+        }
+        else
+        {
+            Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + match.str());            
+        }
     }
-    match = *(++cardinalsiter);
 
+    // Get Orientation
+    match = *(++cardinalsiter);
     if(!match.empty())
     {
-      switch(match.str())
-      {
-        case "NORTH":
-          orientation = NORTH;
-          break;
-        case "SOUTH":
-          orientation = SOUTH;
-          break;
-        case "EAST":
-          orientation = EAST;
-          break;
-        case "WEST":
-          orientation = WEST;
-          break;
-        default:
-          Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + match.str());
-          return;
-      }
+        if(match.str() == "NORTH")
+        {
+            orientation = NORTH;
+        }
+        else if(match.str() == "SOUTH")
+        {
+            orientation = SOUTH;
+        }
+        else if(match.str() == "EAST")
+        {
+            orientation = EAST;
+        }
+        else if(match.str() == "WEST")
+        {
+            orientation = WEST;
+        }
+        else
+        {
+            Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + match.str());            
+        }
     }
-    this.move(direction, orientation);
+        
+    this->move(direction, orientation);
   });
 }
 
-
 //return true if init was successful
-bool MotorCommander::init()
+bool MotorCommander::init(serialib* _arduinoSerial)
 {
-
-  Logger::logMessage("Motor Commander initialized successfully");
-  return true;
+    Logger::logMessage("Motor Commander initialized successfully");
+    arduinoSerial = _arduinoSerial;
+    return true;
 }
 
 // Moves robot in desired cardinal direction
-void MotorCommander::move(Cardinal direction, Cardinal currentOrientation, serialib arduinoSerial)
+void MotorCommander::move(Cardinal direction, Cardinal currentOrientation)
 {
   if (currentOrientation == direction){
     moveForward();
@@ -88,11 +92,11 @@ void MotorCommander::move(Cardinal direction, Cardinal currentOrientation, seria
   else {
         int x = (direction - currentOrientation);
    
-        turn(x*90, arduinoSerial);
+        turn(x*90);
    }
 }
 
-void MotorCommander::turn(int degrees, serialib arduinoSerial)
+void MotorCommander::turn(int degrees)
 {
   if (degrees > 0){
         // left motor back, right foward
@@ -112,7 +116,7 @@ void MotorCommander::turn(int degrees, serialib arduinoSerial)
     }
 
     // Send Arduino a message to notify us when we are done turning
-    arduinoSerial.WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
+    arduinoSerial->WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
 }
 
 void MotorCommander::moveForward()

@@ -25,6 +25,7 @@ bool Robot::init(void)
 	//initiate motorCommander
 	Logger::logMessage("Instantiating MotorCommander...");
 	motorCommander = new MotorCommander();
+
 	Logger::logMessage("\tComplete");
 
 	Logger::logMessage("Initiating Arduino SerialStream...");
@@ -32,6 +33,8 @@ bool Robot::init(void)
 
 	if(initStatus == 1) {
 		Logger::logMessage("\tComplete");
+
+		successful = motorCommander.init(arduinoSerial);
 	} else {
 		Logger::logMessage("\tFailed to Open");
 		successful = false;

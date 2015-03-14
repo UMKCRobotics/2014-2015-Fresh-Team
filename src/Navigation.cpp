@@ -1,4 +1,7 @@
 #include "Navigation.h"
+#include <sstream>
+#include <iostream>
+#include <fstream>
 
 Navigation::Navigation()
 {
@@ -98,6 +101,7 @@ bool Navigation::loadPath()
 
 	infile.close();
 
+	return true;
 }
 
 bool Navigation::storeCriticalPath()
@@ -123,7 +127,7 @@ bool Navigation::storeCriticalPath()
 	cpFile.close();
 	outFile.close();
 
-	outFile.open(fileLocation, ofstream::out | ofstream::trunc);
+	outFile.open(fileLocation, std::ofstream::out | std::ofstream::trunc);
 
 	if(!outFile)
 	{

@@ -14,17 +14,18 @@ public:
 
 	MotorCommander();
 
-	bool init() override;
+	bool init(serialib* _arduinoSerial);
 
-	void loop() override;
-	void halt() override;
+	void loop();
+	void halt();
 
 	//Not Sure if we'll still need these
-	void move(Cardinal direction, Cardinal currentOrientation, serialib arduinoSerial);
-	void turn(int degrees, serialib arduinoSerial);
+	void move(Cardinal direction, Cardinal currentOrientation);
+	void turn(int degrees);
 
 private:
 	void moveForward();
+	serialib* arduinoSerial;
 };
 
 #endif
