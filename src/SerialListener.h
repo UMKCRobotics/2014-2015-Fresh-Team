@@ -1,7 +1,6 @@
 #ifndef SERIALLISTENER_H
 #define SERIALLISTENER_H
 
-#include <string>
 #include "serialib.h"
 #include "MotorCommander.h"
 
@@ -13,7 +12,7 @@ class SerialListener
 
 	public:
 		SerialListener();
-		bool init();
+		bool init(serialib* arduinoSerial);
 		void listen(MotorCommander* motorCommander);
 		void stopListening();
 };

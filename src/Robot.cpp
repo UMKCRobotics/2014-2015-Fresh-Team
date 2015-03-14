@@ -21,12 +21,6 @@ bool Robot::init(void)
 {
 	bool successful = true;
 	int initStatus = 0;
-	
-	//initiate motorCommander
-	Logger::logMessage("Instantiating MotorCommander...");
-	motorCommander = new MotorCommander();
-
-	Logger::logMessage("\tComplete");
 
 	Logger::logMessage("Initiating Arduino SerialStream...");
 	initStatus = arduinoSerial.Open("/dev/ttymxc3", 9600);
@@ -92,14 +86,11 @@ bool Robot::init(void)
 		Logger::logMessage("\tComplete");
 	}
 
-	//Begin Serial Listener
-	serialListener = new serialListener(arduinoSerial);
-
 	// TODO: Any other needed initiation
 
 	if(!successful) return successful;
 
-	State = WAITFORGO;
+	state = WAITFORGO;
 
 	commandqueue::registerFunction(0, "halt", [this](std::string arguments){
 			Logger::logMessage("Robot halting: " + arguments);
@@ -116,8 +107,6 @@ bool Robot::init(void)
 // wait for go is continuously called until the go button is called
 void Robot::waitforgo(void)
 {
-	getRoundAndPart();
-
 	if(!(getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
 	{
 		Logger::logMessage("Go Button Pressed");
