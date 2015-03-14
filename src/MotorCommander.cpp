@@ -1,4 +1,4 @@
-#include <regex>
+#include <sstream>
 #include <math.h>
 #include "MotorCommander.h"
 #include "Pins.h"
@@ -14,63 +14,57 @@ MotorCommander::MotorCommander()
   {
     Cardinal direction;
     Cardinal orientation;
-
-    std::regex regex("([A-Z])+");
-
-    auto cardinalsiter = std::sregex_iterator(arguments.begin(), arguments.end(), regex);
+    string dir = "";
+    string ori = "";
+    std::stringstream ss;
+    ss << arguments;
 
     // Get Direction
-    std::smatch match = *cardinalsiter;
-    if(!match.empty())
+    ss >> dir;
+    if(dir == "NORTH")
     {
-        if(match.str() == "NORTH")
-        {
-            direction = NORTH;
-        }
-        else if(match.str() == "SOUTH")
-        {
-            direction = SOUTH;
-        }
-        else if(match.str() == "EAST")
-        {
-            direction = EAST;
-        }
-        else if(match.str() == "WEST")
-        {
-            direction = WEST;
-        }
-        else
-        {
-            Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + match.str());            
-        }
+        direction = NORTH;
+    }
+    else if(dir == "SOUTH")
+    {
+        direction = SOUTH;
+    }
+    else if(dir == "EAST")
+    {
+        direction = EAST;
+    }
+    else if(dir == "WEST")
+    {
+        direction = WEST;
+    }
+    else
+    {
+        Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + dir);            
     }
 
     // Get Orientation
-    match = *(++cardinalsiter);
-    if(!match.empty())
+    ss >> ori;
+    if(ori == "NORTH")
     {
-        if(match.str() == "NORTH")
-        {
-            orientation = NORTH;
-        }
-        else if(match.str() == "SOUTH")
-        {
-            orientation = SOUTH;
-        }
-        else if(match.str() == "EAST")
-        {
-            orientation = EAST;
-        }
-        else if(match.str() == "WEST")
-        {
-            orientation = WEST;
-        }
-        else
-        {
-            Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + match.str());            
-        }
+        orientation = NORTH;
     }
-        
+    else if(ori == "SOUTH")
+    {
+        orientation = SOUTH;
+    }
+    else if(ori == "EAST")
+    {
+        orientation = EAST;
+    }
+    else if(ori == "WEST")
+    {
+        orientation = WEST;
+    }
+    else
+    {
+        Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + ori);            
+    }
+    
     this->move(direction, orientation);
   });
 }
