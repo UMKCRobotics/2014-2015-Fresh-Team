@@ -30,7 +30,7 @@ int main(void)
 
 		Interface::setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
 
-		robot.go();
+		while(robot.loop());
 
 		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 	}

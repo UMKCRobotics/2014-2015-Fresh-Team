@@ -12,9 +12,10 @@ class SerialListener
 
 	public:
 		SerialListener();
-		bool init(serialib* arduinoSerial);
+		bool init();
 		void listen(MotorCommander* motorCommander);
 		void stopListening();
+		serialib getSerialStream();
 };
 
 #endif

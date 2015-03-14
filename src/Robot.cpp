@@ -22,13 +22,12 @@ bool Robot::init(void)
 	bool successful = true;
 	int initStatus = 0;
 
-	Logger::logMessage("Initiating Arduino SerialStream...");
-	initStatus = arduinoSerial.Open("/dev/ttymxc3", 9600);
+	Logger::logMessage("Initiating SerialListener...");
 
-	if(initStatus == 1) {
+	if(serialListener.init()) {
 		Logger::logMessage("\tComplete");
 
-		successful = motorCommander.init(arduinoSerial);
+		successful = motorCommander.init(&serialListener.getSerialStream());
 	} else {
 		Logger::logMessage("\tFailed to Open");
 		successful = false;
@@ -167,7 +166,7 @@ void Robot::halt()
 
 void Robot::getRoundType(void)
 {
-	if(Interface::getPinState(PIN_ROUND_TYPE_SWITCH) == PIN_STATE_LOW)
+	if(Interface::getPinState(PIN_FAST_ROUND) == PIN_STATE_LOW)
 	{
 		isFastRound = true;
 	}

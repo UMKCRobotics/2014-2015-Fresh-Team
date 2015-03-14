@@ -13,6 +13,7 @@ private:
 	enum Round{ONE, TWO, THREE};
 	enum Part{}; //unsure what the parts are at the moment, can be added later
 
+	bool isFastRound;
 	State state = INIT;
 	Round round = ONE;
 	//Part part;

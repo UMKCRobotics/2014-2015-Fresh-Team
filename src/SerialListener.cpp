@@ -6,11 +6,20 @@ SerialListener::SerialListener()
 	shouldListen = true;
 }
 
-bool SerialListener::init(serialib* arduinoSerial)
+bool SerialListener::init()
 {
 	bool successful = true;
-	
-	serial = arduinoSerial;
+	int initStatus;
+
+	Logger::logMessage("Initiating Arduino SerialStream...");
+	initStatus = serial.Open("/dev/ttymxc3", 9600);
+
+	if(initStatus == 1) {
+		Logger::logMessage("\tComplete");
+	} else {
+		Logger::logMessage("\tFailed to Open");
+		successful = false;
+	}
 
 	return successful;
 }
@@ -103,4 +112,9 @@ void SerialListener::beginListening()
 {
 	Loger::logMessage("Enabling SerialListener!");
 	shouldListen = true;
+}
+
+serialib SerialListener::getSerialStream()
+{
+	return serial;
 }
