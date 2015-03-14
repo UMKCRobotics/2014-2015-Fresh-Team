@@ -11,11 +11,8 @@ int main(void)
 	Logger::logMessage("Starting up...");
 
 	Robot robot;
-
-	SerialListener serialListener;
 	
 	bool robotStartupSuccessful = robot.init(); //robot.init(); TEMP
-	bool serialListenerStartupSuccessful = serialListener.init();
 
 	if(!robotStartupSuccessful && !serialListenerStartupSuccessful)
 	{
