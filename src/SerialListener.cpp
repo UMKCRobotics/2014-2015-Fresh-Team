@@ -34,7 +34,7 @@ void SerialListener::listen(MotorCommander* motorCommander)
 	int readStatus;
 	string str_equiv, command, argument;
 
-	if(shouldListen)
+	if(serial.Peek() > 0) // Check and see if there are any bytes to read
 	{
 		readStatus = serial.ReadString(received, '\n', 128);
 
