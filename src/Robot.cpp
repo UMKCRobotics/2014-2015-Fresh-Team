@@ -90,12 +90,25 @@ bool Robot::init(void)
 	state = WAITFORGO;
 	
 	commandqueue::registerFunction("halt", [this](std::string arguments){
-			Logger::logMessage("Robot halting: " + arguments);
+		Logger::logMessage("Robot halting: " + arguments);
 		this->halt();
 	});
 
 	commandqueue::registerFunction("print", [](std::string arguments){
 		cout << "Asked to print: " << arguments << endl;
+	});
+
+	commandqueue::registerFunction("LineDetected", [this](std::string arguments){
+		if(isFastRound)
+		{
+			// Follow navigation's directions
+			// TODO: For now, let's make sure all of these systems work and do a little test
+			state = WAITFORGO;
+		}
+		else
+		{
+			// TODO: Take a picture of the wall and parse it
+		}
 	});
 
 	return successful;
