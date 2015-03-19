@@ -163,7 +163,7 @@ bool Robot::loop()
 
 void Robot::halt()
 {
-
+	motorCommander->halt();
 	state = HALTED;
 }
 

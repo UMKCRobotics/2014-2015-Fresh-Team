@@ -121,3 +121,12 @@ void MotorCommander::moveForward()
     Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
     Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
 }
+
+void MotorCommander::halt()
+{
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+}
