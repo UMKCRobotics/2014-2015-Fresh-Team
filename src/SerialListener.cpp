@@ -1,5 +1,6 @@
 #include "SerialListener.h"
 #include "Logger.h"
+#include "CommandQueue.h"
 
 SerialListener::SerialListener()
 {
@@ -20,6 +21,12 @@ bool SerialListener::init()
 		Logger::logMessage("\tFailed to Open");
 		successful = false;
 	}
+	
+	commandqueue::registerFunction("SerialSend", [this](string message){
+			Logger::logMessage("SerialSend:");
+			Logger::logMessage((message+"$\n").c_str());
+			this->serial.WriteString((message+"$\n").c_str());
+		});
 
 	return successful;
 }
@@ -46,9 +53,19 @@ void SerialListener::listen(MotorCommander* motorCommander)
 			if(str_equiv == "LineDetected")
 			{
 				Logger::logMessage("I'm in a new space");
+				commandqueue::sendNewCommand(1, "LineDetected", "");
 
 				// Let's figure out if we should stop
-				serial.WriteString("FindRHOpening$");
+				// serial.WriteString("FindRHOpening$");
+			}
+			else if(str_equiv == "AngleReached")
+			{
+				Logger::logMessage("Apparently I'm done turning. Who knew?");
+				commandqueue::sendNewCommand(1, "AngleReached", "");
+			}
+			else if(str_equiv == "OK")
+			{
+				Logger::logMessage("I know I'm turning");
 			}
 			else if(str_equiv.find(" ") != std::string::npos)
 			{

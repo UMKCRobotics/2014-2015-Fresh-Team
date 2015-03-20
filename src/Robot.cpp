@@ -25,7 +25,7 @@ bool Robot::init(void)
 	if(serialListener.init()) {
 		Logger::logMessage("\tComplete");
 
-		successful = motorCommander->init(serialListener.getSerialStream());
+		successful = motorCommander->init();
 	} else {
 		Logger::logMessage("\tFailed to Open");
 		successful = false;
@@ -99,15 +99,21 @@ bool Robot::init(void)
 	});
 
 	commandqueue::registerFunction("LineDetected", [this](std::string arguments){
+		Logger::logMessage("Ah, a line");
+		
 		if(isFastRound)
 		{
 			// Follow navigation's directions
 			// TODO: For now, let's make sure all of these systems work and do a little test
 			state = WAITFORGO;
+			Logger::logMessage("Fast Round");
+			commandqueue::sendNewCommand(1, "MOVE", "SOUTH NORTH");
 		}
 		else
 		{
 			// TODO: Take a picture of the wall and parse it
+			Logger::logMessage("Not a Fast Round");
+			commandqueue::sendNewCommand(1, "MOVE", "SOUTH NORTH");
 		}
 	});
 
@@ -124,6 +130,9 @@ void Robot::waitforgo(void)
 		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 		//navigation.setRoundAndPart(round, part);
 		Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
+		
+		commandqueue::sendNewCommand(1, "MOVE", "NORTH NORTH");
+		
 		state = RUNNING;
 	}
 

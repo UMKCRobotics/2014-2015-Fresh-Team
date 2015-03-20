@@ -2,7 +2,6 @@
 #define MOTORCOMMANDER_H
 
 #include "Cardinal.h"
-#include "serialib.h"
 
 class MotorCommander
 {
@@ -14,7 +13,7 @@ public:
 
 	MotorCommander();
 
-	bool init(serialib* _arduinoSerial);
+	bool init();
 
 	void loop();
 	void halt();
@@ -25,7 +24,7 @@ public:
 
 private:
 	void moveForward();
-	serialib* arduinoSerial;
+	void moveBackward();
 };
 
 #endif

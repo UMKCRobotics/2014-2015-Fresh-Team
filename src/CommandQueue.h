@@ -46,7 +46,7 @@ private:
 			return c;
 		}
 
-		Logger::logMessage("CommandQueue was empty");
+//		Logger::logMessage("CommandQueue was empty");
 		
 		c.priority = 999;
 		c.commanddata = "";
@@ -61,7 +61,7 @@ private:
 			if(FunctionMap.count(commandType) > 0) return true;
 		}
 
-		Logger::logError(commandType + " Does not extist in the FunctionMap!");
+		Logger::logMessage(commandType + " Does not exist in the FunctionMap!");
 		return false;
 	}
 
@@ -72,7 +72,7 @@ private:
 		//if the commandtype doesn't exist create it first
 		if(!commandTypeExists(commandtype))
 		{
-			//Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
+			Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
 			FunctionMap.emplace(commandtype, std::vector<std::function<void(std::string)>>());
 		}
 
@@ -127,14 +127,16 @@ public:
 	static void runNextCommand() //in commands from functionmap
 	{
 		command b = commandqueue::getinstance().poptop();
+		if(b.commandtype != "EMPTY")
+		{
+			std::vector<std::function<void(std::string)>> commandToRun = commandqueue::getinstance().getCommandsOfType(b.commandtype);
 
-		std::vector<std::function<void(std::string)>> commandToRun = commandqueue::getinstance().getCommandsOfType(b.commandtype);
+			if(commandToRun.empty()) return;
 
-		if(commandToRun.empty()) return;
-
-		std::for_each(commandToRun.begin(), commandToRun.end(), [b](std::function<void(std::string)> actWith){
-			actWith(b.commanddata);
-		});
+			std::for_each(commandToRun.begin(), commandToRun.end(), [b](std::function<void(std::string)> actWith){
+				actWith(b.commanddata);
+			});
+		}
 	}
 
 };

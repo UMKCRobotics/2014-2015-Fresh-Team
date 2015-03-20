@@ -4,13 +4,22 @@
 #include "Pins.h"
 #include "Navigation.h"
 #include "Interface.h"
+#include "CommandQueue.h"
 
 // Define pi here for sake of precision and easy of use
 const float pi = 3.14159265358979f;
 
 MotorCommander::MotorCommander()
 {
-  commandqueue::registerFunction("MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
+  
+}
+
+//return true if init was successful
+bool MotorCommander::init()
+{
+    //Logger::logMessage("Motor Commander initialized successfully");
+    //arduinoSerial = _arduinoSerial;
+commandqueue::registerFunction("MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
   {
     Cardinal direction;
     Cardinal orientation;
@@ -67,13 +76,10 @@ MotorCommander::MotorCommander()
     
     this->move(direction, orientation);
   });
-}
-
-//return true if init was successful
-bool MotorCommander::init(serialib* _arduinoSerial)
-{
-    Logger::logMessage("Motor Commander initialized successfully");
-    arduinoSerial = _arduinoSerial;
+  
+  commandqueue::registerFunction("AngleReached", [this](std::string arguments){
+	 this->moveForward(); 
+  });
     return true;
 }
 
@@ -85,8 +91,15 @@ void MotorCommander::move(Cardinal direction, Cardinal currentOrientation)
   }
   else {
         int x = (direction - currentOrientation);
-   
-        turn(x*90);
+        
+        if(abs(x) == 180)
+        {
+			moveBackward();
+		}
+		else
+		{
+			turn(x*90);
+		}
    }
 }
 
@@ -110,7 +123,8 @@ void MotorCommander::turn(int degrees)
     }
 
     // Send Arduino a message to notify us when we are done turning
-    arduinoSerial->WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
+    //arduinoSerial->WriteString(("NotifyOfAngle " + to_string(degrees)).c_str());
+    commandqueue::sendNewCommand(1, "SerialSend", ("NotifyOfAngle " + to_string(degrees)).c_str());
 }
 
 void MotorCommander::moveForward()
@@ -120,6 +134,15 @@ void MotorCommander::moveForward()
 
     Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
     Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
+}
+
+void MotorCommander::moveBackward()
+{
+    Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
+
+    Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
+    Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
 }
 
 void MotorCommander::halt()
