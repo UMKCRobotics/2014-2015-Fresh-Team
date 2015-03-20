@@ -6,6 +6,10 @@
 char incomingByte;
 String receivedMessage;
 void handleMesage(String message);
+bool CurrentlySeesLine = false;
+bool BumpDetected = false;
+long TimeOfLastDetect = 0;
+
 
 // --- Line Sensors ---
 LineSensor ls_left(880);
@@ -66,15 +70,41 @@ void loop()
 
 	// Check and see if both of them have seen a line  within
 	// the threshold of time
-	if(ls_left.lineDetected(ls_right.getTimeDetected()))
-	{
-		// Serial.print(ls_left.getLastReading());
-		// Serial.print("\t\t");
-		// Serial.println(ls_right.getLastReading());
 
-        Serial.print("LineDetected\r\n");
-	}
+        if(ls_left.lineDetected(ls_right.getTimeDetected()))
+        {
+          
+            if(!CurrentlySeesLine && !BumpDetected){
+              long j = micros();
+              long delta = j - TimeOfLastDetect;
+              TimeOfLastDetect = j;
+              if(delta > 530000)
+              {
+            	 // Serial.print(ls_left.getLastReading());
+                	  // Serial.print("\t\t");
+  	          // Serial.println(ls_right.getLastReading());
+                   Serial.print("Time Sense Last DetectLine (uS): ");
+                   Serial.print(delta);
+                   Serial.print("\r\n");
+                   CurrentlySeesLine = true;
 
+                   Serial.print("LineDetected\r\n");
+              }else if(delta < 530000){
+                   if(!BumpDetected)
+                   {                     
+                     Serial.print("BumpDetected\r\n");
+                     BumpDetected = true;
+                   }
+                   
+               }
+              
+            }        
+         }else{
+           CurrentlySeesLine = false;
+           
+           BumpDetected = false;
+         }
+         
     delay(10);
 }
 
