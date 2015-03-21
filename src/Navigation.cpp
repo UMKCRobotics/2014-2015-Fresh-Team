@@ -7,7 +7,7 @@ Navigation::Navigation()
 {
 	position = startPosition;
 
-	commandqueue::registerFunction("CHANGEROUND", [this](std::string ROUND) 
+	commandqueue::registerFunction("ChangeRound", [this](std::string ROUND) 
 	{
 		//pass an integer as a string ie. "1" for round one.
 		std::string::size_type sz;
@@ -16,7 +16,7 @@ Navigation::Navigation()
 		this->changeRound(iround);
 	});
 
-	commandqueue::registerFunction("REPORTMOVE", [this](std::string MOVE)
+	commandqueue::registerFunction("ReportMove", [this](std::string MOVE)
 	{
 		//pass a string with the current position and last move ie. "2 NORTH"
 		std::stringstream ms;
@@ -72,7 +72,7 @@ bool Navigation::loadPath()
 	
 	if(!infile)
 	{
-		Logger::logError("COULD NOT READ THE FILE: " + fileLocation);
+		Logger::logError("Could not read file: " + fileLocation);
 		return false;		
 	}
 
@@ -92,7 +92,7 @@ bool Navigation::loadPath()
 		else if(cardinal == "WEST") map.emplace(pos, WEST);
 		else
 		{
-			Logger::logError("COULD NOT READ CARDINAL FROM FILE: " + cardinal);
+			Logger::logError("Could not read cardinal from file: " + cardinal);
 			infile.close();
 			return false;
 		}
@@ -130,7 +130,7 @@ bool Navigation::storeCriticalPath()
 
 	if(!outFile)
 	{
-		Logger::logError("COULD NOT WRITE TO FILE: " + fileLocation);
+		Logger::logError("Could not write to file: " + fileLocation);
 	}
 
 	for(auto& position: map)
@@ -176,6 +176,11 @@ void Navigation::addMove(Cardinal node)
 	map.emplace(prevPos, node); //map stores the move to make from previous position to current position
 }
 
+void Navigation::setOrientation(Cardinal newOrientation)
+{
+	orientation = newOrientation;
+}
+
 bool Navigation::inFinalNode()
 {
 	return position == finalPosition;
@@ -189,4 +194,9 @@ int Navigation::getCurrentPosition()
 int Navigation::getFinalPosition()
 {
 	return finalPosition;
+}
+
+Cardinal Navigation::getCurrentOrientation()
+{
+	return orientation;
 }

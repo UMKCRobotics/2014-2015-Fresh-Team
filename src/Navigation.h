@@ -15,7 +15,7 @@ using namespace std;
 class Navigation
 {
 private:
-	const string fileLocation = "/home/Ubuntu/Documents/path.txt"; // Dummy value
+	const string fileLocation = "/home/ubuntu/path.txt"; // Dummy value
 	Cardinal orientation;
 	std::map<int, Cardinal> map; //holds position and direction
 
@@ -49,12 +49,13 @@ public:
 	bool storeCriticalPath();
 	void addMove(Cardinal node);
 	void changePosition(int pos);
+	void setOrientation(Cardinal newOrientation);
 
 	bool inFinalNode();
 
 	int getCurrentPosition();
 	int getFinalPosition();
-
+	Cardinal getCurrentOrientation();
 };
 
 #endif
