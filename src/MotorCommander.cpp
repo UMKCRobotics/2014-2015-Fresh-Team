@@ -6,12 +6,13 @@
 #include "Interface.h"
 #include "CommandQueue.h"
 
-// Define pi here for sake of precision and easy of use
-const float pi = 3.14159265358979f;
-
 MotorCommander::MotorCommander()
 {
-  
+  commandqueue::registerFunction("ChangeRoundPhase", [this](std::string PHASE)
+  {
+	  if(PHASE == "true") this->isFastRound = true;
+	  else this->isFastRound = false;
+  });
 }
 
 //return true if init was successful
@@ -19,10 +20,9 @@ bool MotorCommander::init()
 {
     //Logger::logMessage("Motor Commander initialized successfully");
     //arduinoSerial = _arduinoSerial;
-commandqueue::registerFunction("MOVE", [this](std::string arguments) //add arguments as: "direction orientation" where 
+commandqueue::registerFunction("MOVE", [this](std::string arguments) //add argument as: "direction"
   {
     Cardinal direction;
-    Cardinal orientation;
     string dir = "";
     string ori = "";
     std::stringstream ss;
@@ -52,7 +52,7 @@ commandqueue::registerFunction("MOVE", [this](std::string arguments) //add argum
     }
 
     // Get Orientation
-    ss >> ori;
+    /*ss >> ori;
     if(ori == "NORTH")
     {
         orientation = NORTH;
@@ -72,14 +72,15 @@ commandqueue::registerFunction("MOVE", [this](std::string arguments) //add argum
     else
     {
         Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + ori);            
-    }
+    }*/
     
-    this->move(direction, orientation);
-  });
+    this->move(direction, navigation.getCurrentOrientation());
+	});
   
-  commandqueue::registerFunction("AngleReached", [this](std::string arguments){
-	 this->moveForward(); 
-  });
+	commandqueue::registerFunction("AngleReached", [this](std::string arguments){
+		this->moveForward(); 
+	});
+	
     return true;
 }
 
@@ -90,17 +91,32 @@ void MotorCommander::move(Cardinal direction, Cardinal currentOrientation)
     moveForward();
   }
   else {
-        int x = (direction - currentOrientation);
-        
-        if(abs(x) == 180)
-        {
-			moveBackward();
-		}
-		else
-		{
-			turn(x*90);
-		}
+        int steps = (direction - currentOrientation);
+		turn(steps*90);
    }
+   
+   // Update position nwith regards to the current position and the 
+   // direction we are going
+   switch(direction)
+   {
+	   case NORTH:
+			navigation.changePosition(navigation.getCurrentPosition() - 7);
+	   break;
+	   
+	   case SOUTH:
+			navigation.changePosition(navigation.getCurrentPosition() + 7);
+	   break;
+	   
+	   case EAST:
+			navigation.changePosition(navigation.getCurrentPosition() - 1);
+	   break;
+	   
+	   case WEST:
+			navigation.changePosition(navigation.getCurrentPosition() + 1);
+	   break;
+   }
+   
+   if(!isFastRound()) navigation.addMove(direction);
 }
 
 void MotorCommander::turn(int degrees)
@@ -113,7 +129,7 @@ void MotorCommander::turn(int degrees)
         Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
         Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_HIGH);
     }
-    else{
+    else {
         // right motor back, left motor foward
         Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
         Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);

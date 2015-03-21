@@ -2,6 +2,7 @@
 #define MOTORCOMMANDER_H
 
 #include "Cardinal.h"
+#include "Navigation.h"
 
 class MotorCommander
 {
@@ -12,6 +13,7 @@ public:
 	enum state{FORWARD, REVERSE, STOPPED}; 
 
 	MotorCommander();
+	Navigation navigation;
 
 	bool init();
 
@@ -25,6 +27,8 @@ public:
 private:
 	void moveForward();
 	void moveBackward();
+	
+	bool isFastRound;
 };
 
 #endif
