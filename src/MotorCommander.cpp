@@ -18,105 +18,85 @@ MotorCommander::MotorCommander()
 //return true if init was successful
 bool MotorCommander::init()
 {
-    //Logger::logMessage("Motor Commander initialized successfully");
-    //arduinoSerial = _arduinoSerial;
-commandqueue::registerFunction("MOVE", [this](std::string arguments) //add argument as: "direction"
-  {
-    Cardinal direction;
-    string dir = "";
-    string ori = "";
-    std::stringstream ss;
-    ss << arguments;
-
-    // Get Direction
-    ss >> dir;
-    if(dir == "NORTH")
-    {
-        direction = NORTH;
-    }
-    else if(dir == "SOUTH")
-    {
-        direction = SOUTH;
-    }
-    else if(dir == "EAST")
-    {
-        direction = EAST;
-    }
-    else if(dir == "WEST")
-    {
-        direction = WEST;
-    }
-    else
-    {
-        Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + dir);            
-    }
-
-    // Get Orientation
-    /*ss >> ori;
-    if(ori == "NORTH")
-    {
-        orientation = NORTH;
-    }
-    else if(ori == "SOUTH")
-    {
-        orientation = SOUTH;
-    }
-    else if(ori == "EAST")
-    {
-        orientation = EAST;
-    }
-    else if(ori == "WEST")
-    {
-        orientation = WEST;
-    }
-    else
-    {
-        Logger::logError("The string sent to 'MOVE' does not contain an acceptable orientation: " + ori);            
-    }*/
-    
-    this->move(direction, navigation.getCurrentOrientation());
+	//Logger::logMessage("Motor Commander initialized successfully");
+	//arduinoSerial = _arduinoSerial;
+	commandqueue::registerFunction("MOVE", [this](std::string arguments) //add argument as: "direction"
+	{
+		Cardinal direction;
+		string dir = "";
+		string ori = "";
+		std::stringstream ss;
+		ss << arguments;
+		
+		// Get Direction
+		ss >> dir;
+		
+		if(dir == "NORTH")
+		{
+			direction = NORTH;
+		}
+		else if(dir == "SOUTH")
+		{
+			direction = SOUTH;
+		}
+		else if(dir == "EAST")
+		{
+			direction = EAST;
+		}
+		else if(dir == "WEST")
+		{
+			direction = WEST;
+		}
+		else
+		{
+			Logger::logError("The string sent to 'MOVE' does not contain an acceptable direction: " + dir);            
+		}
+		
+		this->move(direction, navigation.getCurrentOrientation());
 	});
-  
-	commandqueue::registerFunction("AngleReached", [this](std::string arguments){
+		
+	commandqueue::registerFunction("AngleReached", [this](std::string arguments) 
+	{
 		this->moveForward(); 
 	});
 	
-    return true;
+	// TEMP: For debugging purposes and testing turn handling
+	commandqueue::sendNewCommand(1, "SerialSend", "NotifyOfAngle 90");
+	
+	return true;
 }
 
 // Moves robot in desired cardinal direction
 void MotorCommander::move(Cardinal direction, Cardinal currentOrientation)
 {
-  if (currentOrientation == direction){
+  if (currentOrientation == direction)
+  {
     moveForward();
-  }
-  else {
+  } else {
         int steps = (direction - currentOrientation);
 		turn(steps*90);
    }
-   
-   // Update position nwith regards to the current position and the 
-   // direction we are going
+      
    switch(direction)
    {
 	   case NORTH:
-			navigation.changePosition(navigation.getCurrentPosition() - 7);
-	   break;
-	   
+           commandqueue::sendNewCommand(2, "ReportMove", "NORTH" );
+           break;
 	   case SOUTH:
-			navigation.changePosition(navigation.getCurrentPosition() + 7);
-	   break;
-	   
-	   case EAST:
-			navigation.changePosition(navigation.getCurrentPosition() - 1);
-	   break;
-	   
+	       commandqueue::sendNewCommand(2, "ReportMove", "SOUTH");
+	       break;
 	   case WEST:
-			navigation.changePosition(navigation.getCurrentPosition() + 1);
-	   break;
-   }
-   
-   if(!isFastRound()) navigation.addMove(direction);
+	       commandqueue::sendNewCommand(2, "ReportMove", "WEST");
+	       break;
+	   case EAST:
+	       commandqueue::sendNewCommand(2, "ReportMove", "EAST");
+	       break;
+	   default:
+	       Logger::logError("Unknown Cardinal provided in MotorCommander::move");
+	       break;
+	}   
+     
+   if(!isFastRound) navigation.addMove(direction);
 }
 
 void MotorCommander::turn(int degrees)
