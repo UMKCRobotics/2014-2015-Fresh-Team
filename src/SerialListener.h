@@ -8,8 +8,9 @@ class SerialListener
 {
 	private:
 		bool shouldListen;
-		serialib serial;
-
+		bool noMessage;
+		serialib serial;		
+		
 	public:
 		SerialListener();
 		bool init();
