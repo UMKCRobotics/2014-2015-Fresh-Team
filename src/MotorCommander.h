@@ -2,7 +2,7 @@
 #define MOTORCOMMANDER_H
 
 #include "Cardinal.h"
-#include "serialib.h"
+#include "Navigation.h"
 
 class MotorCommander
 {
@@ -13,8 +13,9 @@ public:
 	enum state{FORWARD, REVERSE, STOPPED}; 
 
 	MotorCommander();
+	Navigation navigation;
 
-	bool init(serialib* _arduinoSerial);
+	bool init();
 
 	void loop();
 	void halt();
@@ -25,7 +26,9 @@ public:
 
 private:
 	void moveForward();
-	serialib* arduinoSerial;
+	void moveBackward();
+	
+	bool isFastRound;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "SerialListener.h"
 #include "Logger.h"
+#include "CommandQueue.h"
 
 SerialListener::SerialListener()
 {
@@ -10,7 +11,8 @@ bool SerialListener::init()
 {
 	bool successful = true;
 	int initStatus;
-
+	noMessage = false; //assumes there might be a message.
+	
 	Logger::logMessage("Initiating Arduino SerialStream...");
 	initStatus = serial.Open("/dev/ttymxc3", 9600);
 
@@ -20,6 +22,13 @@ bool SerialListener::init()
 		Logger::logMessage("\tFailed to Open");
 		successful = false;
 	}
+	
+	commandqueue::registerFunction("SerialSend", [this](string message){
+			Logger::logMessage("SerialSend:");
+			Logger::logMessage((message+"$\n").c_str());
+			this->serial.WriteString((message+"$\n").c_str());
+			Logger::logMessage("I sent the SerialSend");
+		});
 
 	return successful;
 }
@@ -34,21 +43,30 @@ void SerialListener::listen(MotorCommander* motorCommander)
 	int readStatus;
 	string str_equiv, command, argument;
 
-	if(shouldListen)
+	if(serial.Peek() > 0) // Check and see if there are any bytes to read
 	{
+		Logger::logMessage("New message from Arduino");
 		readStatus = serial.ReadString(received, '\n', 128);
+
+		Logger::logMessage(received);
 
 		if(readStatus > 0)
 		{
 			str_equiv = received;
-			str_equiv = str_equiv.substr(0, strlen(str_equiv.c_str())-2);
+			str_equiv = str_equiv.substr(0, strlen(str_equiv.c_str())-1);
 			
 			if(str_equiv == "LineDetected")
 			{
-				Logger::logMessage("I'm in a new space");
+				Logger::logMessage("Entered new space");
+				commandqueue::sendNewCommand(1, "LineDetected", "");
 
 				// Let's figure out if we should stop
-				serial.WriteString("FindRHOpening$");
+				// serial.WriteString("FindRHOpening$");
+			}
+			else if(str_equiv == "AngleReached")
+			{
+				Logger::logMessage("Angle reached: completed turn");
+				commandqueue::sendNewCommand(1, "AngleReached", "");
 			}
 			else if(str_equiv.find(" ") != std::string::npos)
 			{
@@ -94,6 +112,13 @@ void SerialListener::listen(MotorCommander* motorCommander)
 			Logger::logMessage("Error: Byte maximum is reached:");
 			Logger::logMessage(received);
 		}
+		
+		noMessage = false;
+	}
+	else if(!noMessage)
+	{
+		noMessage = true;
+		Logger::logMessage("No messages from Arduino");
 	}
 }
 

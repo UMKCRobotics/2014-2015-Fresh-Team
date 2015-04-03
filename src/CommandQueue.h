@@ -61,7 +61,7 @@ private:
 			if(FunctionMap.count(commandType) > 0) return true;
 		}
 
-		Logger::logError(commandType + " Does not extist in the FunctionMap!");
+		Logger::logMessage(commandType + " does not exist in the FunctionMap");
 		return false;
 	}
 
@@ -72,7 +72,7 @@ private:
 		//if the commandtype doesn't exist create it first
 		if(!commandTypeExists(commandtype))
 		{
-			//Logger::logMessage(commandtype + " Did not yet exist, creating it now!");
+			Logger::logMessage(commandtype + " did not yet exist, creating it now");
 			FunctionMap.emplace(commandtype, std::vector<std::function<void(std::string)>>());
 		}
 
@@ -124,17 +124,37 @@ public:
 		commandqueue::getinstance().map(commandtype, functionToRegister);
 	}
 	
-	static void runNextCommand() //in commands from functionmap
+	static void skipNextCommand() //in commands from functionmap
 	{
 		command b = commandqueue::getinstance().poptop();
+	}
 
-		std::vector<std::function<void(std::string)>> commandToRun = commandqueue::getinstance().getCommandsOfType(b.commandtype);
+	
+	static void runNextCommand() //in commands from functionmap
+	{
+		//Logger::logMessage("Running next command");
+		command b = commandqueue::getinstance().poptop();
+		if(b.commandtype != "EMPTY")
+		{
+			std::vector<std::function<void(std::string)>> commandToRun = commandqueue::getinstance().getCommandsOfType(b.commandtype);
 
-		if(commandToRun.empty()) return;
+			if(commandToRun.empty()){ return;}
+			//Logger::logMessage("Command Type: " + b.commandtype);
+			//Logger::logMessage("Command Data: " + b.commanddata);
+			//Logger::logMessage("# Commands to Run: " + std::to_string(commandToRun.size()));
 
-		std::for_each(commandToRun.begin(), commandToRun.end(), [b](std::function<void(std::string)> actWith){
-			actWith(b.commanddata);
-		});
+			std::for_each(commandToRun.begin(), commandToRun.end(), [b](std::function<void(std::string)> actWith){
+				//Logger::logMessage("running even more stuff");
+				actWith(b.commanddata);
+				//Logger::logMessage("I'm done running more stuff");
+			});
+		}
+		//Logger::logMessage("Completed Running next command");
+	}
+	
+	static bool isEmpty()
+	{
+		return commandqueue::getinstance().commands.empty();
 	}
 
 };
