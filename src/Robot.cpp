@@ -3,7 +3,9 @@
 #include "MotorCommander.h"
 #include "Interface.h"
 #include "Logger.h"
+#include <time.h>
 #include <string>
+#include "unistd.h"
 using namespace std;
 
 Robot::Robot()
@@ -19,7 +21,8 @@ Robot::Robot()
 bool Robot::init(void)
 {
 	bool successful = true;
-
+	resetCounter = 0;
+	
 	Logger::logMessage("Initiating SerialListener...");
 
 	if(serialListener.init()) {
@@ -86,7 +89,7 @@ bool Robot::init(void)
 	// TODO: Any other needed initiation
 
 	if(!successful) return successful;
-
+	CQISEMPTY = false; // assumes a command will be in the queue
 	state = WAITFORGO;
 	
 	commandqueue::registerFunction("halt", [this](std::string arguments){
@@ -99,7 +102,7 @@ bool Robot::init(void)
 	});
 
 	commandqueue::registerFunction("LineDetected", [this](std::string arguments){
-		Logger::logMessage("Ah, a line");
+		Logger::logMessage("Line detected");
 		
 		if(isFastRound)
 		{
@@ -107,13 +110,11 @@ bool Robot::init(void)
 			// TODO: For now, let's make sure all of these systems work and do a little test
 			state = WAITFORGO;
 			Logger::logMessage("Fast Round");
-			commandqueue::sendNewCommand(1, "MOVE", "SOUTH NORTH");
 		}
 		else
 		{
 			// TODO: Take a picture of the wall and parse it
-			Logger::logMessage("Not a Fast Round");
-			commandqueue::sendNewCommand(1, "MOVE", "SOUTH NORTH");
+			Logger::logMessage("Slow Round");
 		}
 	});
 
@@ -123,25 +124,39 @@ bool Robot::init(void)
 // wait for go is continuously called until the go button is called
 void Robot::waitforgo(void)
 {
+		
 	if(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
 	{
-		Logger::logMessage("Go Button Pressed");
+		while(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)) {};
+		usleep(300000); //sleep for 3 seconds to allow for release of button, this might cause problems and might need to be changed.
+
 		Interface::setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
 		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 		//navigation.setRoundAndPart(round, part);
 		Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
 		
-		commandqueue::sendNewCommand(1, "MOVE", "NORTH NORTH");
-		
+		commandqueue::sendNewCommand(1, "ChangeRound", "1");
+		Logger::logMessage("Going to the next command");
+		commandqueue::sendNewCommand(1, "MOVE", "WEST");
+
+
 		state = RUNNING;
 	}
-
 }
 
 void Robot::running(void)
 {
 	serialListener.listen(motorCommander);
-	commandqueue::runNextCommand();
+
+	
+	if(!(commandqueue::isEmpty()))
+	{
+		CQISEMPTY = false;
+	    commandqueue::runNextCommand();
+	} else if(!CQISEMPTY) {
+		CQISEMPTY = true;
+		Logger::logMessage("Command Queue Empty");
+	}
 
 }
 
@@ -153,7 +168,73 @@ void Robot::halted(void)
 // is pressed at the beginning of the part
 bool Robot::loop()
 {
+	
+	if(state != INIT && state != WAITFORGO)
+	{
+		// Reset the robot when the go button is pressed while running
+		if(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
+		{
+			if(!GoButtonPressed)
+			{
+				resetCounter = 0;
+				GoButtonPressed = true;
+				iButtonPress = time(NULL); // resets to current time?
+			}
+			
+			time_t cTime; //current time
+			cTime = time(NULL); //set current time to the actual current time
+			
+			double secondsDiff = difftime(cTime, iButtonPress);
+			Logger::logMessage("Will soft restart in " + std::to_string(3.0 - secondsDiff) + " seconds");
+			
+			if(secondsDiff > 3.0)
+			{
+				
+				//purge the command queue
+				Logger::logMessage("Purging waiting commands in command queue...");
+				while(!commandqueue::isEmpty())
+				{
+					commandqueue::skipNextCommand();
+				}
+				Logger::logMessage("\tComplete");
+				
+				//send a halt command
+				Logger::logMessage("Sending and executing a halt command");
+				commandqueue::sendNewCommand(0, "HALT", "Soft reset");
+				
+				//execute the halt command
+				if(!commandqueue::isEmpty())
+				{
+					commandqueue::runNextCommand();
+				} else {
+					Logger::logMessage("Halt command unable to run: command queue is empty");
+				}
+				
+				//begin waiting for go
+				Logger::logMessage("Returning to state: WAITFORGO");
+				state = WAITFORGO;
+				
+				GoButtonPressed = false;
+				
+				while(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)) {};
+				usleep(500000); //sleep for 5 seconds to allow for release of button, this might cause problems and might need to be changed.
+				
+				Logger::logMessage("Waiting for go...");
+			}
 
+		} else {
+			//if the button is released reset GoButtonState
+			if(GoButtonPressed)
+			{
+				if(resetCounter >= 10)
+				{
+					GoButtonPressed = false;
+				}
+				resetCounter++;
+			}
+		}
+	}
+	
 	switch(state)
 	{
 		case INIT:
@@ -181,6 +262,7 @@ bool Robot::loop()
 	return true; 
 	//todo: boolean is required to end loop
 	//fix the code so it uses bools insted of voids
+	//alternatively use voids instead of bools
 }
 
 void Robot::halt()
