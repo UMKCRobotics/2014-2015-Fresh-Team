@@ -8,9 +8,8 @@
 #include <map>
 #include "Logger.h"
 #include "CommandQueue.h"
-using namespace std;
-
 #include "Cardinal.h"
+using namespace std;
 
 class Navigation
 {

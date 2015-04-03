@@ -5,34 +5,36 @@
 
 Navigation::Navigation()
 {
-	position = startPosition;
+	position = prevPos = startPosition;
+	orientation = NORTH;
 
 	commandqueue::registerFunction("ChangeRound", [this](std::string ROUND) 
 	{
 		//pass an integer as a string ie. "1" for round one.
+		Logger::logMessage("I'm changing the round");
 		std::string::size_type sz;
 		int iround = std::stoi(ROUND, &sz);
 
 		this->changeRound(iround);
+		Logger::logMessage("Done changing the round");
 	});
 
 	commandqueue::registerFunction("ReportMove", [this](std::string MOVE)
 	{
-		//pass a string with the current position and last move ie. "2 NORTH"
+		//pass a string with the last move ie. "NORTH"
 		std::stringstream ms;
 		ms << MOVE;
 
-		int pos;
 		std::string dir;
-		ms >> pos >> dir;
+		ms >> dir;
 
-		this->changePosition(pos);
+		
 
 		//c++ can't do string switches
-		if(dir == "NORTH") addMove(NORTH);
-		else if(dir == "EAST") addMove(EAST);
-		else if(dir == "SOUTH") addMove(SOUTH);
-		else if(dir == "WEST") addMove(WEST);
+		if(dir == "NORTH"){ this->addMove(NORTH); this->changePosition(position - 7); }
+		else if(dir == "EAST"){ this->addMove(EAST); this->changePosition(position + 1); }
+		else if(dir == "SOUTH"){ this->addMove(SOUTH); this->changePosition(position + 7); }
+		else if(dir == "WEST"){ this->addMove(WEST); this->changePosition(position - 1);}
 		else Logger::logError("Improper direction provided: " + dir);
 	});
 
@@ -144,10 +146,15 @@ bool Navigation::storeCriticalPath()
 	return true;
 }
 
-void Navigation::changePosition(int pos)
+void Navigation::changePosition(int newPosition)
 {
+	Logger::logMessage("Changing position...");
+	Logger::logMessage("Previous Position: ");
+	Logger::logMessage(to_string(prevPos));
+	Logger::logMessage("New Position: ");
+	Logger::logMessage(to_string(newPosition));
 	prevPos = position;
-	position = pos;
+	position = newPosition;
 }
 
 Cardinal Navigation::getNextMove()
@@ -159,11 +166,15 @@ Cardinal Navigation::getNextMove()
 //edit: so is getCardinalToNextNodeInPath
 void Navigation::addMove(Cardinal node) 
 {
+	Logger::logMessage("Adding move: " + to_string(node));
+	
 	//checks map to ensure that the current node hasn't been added already and then acts appropriately
 	auto nodeInMap = map.find(position);
 
 	if(nodeInMap != map.end())
 	{
+		Logger::logMessage("New move is not the last node");
+		
 		for(auto it = map.end(); it != nodeInMap; it--)
 		{
 			map.erase(it);
@@ -171,9 +182,9 @@ void Navigation::addMove(Cardinal node)
 
 		return;
 	}
-
-
+	
 	map.emplace(prevPos, node); //map stores the move to make from previous position to current position
+	Logger::logMessage("Added move node");
 }
 
 void Navigation::setOrientation(Cardinal newOrientation)
