@@ -19,3 +19,10 @@
 *.exe
 *.out
 *.app
+robot_program
+
+# Directories
+build
+
+# Databases
+*.dblite
