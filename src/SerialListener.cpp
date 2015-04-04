@@ -24,10 +24,8 @@ bool SerialListener::init()
 	}
 	
 	commandqueue::registerFunction("SerialSend", [this](string message){
-			Logger::logMessage("SerialSend:");
-			Logger::logMessage((message+"$\n").c_str());
+			Logger::logMessage("SerialSend: "+message+"$");
 			this->serial.WriteString((message+"$\n").c_str());
-			Logger::logMessage("I sent the SerialSend");
 		});
 
 	return successful;
@@ -37,7 +35,7 @@ bool SerialListener::init()
 // Theaded function used to listen on the serial line between processors on the Linux side
 // serialib will need to be checked for thread safety: elsewhere in the code we will still
 // need to send messages
-void SerialListener::listen(MotorCommander* motorCommander)
+void SerialListener::listen()
 {
 	char received[128];
 	int readStatus;
@@ -45,28 +43,29 @@ void SerialListener::listen(MotorCommander* motorCommander)
 
 	if(serial.Peek() > 0) // Check and see if there are any bytes to read
 	{
-		Logger::logMessage("New message from Arduino");
+		Logger::logMessage("New message from Arduino:");
 		readStatus = serial.ReadString(received, '\n', 128);
-
-		Logger::logMessage(received);
 
 		if(readStatus > 0)
 		{
 			str_equiv = received;
-			str_equiv = str_equiv.substr(0, strlen(str_equiv.c_str())-1);
+			str_equiv = str_equiv.substr(0, strlen(str_equiv.c_str())-2);
+			
+			Logger::logMessage("'"+str_equiv+"'");
 			
 			if(str_equiv == "LineDetected")
 			{
 				Logger::logMessage("Entered new space");
 				commandqueue::sendNewCommand(1, "LineDetected", "");
-
-				// Let's figure out if we should stop
-				// serial.WriteString("FindRHOpening$");
 			}
 			else if(str_equiv == "AngleReached")
 			{
 				Logger::logMessage("Angle reached: completed turn");
 				commandqueue::sendNewCommand(1, "AngleReached", "");
+			}
+			else if(str_equiv == "OK")
+			{
+				Logger::logMessage("Message accepted by Arduino");
 			}
 			else if(str_equiv.find(" ") != std::string::npos)
 			{
@@ -80,20 +79,22 @@ void SerialListener::listen(MotorCommander* motorCommander)
 
 					if(argument == "Right")
 					{
-						motorCommander->turn(-90);
+						commandqueue::sendNewCommand(1, "MOVERelative", "Right");
 					}
 					else if(argument == "Left")
 					{
-						motorCommander->turn(90);
+						commandqueue::sendNewCommand(1, "MOVERelative", "Right");
 					}
 					else if(argument == "Back")
 					{
-						motorCommander->turn(180);
+						commandqueue::sendNewCommand(1, "MOVERelative", "Back");
 					}
 				}
+				else
+				{
+					commandqueue::sendNewCommand(1, "MOVERelative", "Front");
+				}
 			}
-
-			// TODO: Push into queue
 		}
 		else if(readStatus == 0)
 		{
@@ -123,12 +124,11 @@ void SerialListener::listen(MotorCommander* motorCommander)
 }
 
 // stopListening (void)
-// Stops the listening on the serial line
+// Stops listening on the serial line
 void SerialListener::stopListening()
 {
-	Logger::logMessage("Disabling SerialListner!");
+	Logger::logMessage("Disabling SerialListener!");
 	shouldListen = false;
-	// TODO: Code to cleanup and possibly stop the thread
 }
 
 void SerialListener::beginListening()

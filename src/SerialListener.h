@@ -14,7 +14,7 @@ class SerialListener
 	public:
 		SerialListener();
 		bool init();
-		void listen(MotorCommander* motorCommander);
+		void listen();
 		void stopListening();
 		void beginListening();
 		serialib* getSerialStream();
