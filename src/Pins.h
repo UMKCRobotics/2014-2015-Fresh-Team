@@ -11,8 +11,8 @@ Motor Pins
 const int PIN_MOTOR_L1 = 41;
 const int PIN_MOTOR_L2 = 42;
 // Right Motor
-const int PIN_MOTOR_L3 = 18;
-const int PIN_MOTOR_L4 = 17;
+const int PIN_MOTOR_L3 = 17;
+const int PIN_MOTOR_L4 = 18;
 
 /********************************************
 Input Pins
@@ -23,7 +23,7 @@ const int PIN_GO_BUTTON_TO 		= 19;
 const int PIN_GO_BUTTON_FROM 	= 1;
 const int PIN_GO_BUTTON_VCC 	= 9;
 const int PIN_GO_BUTTON_GND 	= 21;
-const int PIN_FAST_ROUND		= 7; 	// NOTE: This is connected through an analog pin
+const int PIN_FAST_ROUND		= 135; 
 
 /********************************************
 Distance Sensors
