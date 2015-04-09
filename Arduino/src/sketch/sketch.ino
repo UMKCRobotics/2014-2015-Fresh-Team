@@ -17,7 +17,7 @@ LineSensor ls_middle(880);
 LineSensor ls_right(880);
 
 // --- Distance Sensors ---
-int distanceThreshold = 150;
+int distanceThreshold = 100;
 bool receivedEndline = false;
 
 void setup()
@@ -44,6 +44,8 @@ void loop()
 {
 	// // If data is available on the Serial line,
 	// // read it a byte at a time until we are done
+        Serial.println("Hello Loop");
+        
 	while(Serial.available() && !receivedEndline)
 	{
 		incomingByte = (char)Serial.read();
@@ -53,16 +55,18 @@ void loop()
 	}
 
 	receivedEndline = false;
-
+  
+        
 	// If we actually got more than a character, parse it
 	// If not, just throw it away
 	if(receivedMessage.length() > 1 && receivedMessage.indexOf("$") != -1)
 	{
-		receivedMessage = receivedMessage.substring(0, receivedMessage.length() - 2);
+		receivedMessage = receivedMessage.substring(0, receivedMessage.indexOf("$"));
 
 		handleMessage(receivedMessage);
 		receivedMessage = ""; // Still need to clear the message for next time
 	}
+
 	// Update 
 	ls_left.update(analogRead(PIN_LINE_SENSOR_L));
 	ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
@@ -83,9 +87,9 @@ void loop()
             	 // Serial.print(ls_left.getLastReading());
                 	  // Serial.print("\t\t");
   	          // Serial.println(ls_right.getLastReading());
-                   Serial.print("Time Sense Last DetectLine (uS): ");
-                   Serial.print(delta);
-                   Serial.print("\r\n");
+                   //Serial.print("Time Sense Last DetectLine (uS): ");
+                   //Serial.print(delta);
+                   //Serial.print("\r\n");
                    CurrentlySeesLine = true;
 
                    Serial.print("LineDetected\r\n");
@@ -99,11 +103,11 @@ void loop()
                }
               
             }        
-         }else{
+    }else{
            CurrentlySeesLine = false;
            
            BumpDetected = false;
-         }
+    }
          
     delay(10);
 }
@@ -118,11 +122,13 @@ void handleMessage(String message)
 {
 	String response;
 
-	Serial.print("Command: ");
-	Serial.println(message);
+	//Serial.print("Command: ");
+	//Serial.println(message);
 
 	if(message.startsWith("ReadDistSensor "))
 	{
+                Serial.println("OK");
+  
 		String sensor = message.substring(15);
 
 		if(sensor == "F")
@@ -150,6 +156,8 @@ void handleMessage(String message)
 	}
 	else if(message.startsWith("FindRHOpening"))
 	{  
+                Serial.println("OK");
+  
 		// Front
 		int distanceFront = analogRead(PIN_DISTANCE_SENSOR_F);
 
@@ -181,6 +189,8 @@ void handleMessage(String message)
 	}
 	else if(message.startsWith("NotifyOfAngle "))
 	{
+                Serial.println("OK");
+      
 		// This clause will send a message to the Linux side to stop turning when a designated
 		// angle has been reached (such as 90 or 180 degrees)
 
@@ -195,8 +205,6 @@ void handleMessage(String message)
 		ls_left.resetLinesPassed();
 		ls_middle.resetLinesPassed();
 		ls_right.resetLinesPassed();
-
-		Serial.println("OK");
 
 		while(!angleReached)
 		{
