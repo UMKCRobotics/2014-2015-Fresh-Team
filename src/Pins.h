@@ -8,11 +8,12 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_L1 = 41;
-const int PIN_MOTOR_L2 = 42;
-// Right Motor
-const int PIN_MOTOR_L3 = 17;
-const int PIN_MOTOR_L4 = 18;
+const int PIN_MOTOR_L1 = 161;
+const int PIN_MOTOR_L2 = 160;
+
+//Right Motor
+const int PIN_MOTOR_L3 = 162;
+const int PIN_MOTOR_L4 = 150;
 
 /********************************************
 Input Pins
@@ -72,8 +73,8 @@ Pin Settings
 - Current pin direction (in; out)
 - Current pin setting (0; 1)
 ********************************************/
-const int PIN_STATE_HIGH		= 15;
-const int PIN_STATE_LOW			= 16;
+const int PIN_STATE_HIGH		= 1;
+const int PIN_STATE_LOW			= 0;
 const int PIN_DIRECTION_IN		= 17;
 const int PIN_DIRECTION_OUT		= 18;
 
