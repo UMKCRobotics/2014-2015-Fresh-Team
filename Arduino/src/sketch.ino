@@ -5,7 +5,6 @@
 // --- Message Handling ---
 char incomingByte;
 String receivedMessage;
-void handleMesage(String message);
 
 // --- Line Sensors ---
 LineSensor ls_left(880);
@@ -14,11 +13,14 @@ LineSensor ls_right(880);
 
 // --- Distance Sensors ---
 int distanceThreshold = 150;
-bool receivedEndline = false;
+
+
+// --- setup ---
 
 void setup()
 {
 	Serial.begin(9600);
+	Serial.setTimeout(); //sets serial listening timeout to a second
 
 	Serial.println("Running...");
 
@@ -33,33 +35,39 @@ void setup()
 	pinMode(PIN_LINE_SENSOR_M, INPUT);
 	pinMode(PIN_LINE_SENSOR_R, INPUT);
 
+
     Serial.println("Finished setting up pins");
 }
 
-void loop()
+// --- state values ---
+enum State{ Forward, Turning }; //these go unused for now
+
+
+// -- Arduino automatically calls this between each loop
+void serialEvent()
 {
-	// // If data is available on the Serial line,
-	// // read it a byte at a time until we are done
-	while(Serial.available() && !receivedEndline)
+	//bool receivedEndline = false;
+
+	if(Serial.available() > 1) //makes sure there is more than 1 character being sent
 	{
-		incomingByte = (char)Serial.read();
-		receivedMessage += incomingByte;
 
-		if(incomingByte == '$') receivedEndline = true;
+		receivedMessage = Serial.readStringUntil('$');
+
+		//for debug purposes
+		Serial.print("Command: ");
+		Serial.println(receivedMessage);
+
+	}else{
+		receivedMessage = "";
 	}
+}
 
-	receivedEndline = false;
+// -- Read Sensors --
 
-	// If we actually got more than a character, parse it
-	// If not, just throw it away
-	if(receivedMessage.length() > 1 && receivedMessage.indexOf("$") != -1)
-	{
-		receivedMessage = receivedMessage.substring(0, strlen(receivedMessage.c_str()) - 2);
+void readLineSensors()
+{
 
-		handleMessage(receivedMessage);
-		receivedMessage = ""; // Still need to clear the message for next time
-	}
-	// Update 
+	// Update sensor readings
 	ls_left.update(analogRead(PIN_LINE_SENSOR_L));
 	ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
 	ls_right.update(analogRead(PIN_LINE_SENSOR_R));
@@ -74,150 +82,170 @@ void loop()
 
         Serial.print("LineDetected\r\n");
 	}
-
-    delay(10);
+	//this may need updated, I'm not sure at the moment
+	//TODO: Ask Connor on Friday
 }
 
-// Handles a message sent by the Linux side to the Arduino side
-// Takes the incoming message as a string
-// Does not return any value: the action needed to take by the 
-// message will be handled inside the class through
-// the serial object
-// Handling of errors will also occur inside
-void handleMessage(String message)
+void readDistSensor(string sensor)
 {
 	String response;
 
-	Serial.print("Command: ");
-	Serial.println(message);
-
-	if(message.startsWith("ReadDistSensor "))
+	if(sensor == "F")
 	{
-		String sensor = message.substring(15);
-
-		if(sensor == "F")
-		{
-			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_F);
-		}
-		else if(sensor.startsWith("LF"))
-		{
-			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LF);
-		}
-		else if(sensor.startsWith("LB"))
-		{
-			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LB);
-		}
-		else if(sensor.startsWith("RF"))
-		{
-			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RF);
-		}
-		else if(sensor.startsWith("RB"))
-		{
-			response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
-		}
-
-		Serial.print(response + "\n");
+		response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_F);
 	}
-	else if(message.startsWith("FindRHOpening"))
-	{  
-		// Front
-		int distanceFront = analogRead(PIN_DISTANCE_SENSOR_F);
-
-		// Left
-		int distanceLeftFront = analogRead(PIN_DISTANCE_SENSOR_LF);
-		int distanceLeftBack = analogRead(PIN_DISTANCE_SENSOR_LB);
-
-		// Right
-		int distanceRightFront = analogRead(PIN_DISTANCE_SENSOR_RF);
-		int distanceRightBack = analogRead(PIN_DISTANCE_SENSOR_RB);
-
-		// Check values and send Opening command with parameter/argument of where the opening is
-		if((distanceRightFront + distanceRightBack)/2 < distanceThreshold)
-		{
-			Serial.println("Opening Right");
-		}
-		else if(distanceFront < distanceThreshold)
-		{
-			Serial.println("Opening Front");
-		}
-		else if((distanceLeftFront + distanceLeftBack)/2 < distanceThreshold)
-		{
-			Serial.println("Opening Left");
-		}
-		else
-		{
-			Serial.println("Opening Back");
-		}
-	}
-	else if(message.startsWith("NotifyOfAngle "))
+	else if(sensor.startsWith("LF"))
 	{
-		// This clause will send a message to the Linux side to stop turning when a designated
-		// angle has been reached (such as 90 or 180 degrees)
+		response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LF);
+	}
+	else if(sensor.startsWith("LB"))
+	{
+		response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_LB);
+	}
+	else if(sensor.startsWith("RF"))
+	{
+		response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RF);
+	}
+	else if(sensor.startsWith("RB"))
+	{
+		response = "DistSensor " + sensor + ":" + analogRead(PIN_DISTANCE_SENSOR_RB);
+	}
 
-		// Parse end angle from string
-		String str_endAngle = response.substring(14);
-		int endAngle = -90;	//atoi(str_endAngle.toCharArray());
-		int numberOfRightAngles = abs(endAngle / 90);
-		boolean angleReached = false;
-		boolean passedLeadingSensorBefore = false;
+	Serial.print(response + "\n");
+}
 
-		// Reset lines passed so that the number of lines passed starts at 0
-		ls_left.resetLinesPassed();
-		ls_middle.resetLinesPassed();
-		ls_right.resetLinesPassed();
+void findRHOpening()
+{
+	String response;
 
-		Serial.println("OK");
+	// Front
+	int distanceFront = analogRead(PIN_DISTANCE_SENSOR_F);
 
-		while(!angleReached)
+	// Left
+	int distanceLeftFront = analogRead(PIN_DISTANCE_SENSOR_LF);
+	int distanceLeftBack = analogRead(PIN_DISTANCE_SENSOR_LB);
+
+	// Right
+	int distanceRightFront = analogRead(PIN_DISTANCE_SENSOR_RF);
+	int distanceRightBack = analogRead(PIN_DISTANCE_SENSOR_RB);
+
+	// Check values and send Opening command with parameter/argument of where the opening is
+	if((distanceRightFront + distanceRightBack)/2 < distanceThreshold)
+	{
+		Serial.print("Opening Right\r\n");
+	}
+	else if(distanceFront < distanceThreshold)
+	{
+		Serial.print("Opening Front\r\n");
+	}
+	else if((distanceLeftFront + distanceLeftBack)/2 < distanceThreshold)
+	{
+		Serial.print("Opening Left\r\n");
+	}
+	else
+	{
+		Serial.print("Opening Back\r\n");
+	}
+
+}
+
+//todo: I really want to clean this function up but I don't think it's necessary (granted most of what I did was just
+//style over function) and it would be best to modify it while at the lab where I can test changes I think if it's
+//still having problems it is in this block of code as well. I did clean up the line endings for the messages but I
+//don't think that should matter.
+void notifyOfAngle()
+{
+	// This clause will send a message to the Linux side to stop turning when a designated
+	// angle has been reached (such as 90 or 180 degrees)
+
+	// Parse end angle from string
+	String str_endAngle = response.substring(14);
+	int endAngle = -90;	//atoi(str_endAngle.toCharArray());
+	int numberOfRightAngles = abs(endAngle / 90);
+	boolean angleReached = false;
+	boolean passedLeadingSensorBefore = false;
+
+	// Reset lines passed so that the number of lines passed starts at 0
+	ls_left.resetLinesPassed();
+	ls_middle.resetLinesPassed();
+	ls_right.resetLinesPassed();
+
+	Serial.println("OK");
+
+	while(!angleReached)
+	{
+		ls_left.update(analogRead(PIN_LINE_SENSOR_L));
+		ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
+		ls_right.update(analogRead(PIN_LINE_SENSOR_R));
+		//Serial.println(ls_middle.getLinesPassed());
+
+		// Turning Right
+		if(endAngle < 0)
 		{
-			ls_left.update(analogRead(PIN_LINE_SENSOR_L));
-			ls_middle.update(analogRead(PIN_LINE_SENSOR_M));
-			ls_right.update(analogRead(PIN_LINE_SENSOR_R));
-
-			//Serial.println(ls_middle.getLinesPassed());
-
-			// Turning Right
-			if(endAngle < 0)
+			if(ls_right.getLinesPassed() == numberOfRightAngles)
 			{
-				if(ls_right.getLinesPassed() == numberOfRightAngles)
+				// See if the leading line sensor has passed this line before
+				if(!passedLeadingSensorBefore)
 				{
-					// See if the leading line sensor has passed this line before
-					if(!passedLeadingSensorBefore)
+					// If not, then reset the middle line sensor and let it start scanning for the line
+					ls_middle.resetLinesPassed();
+					passedLeadingSensorBefore = true;
+				}
+				else
+				{
+					if(ls_middle.getLinesPassed() == numberOfRightAngles)
 					{
-						// If not, then reset the middle line sensor and let it start scanning for the line
-						ls_middle.resetLinesPassed();
-						passedLeadingSensorBefore = true;
-					}
-					else
-					{
-						if(ls_middle.getLinesPassed() == numberOfRightAngles)
-						{
-							Serial.print("AngleReached\n");
-							angleReached = true;
-						}
+						Serial.print("AngleReached\r\n");
+						angleReached = true;
 					}
 				}
 			}
-			// Turning Left
-			if(endAngle > 0)
+		}
+		// Turning Left
+		if(endAngle > 0)
+		{
+			if(ls_left.getLinesPassed() == numberOfRightAngles)
 			{
-				if(ls_left.getLinesPassed() == numberOfRightAngles)
+				if(!passedLeadingSensorBefore)
 				{
-					if(!passedLeadingSensorBefore)
+					ls_middle.resetLinesPassed();
+					passedLeadingSensorBefore = true;
+				}
+				else
+				{
+					if(ls_middle.getLinesPassed() == numberOfRightAngles)
 					{
-						ls_middle.resetLinesPassed();
-						passedLeadingSensorBefore = true;
+						Serial.print("AngleReached\r\n");
+						angleReached = true;
 					}
-					else
-					{
-						if(ls_middle.getLinesPassed() == numberOfRightAngles)
-						{
-							Serial.print("AngleReached\n");
-							angleReached = true;
-						}
-					}
-				}	
-			}
+				}
+			}	
+		}
+	}	
+}
+
+// --- The Main Loop ---
+void loop()
+{
+
+	readLineSensors();
+
+	//message state handling
+	if(receivedMessage.length() > 0)
+	{
+		if(message.startsWith("ReadDistSensor "))
+		{
+			readDistSensor(message.substring(15));
+		}
+		else if(message.startsWith("FindRHOpening"))
+		{
+			findRHOpening();
+		}
+		else if(message.startsWith("NotifyOfAngle "))
+			notifyOfAngle();
 		}
 	}
+
+	receivedMessage = ""; //reset receivedMessage
+	//Don't want delays between loops unless necessary
 }
