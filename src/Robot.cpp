@@ -43,6 +43,9 @@ bool Robot::init(void)
 		if(!Interface::setPinDirection(PIN_GO_BUTTON_FROM, PIN_DIRECTION_IN)) successful = false;
 		if(!Interface::setPinDirection(PIN_GO_BUTTON_VCC, PIN_DIRECTION_OUT)) successful = false;
 		if(!Interface::setPinDirection(PIN_GO_BUTTON_GND, PIN_DIRECTION_OUT)) successful = false;
+		
+		// Fast Round Switch
+		if(!Interface::setPinDirection(PIN_FAST_ROUND, PIN_DIRECTION_IN)) successful = false;
 
 		// Status Lights
 		if(!Interface::setPinDirection(PIN_READY_LIGHT_VCC, PIN_DIRECTION_OUT)) successful = false;
@@ -56,7 +59,10 @@ bool Robot::init(void)
 		// Right Motor
 		if(!Interface::setPinDirection(PIN_MOTOR_L3, PIN_DIRECTION_OUT)) successful = false;
 		if(!Interface::setPinDirection(PIN_MOTOR_L4, PIN_DIRECTION_OUT)) successful = false;
-
+		
+		// Motor Enable
+		if(!Interface::setPinDirection(PIN_MOTOR_ENABLE, PIN_DIRECTION_OUT)) successful = false;
+		
 		if(successful) Logger::logMessage("\tComplete");
 		else Logger::logMessage("\tFailed");
 	}
@@ -82,16 +88,22 @@ bool Robot::init(void)
 		// Right Motor
 		Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_LOW);
 		Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
+		
+		// Motor Enable
+		Interface::setPinState(PIN_MOTOR_ENABLE, PIN_STATE_HIGH);
 
 		Logger::logMessage("\tComplete");
 	}
 
-	// TODO: Any other needed initiation
-
+	// Return now if the pin initiation was unsuccessful
 	if(!successful) return successful;
+	
+	// Initiate robot's state
 	CQISEMPTY = false; // assumes a command will be in the queue
 	state = WAITFORGO;
+	getRoundType();
 	
+	// Register functions
 	commandqueue::registerFunction("halt", [this](std::string arguments){
 		Logger::logMessage("Robot halting: " + arguments);
 		this->halt();
@@ -104,17 +116,12 @@ bool Robot::init(void)
 	commandqueue::registerFunction("LineDetected", [this](std::string arguments){
 		Logger::logMessage("Line detected");
 		
-		if(isFastRound)
-		{
-			// Follow navigation's directions
-			// TODO: For now, let's make sure all of these systems work and do a little test
-			state = WAITFORGO;
-			Logger::logMessage("Fast Round");
-		}
+		if(isFastRound) navigateNextMove();		
 		else
 		{
-			// TODO: Take a picture of the wall and parse it
-			Logger::logMessage("Slow Round");
+			Logger::logMessage("Slow round: requesting openings from Arduino");
+			this->motorCommander->halt();
+			commandqueue::sendNewCommand(1, "SerialSend", "FindRHOpening");
 		}
 	});
 
@@ -132,13 +139,12 @@ void Robot::waitforgo(void)
 
 		Interface::setPinState(PIN_READY_LIGHT_VCC, PIN_STATE_LOW);
 		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
-		//navigation.setRoundAndPart(round, part);
 		Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
 		
 		commandqueue::sendNewCommand(1, "ChangeRound", "1");
-		Logger::logMessage("Going to the next command");
-		commandqueue::sendNewCommand(1, "MOVE", "WEST");
-
+		
+		if(!isFastRound) commandqueue::sendNewCommand(3, "SerialSend", "FindRHOpening");
+		else navigateNextMove();
 
 		state = RUNNING;
 	}
@@ -146,9 +152,9 @@ void Robot::waitforgo(void)
 
 void Robot::running(void)
 {
-	serialListener.listen(motorCommander);
+	serialListener.listen();
 
-	
+
 	if(!(commandqueue::isEmpty()))
 	{
 		CQISEMPTY = false;
@@ -157,15 +163,25 @@ void Robot::running(void)
 		CQISEMPTY = true;
 		Logger::logMessage("Command Queue Empty");
 	}
-
 }
 
 void Robot::halted(void)
 {
 }
 
-// go is called when the start button of the robot
-// is pressed at the beginning of the part
+// Grabs the next move from Navigation and commands the motors in that direction
+void Robot::navigateNextMove()
+{
+	Logger::logMessage("Getting next move from Navigation");
+	
+	std::string nextDirection = CardinalNames[navigation.getNextMove()];
+	std::string orientation = CardinalNames[navigation.getCurrentOrientation()];
+	
+	Logger::logMessage("Next Move: " + orientation + " -> " + nextDirection);
+	
+	commandqueue::sendNewCommand(3, "MOVE", nextDirection + " " + orientation);
+}
+
 bool Robot::loop()
 {
 	
@@ -185,12 +201,11 @@ bool Robot::loop()
 			cTime = time(NULL); //set current time to the actual current time
 			
 			double secondsDiff = difftime(cTime, iButtonPress);
-			Logger::logMessage("Will soft restart in " + std::to_string(3.0 - secondsDiff) + " seconds");
+			//Logger::logMessage("Will soft restart in " + std::to_string(3.0 - secondsDiff) + " seconds");
 			
 			if(secondsDiff > 3.0)
 			{
-				
-				//purge the command queue
+				// Purge the command queue
 				Logger::logMessage("Purging waiting commands in command queue...");
 				while(!commandqueue::isEmpty())
 				{
@@ -198,11 +213,11 @@ bool Robot::loop()
 				}
 				Logger::logMessage("\tComplete");
 				
-				//send a halt command
+				// Send a halt command
 				Logger::logMessage("Sending and executing a halt command");
 				commandqueue::sendNewCommand(0, "HALT", "Soft reset");
 				
-				//execute the halt command
+				// Execute the halt command
 				if(!commandqueue::isEmpty())
 				{
 					commandqueue::runNextCommand();
@@ -210,7 +225,7 @@ bool Robot::loop()
 					Logger::logMessage("Halt command unable to run: command queue is empty");
 				}
 				
-				//begin waiting for go
+				// Begin waiting for go
 				Logger::logMessage("Returning to state: WAITFORGO");
 				state = WAITFORGO;
 				
