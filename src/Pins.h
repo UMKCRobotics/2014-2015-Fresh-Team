@@ -11,9 +11,12 @@ Motor Pins
 const int PIN_MOTOR_L1 = 161;
 const int PIN_MOTOR_L2 = 160;
 
-//Right Motor
+// Right Motor
 const int PIN_MOTOR_L3 = 162;
 const int PIN_MOTOR_L4 = 150;
+
+// Motor Enable
+const int PIN_MOTOR_ENABLE = 158;
 
 /********************************************
 Input Pins
