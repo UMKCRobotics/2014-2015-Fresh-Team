@@ -25,8 +25,6 @@ private:
 	Round round = ONE;
 	//Part part;
 
-
-
 	MotorCommander* motorCommander;
 	SerialListener serialListener;
 
@@ -34,8 +32,6 @@ private:
 public:
 	Robot();
 	Navigation navigation;
-
-
 
 	bool init(void);
 	bool loop();
@@ -45,11 +41,11 @@ public:
 	void running(void);
 	void halted(void);
 
+	void halt();
+	void navigateNextMove();
+
 	int getPinDirection(int pin);
 	int getPinState(int pin);
-
-	void halt();
-
 	bool getIsFastRound();
 };
 #endif
