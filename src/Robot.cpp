@@ -99,7 +99,7 @@ bool Robot::init(void)
 	if(!successful) return successful;
 	
 	// Initiate robot's state
-	CQISEMPTY = false; // assumes a command will be in the queue
+	CQISEMPTY = false; // Assumes a command will be in the queue
 	state = WAITFORGO;
 	getRoundType();
 	
@@ -114,14 +114,14 @@ bool Robot::init(void)
 	});
 
 	commandqueue::registerFunction("LineDetected", [this](std::string arguments){
-		Logger::logMessage("Line detected");
+		Logger::logMessage("Line Detected");
+		this->motorCommander->halt();
 		
 		if(isFastRound) navigateNextMove();		
 		else
 		{
-			Logger::logMessage("Slow round: requesting openings from Arduino");
-			this->motorCommander->halt();
-			commandqueue::sendNewCommand(1, "SerialSend", "FindRHOpening");
+			//Logger::logMessage("Slow round: requesting openings from Arduino");
+			commandqueue::sendNewCommand(2, "SerialSend", "FindRHOpening");
 		}
 	});
 
@@ -131,7 +131,6 @@ bool Robot::init(void)
 // wait for go is continuously called until the go button is called
 void Robot::waitforgo(void)
 {
-		
 	if(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW))
 	{
 		while(!(Interface::getPinState(PIN_GO_BUTTON_FROM) == PIN_STATE_LOW)) {};
@@ -141,9 +140,10 @@ void Robot::waitforgo(void)
 		Interface::setPinState(PIN_END_LIGHT_VCC, PIN_STATE_HIGH);
 		Logger::logMessage("Starting at position " + to_string(navigation.getCurrentPosition()));
 		
-		commandqueue::sendNewCommand(1, "ChangeRound", "1");
+		commandqueue::sendNewCommand(3, "ChangeRound", "1");
+		commandqueue::sendNewCommand(1, "SerialSend", "Sync");
 		
-		if(!isFastRound) commandqueue::sendNewCommand(3, "SerialSend", "FindRHOpening");
+		if(!isFastRound) commandqueue::sendNewCommand(2, "SerialSend", "FindRHOpening");
 		else navigateNextMove();
 
 		state = RUNNING;
@@ -179,7 +179,7 @@ void Robot::navigateNextMove()
 	
 	Logger::logMessage("Next Move: " + orientation + " -> " + nextDirection);
 	
-	commandqueue::sendNewCommand(3, "MOVE", nextDirection + " " + orientation);
+	commandqueue::sendNewCommand(1, "MOVE", nextDirection + " " + orientation);
 }
 
 bool Robot::loop()
