@@ -6,17 +6,20 @@
 Navigation::Navigation()
 {
 	position = prevPos = startPosition;
+	
+	//Logger::logMessage("on init: position: " + std::to_string(position) + " prevPos: " + std::to_string(prevPos) + " startPosition: " + std::to_string(startPosition));
 	orientation = NORTH;
 
 	commandqueue::registerFunction("ChangeRound", [this](std::string ROUND) 
 	{
 		//pass an integer as a string ie. "1" for round one.
-		Logger::logMessage("I'm changing the round");
+		Logger::logMessage("Changing the round");
 		std::string::size_type sz;
 		int iround = std::stoi(ROUND, &sz);
 
 		this->changeRound(iround);
 		Logger::logMessage("Done changing the round");
+		Logger::logMessage("Starting Position = " + to_string(startPosition) + ", Previous Position = " + to_string(prevPos));
 	});
 
 	commandqueue::registerFunction("ReportMove", [this](std::string MOVE)
@@ -28,7 +31,7 @@ Navigation::Navigation()
 		std::string dir;
 		ms >> dir;
 
-		
+		Logger::logMessage("Move Reported: " + dir);
 
 		//c++ can't do string switches
 		if(dir == "NORTH"){ this->addMove(NORTH); this->changePosition(position - 7); }
@@ -107,7 +110,6 @@ bool Navigation::loadPath()
 
 bool Navigation::storeCriticalPath()
 {
-
 	Logger::logMessage("Attempting to write path to file: " + fileLocation);
 
 	std::ifstream cpFile(fileLocation, std::ifstream::in);
@@ -166,22 +168,32 @@ Cardinal Navigation::getNextMove()
 //edit: so is getCardinalToNextNodeInPath
 void Navigation::addMove(Cardinal node) 
 {
-	Logger::logMessage("Adding move: " + to_string(node));
+	Logger::logMessage("Adding move: " + to_string(node) + " " + to_string(prevPos));
 	
-	//checks map to ensure that the current node hasn't been added already and then acts appropriately
-	auto nodeInMap = map.find(position);
-
-	if(nodeInMap != map.end())
+	if(!map.empty())
 	{
-		Logger::logMessage("New move is not the last node");
 		
-		for(auto it = map.end(); it != nodeInMap; it--)
-		{
-			map.erase(it);
-		}
+		//checks map to ensure that the current node hasn't been added already and then acts appropriately
+		auto nodeInMap = map.find(position);
+		
+		Logger::logMessage("Previous position in map: " + std::to_string(nodeInMap->first));
 
-		return;
+		if(nodeInMap != map.end())
+		{
+			Logger::logMessage("New move is not the last node");
+			
+			for(auto it = map.end(); it != nodeInMap; it--)
+			{
+				map.erase(it);
+			}
+
+			return;
+		}
 	}
+	
+	Logger::logMessage("Node is the map end");
+	Logger::logMessage("Previous position to add: ");
+	Logger::logMessage(to_string(prevPos));
 	
 	map.emplace(prevPos, node); //map stores the move to make from previous position to current position
 	Logger::logMessage("Added move node");
