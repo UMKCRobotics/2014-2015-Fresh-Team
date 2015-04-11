@@ -25,7 +25,8 @@ bool SerialListener::init()
 	
 	commandqueue::registerFunction("SerialSend", [this](string message){
 			Logger::logMessage("SerialSend: "+message+"$");
-			this->serial.WriteString((message+"$\n").c_str());
+			this->serial.WriteString((message+"$").c_str());
+			Logger::logMessage("Sent");
 		});
 
 	return successful;
@@ -56,7 +57,7 @@ void SerialListener::listen()
 			if(str_equiv == "LineDetected")
 			{
 				Logger::logMessage("Entered new space");
-				commandqueue::sendNewCommand(1, "LineDetected", "");
+				commandqueue::sendNewCommand(5, "LineDetected", "");
 			}
 			else if(str_equiv == "AngleReached")
 			{
@@ -69,30 +70,31 @@ void SerialListener::listen()
 			}
 			else if(str_equiv.find(" ") != std::string::npos)
 			{
-				// We have a command to interpret
+				// We have a command that has an argument
+				// The command and argument will need to be split
 				command = str_equiv.substr(0, str_equiv.find(" "));
 				argument = str_equiv.substr(str_equiv.find(" ")+1);
 
-				if(command == "Opening" && argument != "Front")
-				{
-					// TODO: Interact with navigation and update direction and position
+				if(command == "Opening")
+				{					
+					Logger::logMessage("Move Relative: "+argument);
 
 					if(argument == "Right")
 					{
 						commandqueue::sendNewCommand(1, "MOVERelative", "Right");
 					}
+					else if(argument == "Front")
+					{
+						commandqueue::sendNewCommand(1, "MOVERelative", "Front");
+					}
 					else if(argument == "Left")
 					{
-						commandqueue::sendNewCommand(1, "MOVERelative", "Right");
+						commandqueue::sendNewCommand(1, "MOVERelative", "Left");
 					}
 					else if(argument == "Back")
 					{
 						commandqueue::sendNewCommand(1, "MOVERelative", "Back");
 					}
-				}
-				else
-				{
-					commandqueue::sendNewCommand(1, "MOVERelative", "Front");
 				}
 			}
 		}
@@ -119,7 +121,6 @@ void SerialListener::listen()
 	else if(!noMessage)
 	{
 		noMessage = true;
-		Logger::logMessage("No messages from Arduino");
 	}
 }
 
