@@ -13,7 +13,6 @@ public:
 	enum state{FORWARD, REVERSE, STOPPED}; 
 
 	MotorCommander();
-	Navigation navigation;
 
 	bool init();
 
