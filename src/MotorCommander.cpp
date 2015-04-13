@@ -1,5 +1,6 @@
 #include <sstream>
 #include <math.h>
+#include <unistd.h>
 #include "MotorCommander.h"
 #include "Pins.h"
 #include "Navigation.h"
@@ -121,6 +122,29 @@ bool MotorCommander::init()
 		else this->isFastRound = false;
 	});
 	
+	commandqueue::registerFunction("Correct", [this](std::string SIDE)
+	{
+		this->halt();
+		
+		if(SIDE == "Left") 
+		{
+			turn(1);
+		}
+		else
+		{
+			turn(-1);
+		}
+		
+		usleep(5 * 1000); // Sleep for 5 ms
+		
+		this->moveForward();
+	});
+	
+	commandqueue::registerFunction("Corrected", [this](std::string arguments)
+	{
+		//this->moveForward();
+	});
+	
 	return true;
 }
 
@@ -168,7 +192,8 @@ void MotorCommander::turn(int degrees)
         Interface::setPinState(PIN_MOTOR_L3, PIN_STATE_HIGH);
         Interface::setPinState(PIN_MOTOR_L4, PIN_STATE_LOW);
     }
-    else {
+    else 
+    {
         // right motor back, left motor foward
         Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
         Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_LOW);
@@ -178,7 +203,8 @@ void MotorCommander::turn(int degrees)
     }
 
     // Send Arduino a message to notify us when we are done turning
-    commandqueue::sendNewCommand(1, "SerialSend", ("NotifyOfAngle " + to_string(degrees)).c_str());
+    // If |degrees| is 1 then we are correcting the course and there is no need to request a notification from the Arduino
+    if(abs(degrees) != 1) commandqueue::sendNewCommand(1, "SerialSend", ("NotifyOfAngle " + to_string(degrees)).c_str());
 }
 
 void MotorCommander::moveForward()
