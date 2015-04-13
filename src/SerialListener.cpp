@@ -96,6 +96,10 @@ void SerialListener::listen()
 						commandqueue::sendNewCommand(1, "MOVERelative", "Back");
 					}
 				}
+				else if(command == "Correct")
+				{
+					commandqueue::sendNewCommand(6, command, argument);
+				}
 			}
 		}
 		else if(readStatus == 0)
