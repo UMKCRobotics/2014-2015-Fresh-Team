@@ -21,13 +21,12 @@ void LineSensor::update(float reading)
                 {              
                     timeWhenDetected = micros();
                     seesLine = true;
-                    //Serial.println("\t\tLine");
                 }
 	}
 	else
 	{
 		// Increment our number of lines passed
-		if(seesLine)	linesPassed++;
+		if(seesLine) linesPassed++;
 
 		seesLine = false;
                 consecutiveReadings = 0;
