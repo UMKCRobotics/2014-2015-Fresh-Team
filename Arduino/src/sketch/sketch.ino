@@ -7,19 +7,23 @@
 char incomingByte;
 String receivedMessage;
 void handleMesage(String message);
-bool CurrentlySeesLine = false;
-bool BumpDetected = false;
-long TimeOfLastDetect = 0;
 const String invalid = "Invalid Message: ";
 
 // --- Line Sensors ---
 LineSensor ls_left(880);
 LineSensor ls_middle(880);
 LineSensor ls_right(880);
+bool CurrentlySeesLine = false;
+bool BumpDetected = false;
+long timeOfLastDetect = 0;
 
 // --- Distance Sensors ---
 int distanceThreshold = 100;
 bool receivedEndline = false;
+
+// --- Course Correction ---
+bool correcting = false;
+unsigned long correctionStartTime = 0;
 
 void setup()
 {
@@ -53,7 +57,7 @@ void loop()
       {
         sendSerial("OK");
         waitforgo = false;
-        TimeOfLastDetect = micros();
+        timeOfLastDetect = micros();
       }
       
       receivedMessage = "";
@@ -61,14 +65,15 @@ void loop()
   }
   else
   {
-    updateLineSensors();
-    
-    if(receivedMessage.length() >= 2)
-    {
-        handleMessage(receivedMessage);
-        
-        receivedMessage = "";
-    }
+      updateLineSensors();
+      checkCourse();
+      
+      if(receivedMessage.length() >= 2)
+      {
+          handleMessage(receivedMessage);
+          
+          receivedMessage = "";
+      }
   }
   
 //  if(Serial.available()) 
@@ -145,27 +150,25 @@ void updateLineSensors()
     {  
           if(!CurrentlySeesLine && !BumpDetected)
           {
-              long j = micros();
-              long delta = j - TimeOfLastDetect;
-              TimeOfLastDetect = j;
+              long delta = micros() - timeOfLastDetect;
               
-              if(delta > 70000)
+              if(delta >= 290000)
               {
-//                  Serial.print("Time since last detect (uS): ");
-//                  Serial.print(delta);
-//                  Serial.print("\r\n");
-                  
+                  //Serial.print("Delta: ");
+                  //Serial.println(delta);
+                
                   CurrentlySeesLine = true;
                   sendSerial("LineDetected");
-              } 
-              else if(delta < 70000) 
-              {
-                  if(!BumpDetected)
-                  {
-                      sendSerial("BumpDetected");
-                      BumpDetected = true;
-                  }  
+                  timeOfLastDetect = micros();
               }
+              //else
+              //{
+              //    if(!BumpDetected)
+              //    {
+              //        sendSerial("BumpDetected");
+              //        BumpDetected = true;
+              //    }  
+              //}
          }        
      } else {
          CurrentlySeesLine = false;
@@ -240,7 +243,6 @@ void notifyOfAngle(String argument)
     int numberOfRightAngles = abs(endAngle / 90);
     boolean angleReached = false;
     boolean passedLeadingSensorBefore = false;
-    
     int lastNumberOfLinesPassed = 0;
     
     // Reset lines passed so that the number of lines passed starts at 0
@@ -257,7 +259,7 @@ void notifyOfAngle(String argument)
         // Turning Right
         if(endAngle < 0)
         {
-            if(ls_right.getLinesPassed() == numberOfRightAngles)
+            if(ls_right.getLinesPassed() >= numberOfRightAngles)
             {
                 // See if the leading line sensor has passed this line before
                 if(!passedLeadingSensorBefore)
@@ -286,7 +288,7 @@ void notifyOfAngle(String argument)
         // Turning Left
         else if(endAngle > 0)
         {
-            if(ls_left.getLinesPassed() == numberOfRightAngles)
+            if(ls_left.getLinesPassed() >= numberOfRightAngles)
             {
                 if(!passedLeadingSensorBefore)
                 {
@@ -302,13 +304,60 @@ void notifyOfAngle(String argument)
                     }
                 }
             }
-            else if(lastNumberOfLinesPassed != ls_right.getLinesPassed())
+            else if(lastNumberOfLinesPassed != ls_left.getLinesPassed())
             {
               Serial.print("Lines passed: ");
               Serial.println(ls_left.getLinesPassed());
               
               lastNumberOfLinesPassed = ls_left.getLinesPassed();
-            }	
+            }
+        }
+    }
+    
+    // After we are done turning, the time since last line read will need to be reset the time
+    // since the last line has been passed. The majority of the time has been spent turning.
+    timeOfLastDetect = micros();
+}
+
+void checkCourse()
+{
+    unsigned long currentTime = micros();
+    
+    if(correcting)
+    {
+        // If the middle line sensor picks the line up while we are correcting course then we have finished correcitn
+        // course and can continue moving forward
+        if(ls_middle.lineDetected(currentTime))
+        {
+              sendSerial("Corrected");
+              correcting = false;
+              timeOfLastDetect = timeOfLastDetect + (micros() - correctionStartTime);
+        }
+    }
+    else
+    {
+        // Check if the middle line sensor is on the line. In optimal conditions, it should be
+        if(!ls_middle.lineDetected(currentTime))
+        {
+              // If both are reading a line, we cannot accurately correct the course
+              if(ls_left.lineDetected(micros()) && ls_right.lineDetected(currentTime))
+              {
+                  
+              }
+              // If the right is reading, then the robot is off to the left
+              else if(!ls_left.lineDetected(micros()) && ls_right.lineDetected(currentTime))
+              {
+                   sendSerial("Correct Right");
+                   correctionStartTime = micros();
+                   correcting = true;
+              }
+              // If the left is reading, then the robot is off to the right
+              else if(ls_left.lineDetected(currentTime) && !ls_right.lineDetected(currentTime))
+              {
+                   sendSerial("Correct Left");
+                   correctionStartTime = micros();
+                   correcting = true;
+              }
         }
     }
 }
