@@ -8,11 +8,15 @@ Motor Pins
 ********************************************/
 
 // Left Motor
-const int PIN_MOTOR_L1 = 41;
-const int PIN_MOTOR_L2 = 42;
+const int PIN_MOTOR_L1 = 161;
+const int PIN_MOTOR_L2 = 160;
+
 // Right Motor
-const int PIN_MOTOR_L3 = 18;
-const int PIN_MOTOR_L4 = 17;
+const int PIN_MOTOR_L3 = 162;
+const int PIN_MOTOR_L4 = 150;
+
+// Motor Enable
+const int PIN_MOTOR_ENABLE = 158;
 
 /********************************************
 Input Pins
@@ -23,7 +27,7 @@ const int PIN_GO_BUTTON_TO 		= 19;
 const int PIN_GO_BUTTON_FROM 	= 1;
 const int PIN_GO_BUTTON_VCC 	= 9;
 const int PIN_GO_BUTTON_GND 	= 21;
-const int PIN_FAST_ROUND		= 7; 	// NOTE: This is connected through an analog pin
+const int PIN_FAST_ROUND		= 135; 
 
 /********************************************
 Distance Sensors
@@ -64,7 +68,7 @@ Output Pins
   ground to emit light
 ********************************************/
 const int PIN_READY_LIGHT_VCC	= 124;
-const int PIN_END_LIGHT_VCC		= 126;
+const int PIN_END_LIGHT_VCC	= 126;
 const int PIN_STATUS_LIGHTS_GND	= 133;
 
 /********************************************
@@ -72,8 +76,8 @@ Pin Settings
 - Current pin direction (in; out)
 - Current pin setting (0; 1)
 ********************************************/
-const int PIN_STATE_HIGH		= 15;
-const int PIN_STATE_LOW			= 16;
+const int PIN_STATE_HIGH		= 1;
+const int PIN_STATE_LOW			= 0;
 const int PIN_DIRECTION_IN		= 17;
 const int PIN_DIRECTION_OUT		= 18;
 
@@ -82,3 +86,4 @@ const int PIN_DIRECTION 		= 19;
 const int PIN_STATE 			= 20;
 
 #endif
+
