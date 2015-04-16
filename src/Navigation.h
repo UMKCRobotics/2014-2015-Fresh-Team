@@ -31,7 +31,8 @@ private:
 		Start 	49
 		End 	1
 	*/
-
+	int currentRound 			= 0;
+	int currentPhase			= 0;
 	int position 				= 0; // position set to start position upon class instantiation
 	int prevPos					= 0; // previous position
 	int startPosition 			= 48;

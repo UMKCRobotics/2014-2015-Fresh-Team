@@ -22,6 +22,31 @@ Navigation::Navigation()
 		Logger::logMessage("Starting Position = " + to_string(startPosition) + ", Previous Position = " + to_string(prevPos));
 	});
 
+	//command to be ran at the end of an Exploration round, makes the robot record the round
+	commandqueue::registerFunction("SaveMap", [this](std::string INFORMATION)
+	{
+
+		//does not require any perimeters in the string
+		Logger::logMessage("Saving the round to a file...");
+
+		if(!this->StoreCriticalPath()){Logger::logError("!!!!!Failed to save the map to a file, check above output for errors"); return;}
+
+		Logger::logMessage("successiful!");
+
+
+	});
+
+	//command to be ran at the start of a timed run
+	commandqueue::registerFunction("LoadMap", [this](std::string INFORMATION){
+		//does not require an perimeters in the string
+		Logger::logMessage("Loading the map from a file");
+
+		if(!this->LoadPath)){ Logger::logError("!!!!!Failed to load map from a file. check above output for errors"); return;}
+
+		Logger::logMessage("successiful!");
+
+	}
+
 	commandqueue::registerFunction("ReportMove", [this](std::string MOVE)
 	{
 		//pass a string with the last move ie. "NORTH"
@@ -45,6 +70,8 @@ Navigation::Navigation()
 
 void Navigation::changeRound(int round)
 {
+	currentRound = round;
+
 	//todo: Set up the proper configurations for each round
 	switch(round)
 	{
@@ -66,7 +93,6 @@ void Navigation::changeRound(int round)
 		default:
 		break;
 	}
-
 }
 
 bool Navigation::loadPath()
@@ -112,7 +138,7 @@ bool Navigation::storeCriticalPath()
 {
 	Logger::logMessage("Attempting to write path to file: " + fileLocation);
 
-	std::ifstream cpFile(fileLocation, std::ifstream::in);
+	std::ifstream cpFile(fileLocation + "." + round, std::ifstream::in);
 	std::ofstream outFile;
 
 	outFile.open(fileLocation + ".old", std::ofstream::out | std::ofstream::trunc);
