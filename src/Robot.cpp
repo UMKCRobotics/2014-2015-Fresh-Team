@@ -116,6 +116,7 @@ bool Robot::init(void)
 	commandqueue::registerFunction("LineDetected", [this](std::string arguments){
 		Logger::logMessage("Line Detected");
 		this->motorCommander->halt();
+		usleep(100000); // halt for 1 second
 		
 		if(isFastRound) navigateNextMove();		
 		else
@@ -248,6 +249,12 @@ bool Robot::loop()
 				resetCounter++;
 			}
 		}
+	}
+	
+	// If the switch is flipped during the run then halt
+	if((Interface::getPinState(PIN_FAST_ROUND) == PIN_STATE_LOW)  != getIsFastRound())
+	{
+		halt();
 	}
 	
 	switch(state)

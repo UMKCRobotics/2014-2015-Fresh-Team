@@ -15,6 +15,8 @@ MotorCommander::MotorCommander()
 //return true if init was successful
 bool MotorCommander::init()
 {
+	State = STOPPED;
+	
 	commandqueue::registerFunction("MOVE", [this](std::string arguments) //add argument as: "direction orientation"
 	{
 		Cardinal direction;
@@ -79,7 +81,7 @@ bool MotorCommander::init()
 		Cardinal direction;
 		Cardinal orientation;
 		string relativeDirection = "";
-
+		
 		std::stringstream ss;
 		ss << arguments;
 		
@@ -90,29 +92,36 @@ bool MotorCommander::init()
 		
 		if(relativeDirection == "Right")
 		{
+			State = TURNING;
 			this->turn(-90);
 		}
 		else if(relativeDirection == "Front")
 		{
+			State = FORWARD;
 			Logger::logMessage("I'm about to move forward");
 			this->moveForward();
 		}
 		else if(relativeDirection == "Left")
 		{
+			State = TURNING;
 			this->turn(90);
 		}
 		else if(relativeDirection == "Back")
 		{
+			State = REVERSE;
 			this->turn(180);
 		}
 		else
 		{
+			State = ERROR;
 			Logger::logError("The string sent to 'MOVERelative' does not contain an acceptable relative direction: '" + relativeDirection + "'");            
 		}
 	});
 		
 	commandqueue::registerFunction("AngleReached", [this](std::string arguments) 
-	{
+	{		
+		this->halt();
+		usleep(100000); // halt for 1 second
 		this->moveForward();
 	});
 	
@@ -124,6 +133,12 @@ bool MotorCommander::init()
 	
 	commandqueue::registerFunction("Correct", [this](std::string SIDE)
 	{
+		if(State == TURNING)
+		{
+			Logger::logMessage("Currently turning, refused correction.");
+			return;
+		}
+		
 		this->halt();
 		
 		if(SIDE == "Left") 
@@ -135,7 +150,7 @@ bool MotorCommander::init()
 			turn(-1);
 		}
 		
-		usleep(5 * 1000); // Sleep for 5 ms
+		usleep(8 * 1000); // Sleep for 8 ms
 		
 		this->moveForward();
 	});
@@ -209,6 +224,8 @@ void MotorCommander::turn(int degrees)
 
 void MotorCommander::moveForward()
 {	
+	Logger::logMessage("Move Forward");
+	State = FORWARD;
     Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_LOW);
     Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 
@@ -227,6 +244,8 @@ void MotorCommander::moveBackward()
 
 void MotorCommander::halt()
 {
+	Logger::logMessage("Halt");
+	State = STOPPED;
     Interface::setPinState(PIN_MOTOR_L1, PIN_STATE_HIGH);
     Interface::setPinState(PIN_MOTOR_L2, PIN_STATE_HIGH);
 

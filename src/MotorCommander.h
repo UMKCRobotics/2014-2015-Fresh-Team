@@ -10,7 +10,7 @@ public:
 	//state declaration for the motors
 	//use as LeftMotor.setState(FORWARD); RightMotor.setState(REVERSE); 
 	//as an example to turn right
-	enum state{FORWARD, REVERSE, STOPPED}; 
+	enum state{FORWARD, TURNING, REVERSE, STOPPED, ERROR}; 
 
 	MotorCommander();
 
@@ -26,7 +26,7 @@ public:
 private:
 	void moveForward();
 	void moveBackward();
-	
+	state State;
 	bool isFastRound;
 };
 
